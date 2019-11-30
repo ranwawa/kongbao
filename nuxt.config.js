@@ -17,10 +17,10 @@ module.exports = {
     { src: '~/static/font/iconfont.css', lang: 'css' },
   ],
   // 编译缓存
-  cache: true,
+  cache: false,
   // 第3方VUE插件
   plugins: [
-    { src: '~/plugins/muse-ui.js', ssr: true },
+    { src: '~/plugins/muse-ui.js', ssr: false },
     { src: '~/plugins/toast.js', ssr: false },
     { src: '~/plugins/loading.js', ssr: false },
     { src: '~/plugins/message.js', ssr: false },

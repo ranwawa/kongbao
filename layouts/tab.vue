@@ -66,7 +66,7 @@
   </div>
 </template>
 <script>
-import elementLoading from 'vue-element-loading';
+// import elementLoading from 'vue-element-loading';
 import customBottom from 'custom-bottom';
 
 export default {
@@ -126,7 +126,7 @@ export default {
     },
   },
   components: {
-    elementLoading,
+    // elementLoading,
     customBottom,
   },
   methods: {

@@ -318,7 +318,7 @@ import utils from 'utils';
 import address from 'address';
 import order from 'order';
 import vueUpload from 'vue-upload-component';
-import vueLoading from 'vue-element-loading';
+// import vueLoading from 'vue-element-loading';
 import wx from 'wx';
 
 export default {
@@ -369,7 +369,7 @@ export default {
   },
   components: {
     vueUpload,
-    vueLoading,
+    // vueLoading,
   },
   methods: {
     // 计算总运费和数量

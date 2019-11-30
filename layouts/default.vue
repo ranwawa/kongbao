@@ -60,11 +60,11 @@
       </mu-list>
     </mu-drawer>
     <!-- 全屏loading -->
-    <element-loading :active="showLoading" :is-full-scree="true"></element-loading>
+    <!--<element-loading :active="showLoading" :is-full-scree="true"></element-loading>-->
   </div>
 </template>
 <script>
-import elementLoading from 'vue-element-loading';
+// import elementLoading from 'vue-element-loading';
 
 export default {
   data() {
@@ -116,7 +116,7 @@ export default {
     },
   },
   components: {
-    elementLoading,
+    // elementLoading,
   },
   methods: {
     // 显示侧边弹框
