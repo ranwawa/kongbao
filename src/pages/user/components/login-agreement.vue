@@ -18,12 +18,12 @@ export default class LoginHome extends Vue {
   scoped
 >
   .rww-container {
-    padding: 0 8px;
+    padding: 0 $s-xs;
     color: #888;
-    font-size: 12px;
+    font-size: $fz-sm;
   }
   text {
-    padding-left: 8px;
+    padding-left: $s-xs;
     color: blue;
   }
 </style>
