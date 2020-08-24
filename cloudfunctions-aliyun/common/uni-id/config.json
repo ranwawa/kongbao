@@ -1,7 +1,12 @@
 {
 	"passwordSecret": "passwordSecret-ranwawa",
 	"tokenSecret": "tokenSecret-ranwawa",
-	"tokenExpiresIn": 2592000,
+	"tokenExpiresIn": 7200000,
+	"passwordErrorLimit": 5,
+	"bindTokenToDevice": true,
+	"passwordErrorRetryTime": 600,
+	"autoSetInviteCode": false,
+	"forceInviteCode": false,
 	"app-plus": {
 		"tokenExpiresIn": 2592000,
 		"oauth" : {
@@ -25,6 +30,14 @@
 				"appid" : "alipay appid",
 				"privateKey" : "alipay privateKey"
 			}
+		}
+	},
+	"service": {
+		"sms": {
+			"name": "DCloud",
+			"codeExpiresIn": 300,
+			"smsKey": "your sms key",
+			"smsSecret": "your sms secret"
 		}
 	}
 }
