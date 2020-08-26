@@ -26,11 +26,11 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import Component from 'vue-class-component'
+import Vue from "vue";
+import Component from "vue-class-component";
 import { user } from "@/api/user";
-import UvField from 'uni-vant/lib/field.vue';
-import LoginAgreement from './components/login-agreement.vue';
+import UvField from "uni-vant/lib/field.vue";
+import LoginAgreement from "./components/login-agreement.vue";
 import { cellPhoneReg, emailReg, userNameReg } from "@/assetes/js/regular";
 import { uniWrapper } from "@/assetes/js/uni-wrapper";
 
@@ -38,53 +38,49 @@ import { uniWrapper } from "@/assetes/js/uni-wrapper";
   components: {
     UvField,
     LoginAgreement,
-  }
+  },
 })
 export default class LoginHome extends Vue {
   form = {
-    userName: '',
-    password: '',
-    inviteCode: '',
+    userName: "",
+    password: "",
+    inviteCode: "",
   };
   focus = {
     userName: true,
     password: false,
-  }
+  };
 
-  async onLoad() {
-  }
+  async onLoad() {}
 
   /**
    * 登录
    */
   async submit() {
-    const [err, data] = await user.register(this.form)
+    const [err, data] = await user.register(this.form);
   }
   formValidate() {
     const { userName } = this.form;
     if (
-      !emailReg.test(userName)
-      && !cellPhoneReg.test(userName)
-      && !userNameReg.test(userName)
+      !emailReg.test(userName) &&
+      !cellPhoneReg.test(userName) &&
+      !userNameReg.test(userName)
     ) {
-      uniWrapper.showToastText('用户名输入有误');
+      uniWrapper.showToastText("用户名输入有误");
     }
   }
-};
+}
 </script>
 
-<style
-  lang="scss"
-  scoped
->
-  .rww-container {
-    padding: 0 16px;
-    background-color: #fff;
-    /deep/ .uv-cell {
-      padding-left: 0;
-      &::after {
-        left: 0;
-      }
+<style lang="scss" scoped>
+.rww-container {
+  padding: 0 $s-md;
+  background-color: #fff;
+  /deep/ .uv-cell {
+    padding-left: 0;
+    &::after {
+      left: 0;
     }
   }
+}
 </style>
