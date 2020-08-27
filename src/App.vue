@@ -15,9 +15,12 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
+@import "~uni-vant/lib/common/index";
 /*每个页面公共css */
 page {
-  background-color: #f5f5f5;
+  background-color: $bgc-base;
+  color: $c-base;
+  font-size: $fz-md;
 }
 .theme-style__button {
   border-radius: 2em !important;

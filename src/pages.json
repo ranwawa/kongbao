@@ -16,6 +16,12 @@
 					"style": {
 						"navigationBarTitleText": "帐号密码登录"
 					}
+				},
+				{
+					"path": "register",
+					"style": {
+						"navigationBarTitleText": "注册"
+					}
 				}
 			]
 		}

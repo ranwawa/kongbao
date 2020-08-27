@@ -1,22 +1,14 @@
 <template>
   <view class="rww-container">
-    <login-form-username>
+    <login-form-username submit-text="立即注册" is-show-confirm>
       <view class="login-tip">
         <view
           class="login-tip__register"
-          @click="goPage('/pages/user/register')"
-          >没有帐号? 立即注册</view
-        >
-        <view
-          class="login-tip__register"
-          @click="goPage('/pages/user/forgot-password')"
-          >找回密码</view
+          @click="goPage('/pages/user/login-home')"
+          >已有帐号? 立即登录</view
         >
       </view>
     </login-form-username>
-    <login-agreement />
-
-    <login-popup ref="popup" />
   </view>
 </template>
 
@@ -45,7 +37,6 @@ export default class LoginHome extends Vue {
    * 登录
    */
   async submit(e: any) {
-    this.formValidate(e);
     const [err, data] = await user.register(e);
   }
   formValidate(e: any) {
@@ -59,7 +50,7 @@ export default class LoginHome extends Vue {
     }
   }
   goPage(url: ROUTE) {
-    uniWrapper.navigateToPage(url);
+    uniWrapper.redirectToPage(url);
   }
 }
 </script>

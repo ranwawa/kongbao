@@ -12,9 +12,14 @@ export default class LoginHome extends Vue {}
 
 <style lang="scss" scoped>
 .login-agreement {
+  position: fixed;
+  right: 0;
+  bottom: $s-xl;
+  left: 0;
   padding: $s-xs 0;
   color: $c-muted;
   font-size: $fz-sm;
+  text-align: center;
 }
 text {
   padding-left: $s-xs;
