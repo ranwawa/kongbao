@@ -16,6 +16,7 @@ export default Vue.extend({
 
 <style lang="scss">
 @import "~uni-vant/lib/common/index";
+
 /*每个页面公共css */
 page {
   background-color: $bgc-base;
@@ -23,9 +24,6 @@ page {
   font-size: $fz-md;
 }
 .theme-style__button {
-  border-radius: 2em !important;
-  border-color: transparent !important;
-  background: linear-gradient(to right, $c-theme, $c-theme-light) $c-theme-light;
-  color: #fff !important;
+  @include theme-style__button;
 }
 </style>

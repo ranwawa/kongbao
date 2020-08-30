@@ -1,0 +1,41 @@
+{
+  "store": {
+    "spId": "123",
+    "type": "store",
+    "apiUrl": "http://www.alihuocang.com/api/storehouse/list",
+    "map": {
+      "storeName": "name",
+      "storeCode": "code",
+      "expressName": "expressName",
+      "expressCode": "",
+      "costPrice": "expressCostPrice",
+      "provinceName": "provinceName",
+      "cityName": "cityName",
+      "areaName": "areaName",
+      "shipAddress": "shipAddress",
+      "notSendAddress": "notSendAddress"
+    },
+    "createdTime": "",
+    "updateTime": "",
+    "isDeleted": false,
+    "isDisabled": false,
+    "sort": 0,
+  },
+  "goods": {
+    "goodsName": "name",
+    "goodsCode": "code",
+    "storeCode": "",
+    "goodsCostPrice": "price",
+    "imgList": "image",
+    "sales": "sales",
+    "inventory": "totalStockNumber",
+    "content": "intro",
+    "spId": 123,
+    "createdTime": "",
+    "updateTime": "",
+    "isDeleted": false,
+    "isDisabled": false,
+    "sort": 0,
+    "thirdObj": {}
+  }
+}

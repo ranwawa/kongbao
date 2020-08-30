@@ -5,6 +5,12 @@
 			"style": {
 				"navigationBarTitleText": "uni-app"
 			}
+		},
+		{
+			"path": "pages/tab/goods-category",
+			"style": {
+				"navigationBarTitleText": "uni-app"
+			}
 		}
 	],
 	"subPackages": [
@@ -24,7 +30,19 @@
 					}
 				}
 			]
+		},
+		{
+			"root": "pages/goods",
+			"pages": [
+				{
+					"path": "detail",
+					"style": {
+						"navigationBarTitleText": "小礼品详情"
+					}
+				}
+			]
 		}
+
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

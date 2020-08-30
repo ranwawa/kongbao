@@ -2,9 +2,11 @@
   <view class="login-form">
     <!-- 用户名 -->
     <uv-field
-      v-model="form.userName"
-      :focus="focus.userName"
-      maxlength="16"
+      v-model="form.username"
+      :focus="focus.username"
+      :maxlength="16"
+      :error="!!error.username"
+      :error-message="error.username"
       size="large"
       clearable
       placeholder="请输入用户名/手机号/邮箱"
@@ -13,7 +15,9 @@
     <uv-field
       v-model="form.password"
       :focus="focus.password"
-      maxlength="16"
+      :maxlength="16"
+      :error="!!error.password"
+      :error-message="error.password"
       size="large"
       type="password"
       placeholder="请输入密码"
@@ -24,7 +28,9 @@
       v-if="isShowConfirm"
       v-model="form.confirm"
       :focus="focus.confirm"
-      maxlength="16"
+      :maxlength="16"
+      :error="!!error.confirm"
+      :error-message="error.confirm"
       size="large"
       type="password"
       placeholder="请确认密码"
@@ -58,25 +64,41 @@ import UvField from "uni-vant/lib/field.vue";
       type: Boolean,
       default: false,
     },
+    // 是否正在处理请求
+    isHandlingSubmit: {
+      type: Boolean,
+      default: false,
+    },
     // 确认按钮文字
     submitText: {
       type: String,
       default: "同意协议并登录",
     },
+    // 输入框聚焦
+    focus: {
+      type: Object,
+      default: () => ({
+        username: true,
+        password: false,
+        confirm: false,
+      }),
+    },
+    // 输入框错误令牌
+    error: {
+      type: Object,
+      default: () => ({
+        username: "",
+        password: "",
+        confirm: "",
+      }),
+    },
   },
 })
 export default class LoginHome extends Vue {
-  // 是否正在提交表单
-  isHandlingSubmit = false;
   form = {
-    userName: "",
+    username: "",
     password: "",
     confirm: "",
-    inviteCode: "",
-  };
-  focus = {
-    userName: true,
-    password: false,
   };
 }
 </script>

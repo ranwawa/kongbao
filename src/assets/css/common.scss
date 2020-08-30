@@ -1,0 +1,8 @@
+$c-theme: #ff5000;
+$c-theme-light: #ff9000;
+@mixin theme-style__button() {
+  border-radius: 2em !important;
+  border-color: transparent !important;
+  background: linear-gradient(to right, $c-theme, $c-theme-light) $c-theme-light;
+  color: #fff !important;
+}

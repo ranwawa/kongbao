@@ -1,5 +1,8 @@
+import { uniWrapper } from "@/assets/js/uni-wrapper";
+import { config } from "@/config";
+
 export class Request {
-  name: string = '';
+  name: string = "";
   uniCloud: TypesUniCloud.UniCloud;
 
   constructor(name: string) {
@@ -8,33 +11,35 @@ export class Request {
   }
 
   init() {
-    return uniCloud.init({
-      provider: 'aliyun',
-      spaceId: '66108fd9-83f0-4fda-9219-f9fe3a6a377e',
-      clientSecret: 'BF6ATHIcf8W8kOr4gDgCSA==',
-    })
+    return uniCloud.init(config.uniCloudSpace);
   }
 
-  async start(param: TypesUniCloud.DataReq) {
+  async start<TReq, TRes>(
+    param: TypesUniCloud.DataReq<TReq>
+  ): Promise<[any | null, TRes | null]> {
     try {
       const res = await this.uniCloud.callFunction({
         name: this.name,
         data: {
-          ...param
+          ...param,
         },
       });
-      return this.handleCallFunctionRes(res);
+      return this.handleCallFunctionRes<TRes>(res);
     } catch (e) {
       return [e.message, null];
     }
   }
 
-  handleCallFunctionRes(options: TypesUniCloud.CallFunctionRes): [any | null, any | null] {
+  handleCallFunctionRes<T>(
+    options: TypesUniCloud.CallFunctionRes<T>
+  ): [any | null, T | null] {
+    console.log(options);
     if (!options.success) {
       return [options, null];
     }
     const { result }: any = options;
     if (result.code !== 0) {
+      uniWrapper.showToastText(result.msg);
       return [result, null];
     }
     return [null, result];

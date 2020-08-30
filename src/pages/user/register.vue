@@ -1,10 +1,15 @@
 <template>
   <view class="rww-container">
-    <login-form-username submit-text="立即注册" is-show-confirm>
+    <login-form-username
+      :error="formError"
+      :focus="formFocus"
+      :is-handling-submit="isHandlingSubmit"
+      submit-text="立即注册"
+      is-show-confirm
+      @submit="submit"
+    >
       <view class="login-tip">
-        <view
-          class="login-tip__register"
-          @click="goPage('/pages/user/login-home')"
+        <view class="login-tip__register" @click="goLoginHome"
           >已有帐号? 立即登录</view
         >
       </view>
@@ -15,13 +20,14 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
+import _ from "lodash";
+import Super from "./mixins";
 import { user } from "@/api/user";
-import { uniWrapper } from "@/assetes/js/uni-wrapper";
-import { cellPhoneReg, emailReg, userNameReg } from "@/assetes/js/regular";
+import { uniWrapper } from "@/assets/js/uni-wrapper";
 import LoginPopup from "./components/login-popup.vue";
 import LoginAgreement from "./components/login-agreement.vue";
 import LoginFormUsername from "./components/login-form-username.vue";
-import { ROUTE } from "@/assetes/constant/common";
+import { ROUTE, STORAGE_KEY } from "@/assets/constant/common";
 
 @Component({
   components: {
@@ -30,27 +36,27 @@ import { ROUTE } from "@/assetes/constant/common";
     LoginFormUsername,
   },
 })
-export default class LoginHome extends Vue {
-  async onLoad() {}
-
+export default class LoginHome extends Super {
+  isHandlingSubmit = false;
   /**
    * 登录
    */
-  async submit(e: any) {
-    const [err, data] = await user.register(e);
-  }
-  formValidate(e: any) {
-    const { userName } = e;
-    if (
-      !emailReg.test(userName) &&
-      !cellPhoneReg.test(userName) &&
-      !userNameReg.test(userName)
-    ) {
-      uniWrapper.showToastText("用户名输入有误");
+  async submit(e: RegisterForm<string>) {
+    if (!this.validateForm(e, true)) {
+      return;
     }
+    this.isHandlingSubmit = true;
+    const [err, data] = await user.register(
+      _.pick(e, ["username", "password"])
+    );
+    this.isHandlingSubmit = false;
+    if (err || !data) return;
+    uni.setStorageSync(STORAGE_KEY.UNI_ID_TOKEN, data.token);
+    uniWrapper.showToastText(data.msg);
+    setTimeout(this.goLoginHome, 2000);
   }
-  goPage(url: ROUTE) {
-    uniWrapper.redirectToPage(url);
+  goLoginHome() {
+    uniWrapper.redirectToPage(ROUTE.USER_LOGIN_HOME);
   }
 }
 </script>

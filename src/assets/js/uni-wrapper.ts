@@ -1,4 +1,4 @@
-import { ROUTE } from "@/assetes/constant/common";
+import { ROUTE } from "@/assets/constant/common";
 
 const { showToast, navigateTo, redirectTo } = uni;
 

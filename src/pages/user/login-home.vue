@@ -1,6 +1,6 @@
 <template>
   <view class="rww-container">
-    <login-form-username>
+    <login-form-username :error="formError" :focus="formFocus" @submit="submit">
       <view class="login-tip">
         <view
           class="login-tip__register"
@@ -23,13 +23,13 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
+import Super from "./mixins";
 import { user } from "@/api/user";
-import { uniWrapper } from "@/assetes/js/uni-wrapper";
-import { cellPhoneReg, emailReg, userNameReg } from "@/assetes/js/regular";
+import { uniWrapper } from "@/assets/js/uni-wrapper";
 import LoginPopup from "./components/login-popup.vue";
 import LoginAgreement from "./components/login-agreement.vue";
 import LoginFormUsername from "./components/login-form-username.vue";
-import { ROUTE } from "@/assetes/constant/common";
+import { ROUTE, STORAGE_KEY } from "@/assets/constant/common";
 
 @Component({
   components: {
@@ -38,25 +38,16 @@ import { ROUTE } from "@/assetes/constant/common";
     LoginFormUsername,
   },
 })
-export default class LoginHome extends Vue {
-  async onLoad() {}
-
+export default class LoginHome extends Super {
   /**
    * 登录
    */
-  async submit(e: any) {
-    this.formValidate(e);
-    const [err, data] = await user.register(e);
-  }
-  formValidate(e: any) {
-    const { userName } = e;
-    if (
-      !emailReg.test(userName) &&
-      !cellPhoneReg.test(userName) &&
-      !userNameReg.test(userName)
-    ) {
-      uniWrapper.showToastText("用户名输入有误");
-    }
+  async submit(e: RegisterForm<string>) {
+    if (!this.validateForm(e)) return;
+    const [err, data] = await user.login(e);
+    if (err || !data) return;
+    uni.setStorageSync(STORAGE_KEY.UNI_ID_TOKEN, data.token);
+    uniWrapper.showToastText("登录成功 ");
   }
   goPage(url: ROUTE) {
     uniWrapper.navigateToPage(url);
