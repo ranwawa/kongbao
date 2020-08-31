@@ -78,6 +78,8 @@ module.exports = class Store {
    */
   async add(entity) {
     entity.createTime = Date.now();
+    entity.isDeleted = false;
+    entity.isEnable = true;
     const res = await colStore.add(entity);
     uniCloud.logger.log("添加仓库-结果", res);
     return res;
@@ -102,6 +104,7 @@ module.exports = class Store {
     const res = await colStore
       .field({ _id: true, storeCode: true, storeName: true })
       .get();
+    uniCloud.logger.log("查询所有仓库-出参", res);
     return new ResponseModal(0, res);
   }
   /**
@@ -112,7 +115,7 @@ module.exports = class Store {
    */
   async update(id, entity) {
     const res = await colStore.doc(id).set(this.combineStoreEntity(entity));
-    uniCloud.logger.log("更新仓库", res);
+    uniCloud.logger.log("更新一条仓库-出参", res);
     return res;
   }
   /**
@@ -120,11 +123,9 @@ module.exports = class Store {
    * @returns {Promise<{deleted: number}>}
    */
   async removeAll() {
-    return colStore
-      .where({
-        _id: dbCmd.exists(),
-      })
-      .remove();
+    const res = await colStore.where({ _id: dbCmd.exists(true) }).remove();
+    uniCloud.logger.info("删除全部仓库-出参", res);
+    return res;
   }
   /**
    * 同步仓库信息

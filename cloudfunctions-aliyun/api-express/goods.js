@@ -1,6 +1,6 @@
 const api = require("api");
 const db = require("./db");
-const { colGoods } = db;
+const { colSpGoods, dbCmd } = db;
 const { request, ResponseModal } = api;
 module.exports = class Goods {
   constructor(spId, accessToken, modelMap = {}) {
@@ -57,12 +57,26 @@ module.exports = class Goods {
   /**
    * 添加单个商品
    * @param entity
+   * @param storeItem
    * @returns {Promise<{id: string}|{inserted: number, ids: string[]}>}
    */
-  async add(entity) {
+  async add(entity, storeItem) {
+    entity.expressName = storeItem.expressName;
+    entity.expressCode = storeItem.expressCode;
     entity.createTime = Date.now();
-    const res = await colGoods.add(entity);
+    entity.isDeleted = false;
+    entity.isEnable = true;
+    const res = await colSpGoods.add(entity);
     uniCloud.logger.info("添加商品-出参", res);
+    return res;
+  }
+  /**
+   * 删除全部商品
+   * @returns {Promise<{deleted: number}>}
+   */
+  async removeAll() {
+    const res = await colSpGoods.where({ _id: dbCmd.exists(true) }).remove();
+    uniCloud.logger.info("删除全部商品-出参", res);
     return res;
   }
   /**
@@ -73,7 +87,7 @@ module.exports = class Goods {
    */
   async update(id, entity) {
     uniCloud.logger.info("更新商品-入参", id, entity);
-    const res = await colGoods.doc(id).update(entity);
+    const res = await colSpGoods.doc(id).update(entity);
     uniCloud.logger.info("更新商品-出参", res);
     return res;
   }
@@ -86,7 +100,7 @@ module.exports = class Goods {
   async get(entity, storeCode) {
     const condition = this.getWhereParam(entity, storeCode);
     uniCloud.logger.info("查询商品-入参", condition);
-    const res = await colGoods.where(condition).get();
+    const res = await colSpGoods.where(condition).get();
     uniCloud.logger.info("查询商品-出参", res);
     return res.data[0];
   }
@@ -106,7 +120,7 @@ module.exports = class Goods {
       const oldGoods = await this.get(entity, storeCode);
       oldGoods
         ? await this.update(oldGoods._id, entity)
-        : await this.add(entity);
+        : await this.add(entity, storeItem);
     }
   }
 };

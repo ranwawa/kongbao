@@ -131,7 +131,7 @@ declare namespace ucDatabase {
     /**
      * 数据库操作符
      */
-    Command: ucCommand.ICommand;
+    command: ucCommand.ICommand;
     /**
      * 获取集合的引用。
      * @param name 指定需引用的集合名称。
@@ -167,7 +167,7 @@ declare namespace ucCollection {
      * 若指定了 _id，则不能与已有记录冲突
      * @param options
      */
-    add: (options: Object) => Promise<Object>;
+    add: (options: Object) => Promise<AddRes>;
     /**
      * 发起聚合操作，
      * 定义完聚合流水线阶段之后需调用 end 方法标志结束定义并实际发起聚合操作
@@ -182,7 +182,7 @@ declare namespace ucCollection {
      * 获取集合数据，
      * 或获取根据查询条件筛选后的集合数据。
      */
-    get: () => Promise<Object>;
+    get: () => Promise<{ affectedDocs: number; data: Attray<Object> }>;
     /**
      * 更新多条记录
      */
@@ -192,7 +192,45 @@ declare namespace ucCollection {
      * @param condition
      */
     where: (condition: Object) => ICollection;
+    /**
+     * 删除多条记录。
+     * 注意只支持通过匹配 where 语句来删除，不支持 skip 和 limit。
+     */
+    remove: () => Promise<{ affectedDocs: number; deleted: number }>;
   }
+
+  /**
+   * 单条插入时
+   */
+  interface IAddResSingle {
+    /**
+     *
+     */
+    id: tring;
+  }
+
+  /**
+   * 批量插入时
+   */
+  interface IAddResList {
+    /**
+     * 插入成功条数
+     */
+    inserted: number;
+    /**
+     * 批量插入所有记录的id
+     */
+    result: Object;
+    /**
+     * 批量插入所有记录的id
+     */
+    ids: Array<string>;
+  }
+
+  /**
+   * 新增纪录时,返回格式
+   */
+  type AddRes = IAddResList;
 }
 declare namespace ucDocument {
   /**
@@ -230,7 +268,7 @@ declare namespace ucAggregate {
      * 对该阶段的每一个输入记录，lookup 会在该记录中增加一个数组字段，该数组是被联表中满足匹配条件的记录列表。
      * lookup 会将连接后的结果输出给下个阶段。
      */
-    lookup: (AggregateLookUpBaseEqual) => IAggregate;
+    lookup: (options: IAggregateLookUpBaseEqual) => IAggregate;
     /**
      * 聚合阶段。
      * 根据条件过滤文档，并且把符合条件的文档传递给下一个流水线阶段。
@@ -244,6 +282,14 @@ declare namespace ucAggregate {
      * @param options
      */
     project: (options: Object) => IAggregate;
+    /**
+     * 聚合阶段。
+     * 使用指定的数组字段中的每个元素，对文档进行拆分。
+     * 拆分后，文档会从一个变为一个或多个，分别对应数组的每个元素。
+     *  https://developers.weixin.qq.com/miniprogram/dev/wxcloud/reference-sdk-api/database/aggregate/Aggregate.unwind.html#%E7%A4%BA%E4%BE%8B
+     * @param options
+     */
+    unwind: (options: IAggregateUnwindObject | string) => IAggregate;
     /**
      * 标志聚合操作定义完成，发起实际聚合操作
      */
@@ -274,6 +320,21 @@ declare namespace ucAggregate {
      * 如果被连接集合的记录中没有该字段，该字段的值将在匹配时被视作 null
      */
     foreignField: string;
+  }
+  interface IAggregateUnwindObject {
+    /**
+     * 想要拆分的数组的字段名，需要以 $ 开头。
+     */
+    path: string;
+    /**
+     * 可选项，传入一个新的字段名，数组索引会保存在这个新的字段上。新的字段名不能以 $ 开头。
+     */
+    includeArrayIndex?: string;
+    /**
+     * 如果为 true，那么在 path 对应的字段为 null、空数组或者这个字段不存在时，依然会输出这个文档；
+     * 如果为 false，unwind 将不会输出这些文档。默认为 false。
+     */
+    preserveNullAndEmptyArrays?: boolean;
   }
 }
 

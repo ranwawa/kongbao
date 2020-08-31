@@ -19,7 +19,7 @@
     "updateTime": "",
     "isDeleted": false,
     "isDisabled": false,
-    "sort": 0,
+    "sort": 0
   },
   "goods": {
     "goodsName": "name",
@@ -37,5 +37,33 @@
     "isDisabled": false,
     "sort": 0,
     "thirdObj": {}
+  },
+  "agent-goods": {
+    "appId": 1,
+    "goodsInfo": {},
+    "isEnable": true,
+    "sort": 1,
+    "costPrice": 1,
+    "showPrice": 2,
+    "salePriceNormal": 1.8,
+    "salePriceVip": 1.5
+  },
+  "agent": {
+    "appId": 123,
+    "userId": 123,
+    "balance": 123,
+    "isEnable": true,
+    "isDeleted": false,
+    "createTime": 123,
+    "updateTime": 123,
+    "masterInfo": {
+      "name": 123,
+      "wechat": 123,
+      "phone": 123
+    },
+    "siteInfo": {
+      "url": 123,
+      "title": 123
+    }
   }
 }

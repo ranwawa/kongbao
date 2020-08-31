@@ -52,6 +52,11 @@ async function clockedTask() {
 exports.main = async (event, context) => {
   const { action, data } = event;
   const { APPID } = context;
+  // clockedTask();
+  // const goods = new Goods();
+  // const store = new Store();
+  // store.removeAll();
+  // goods.removeAll();
   if (action) {
     const [model, method] = action.split("/");
     let instance = new instanceMap[model]();
