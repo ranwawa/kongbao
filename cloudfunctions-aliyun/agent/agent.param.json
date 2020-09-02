@@ -2,7 +2,9 @@
 // 配置教程参考：https://uniapp.dcloud.net.cn/uniCloud/quickstart?id=runparam
 {
 	"action": "agent-goods/getList",
-	"data": {},
+	"data": {
+		"storeCode": "00005"
+	},
 	"clientInfo": {
 		"APPID":"__UNI__0CA1D11"
 	}

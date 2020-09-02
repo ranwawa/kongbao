@@ -1,5 +1,6 @@
 const api = require("api");
 const db = require("./db");
+const md5 = require("md5");
 const { colSpGoods, dbCmd } = db;
 const { request, ResponseModal } = api;
 module.exports = class Goods {
@@ -48,6 +49,7 @@ module.exports = class Goods {
     entity.storeCode = storeItem.storeCode;
     entity.storeName = storeItem.storeName;
     entity.thirdObj = thirdGoodsItem;
+    entity._id = md5(`${this.spId}-${entity.storeCode}-${entity.goodsCode}`);
     entity.spId = this.spId;
     entity.sort = 0;
     entity.updateTime = Date.now();

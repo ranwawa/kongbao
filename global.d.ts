@@ -234,11 +234,11 @@ declare namespace ucCollection {
      * 获取集合数据，
      * 或获取根据查询条件筛选后的集合数据。
      */
-    get: () => Promise<{ affectedDocs: number; data: Attray<Object> }>;
+    get: () => Promise<{ affectedDocs: number; data: Array<Object> }>;
     /**
      * 更新多条记录
      */
-    update: () => Promise<Object>;
+    update: (options) => Promise<Object>;
     /**
      * 指定查询条件，返回带新查询条件的新的集合引用
      * @param condition

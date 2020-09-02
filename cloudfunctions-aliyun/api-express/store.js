@@ -1,5 +1,6 @@
 const db = require("./db");
 const api = require("api");
+const md5 = require("md5");
 const { request, ResponseModal } = api;
 const { colStore, dbCmd } = db;
 module.exports = class Store {
@@ -17,7 +18,6 @@ module.exports = class Store {
    */
   addSubscriber(eventName, eventHandler = () => {}) {
     uniCloud.logger.log("订阅仓库相关事件-入参", eventName);
-    const subscriberList = this.subscribers[eventName];
     !this.subscribers[eventName] && (this.subscribers[eventName] = []);
     this.subscribers[eventName].push(eventHandler);
   }
@@ -59,13 +59,13 @@ module.exports = class Store {
   combineStoreEntity(thirdStoreItem = {}) {
     // 遍历标准实体映射
     // 将第3方字段转存过来
-    const { modelMap } = this;
     const entity = {};
-    Object.entries(modelMap).forEach(([standardKey, thirdKey]) => {
+    Object.entries(this.modelMap).forEach(([standardKey, thirdKey]) => {
       entity[standardKey] = thirdStoreItem[thirdKey];
     });
     entity.thirdObj = thirdStoreItem;
     entity.spId = this.spId;
+    entity._id = md5(`${this.spId}-${entity.storeCode}`);
     entity.sort = 0;
     entity.updateTime = Date.now();
     uniCloud.logger.log("合并仓库实体数据-出参", entity);
@@ -87,7 +87,6 @@ module.exports = class Store {
   /**
    * 查询一条仓库
    * @param entity
-   * @returns {Promise<{affectedDocs: number, data: any[]}>}
    */
   async get(entity) {
     const res = await colStore
@@ -111,7 +110,6 @@ module.exports = class Store {
    * 更新一条仓库
    * @param id
    * @param entity
-   * @returns {Promise<{updated: number}>}
    */
   async update(id, entity) {
     const res = await colStore.doc(id).set(this.combineStoreEntity(entity));
@@ -137,42 +135,7 @@ module.exports = class Store {
     // 查找本地仓库信息
     // 如果有则更新, 如果木有,则新增
     // 更新商品信息
-    // const newStoreList = await this.getListFromApi(requestBody);
-    const newStoreList = [
-      {
-        name: "圆通北京仓",
-        code: "00001",
-        expressName: "圆通快递",
-        provinceName: "北京市",
-        cityName: "市辖区",
-        areaName: "顺义区",
-        shipAddress: "北京市市辖区顺义区南法信府前街16号",
-        expressCostPrice: "3.6",
-        notSendAddress: "新疆,西藏,宁夏,甘肃,内蒙古,香港,澳门,台湾",
-      },
-      {
-        name: "邮政泉州仓",
-        code: "00004",
-        expressName: "邮政EMS",
-        provinceName: "福建省",
-        cityName: "泉州市",
-        areaName: "惠安县",
-        shipAddress: "福建省泉州市惠安县张青公路中熙产业园",
-        expressCostPrice: "3",
-        notSendAddress: "新疆,西藏,宁夏,甘肃,内蒙古,香港,澳门,台湾,河北555555",
-      },
-      {
-        name: "圆通杭州仓",
-        code: "00005",
-        expressName: "圆通快递",
-        provinceName: "浙江省",
-        cityName: "绍兴市",
-        areaName: "上虞市",
-        shipAddress: "浙江省绍兴市上虞市张青公路中熙产业园",
-        expressCostPrice: "3.1",
-        notSendAddress: "新疆,西藏,宁夏,甘肃,内蒙古,香港,澳门,台湾",
-      },
-    ];
+    const newStoreList = await this.getListFromApi(requestBody);
     for (let newStoreItem of newStoreList) {
       const entity = this.combineStoreEntity(newStoreItem);
       // 发布更新商品的事件

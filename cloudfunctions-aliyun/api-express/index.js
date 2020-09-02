@@ -52,21 +52,21 @@ async function clockedTask() {
 exports.main = async (event, context) => {
   const { action, data } = event;
   const { APPID } = context;
-  // clockedTask();
   // const goods = new Goods();
   // const store = new Store();
-  // store.removeAll();
+  // await store.removeAll();
   // goods.removeAll();
-  if (action) {
-    const [model, method] = action.split("/");
-    let instance = new instanceMap[model]();
-    return instance[method]
-      ? await instance[method](data, event, context)
-      : {
-          code: 404,
-          msg: "未找到访问的接口",
-        };
-  } else {
-    return event;
-  }
+  // await clockedTask();
+  // if (action) {
+  //   const [model, method] = action.split("/");
+  //   let instance = new instanceMap[model]();
+  //   return instance[method]
+  //     ? await instance[method](data, event, context)
+  //     : {
+  //         code: 404,
+  //         msg: "未找到访问的接口",
+  //       };
+  // } else {
+  //   return event;
+  // }
 };

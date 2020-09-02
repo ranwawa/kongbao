@@ -31,6 +31,8 @@ module.exports = class AgentGoods {
       })
       .project({
         goodsId: "$_id",
+        goodsCode: "$goodsCode",
+        spId: "$spId",
         goodsCostPrice: true,
         expressCostPrice: "$storeInfo.expressCostPrice",
       })
@@ -41,10 +43,13 @@ module.exports = class AgentGoods {
   /**
    * 查询某个代理的所有商品信息
    */
-  async getList() {
+  async getList(param = {}) {
     const res = await colAgGoods
       .aggregate()
-      .match({ _id: dbCmd.exists(true) })
+      .match({
+        appId: this.appId,
+        _id: dbCmd.exists(true),
+      })
       .lookup({
         from: "kb-sp-goods",
         localField: "goodsId",
@@ -55,6 +60,7 @@ module.exports = class AgentGoods {
         path: "$spGoodsInfo",
       })
       .match({
+        "spGoodsInfo.storeCode": param.storeCode,
         "spGoodsInfo.isDeleted": false,
         "spGoodsInfo.isEnable": true,
       })
@@ -64,7 +70,8 @@ module.exports = class AgentGoods {
         isEnable: false,
         sort: false,
         goodsId: false,
-
+        expressCostPrice: false,
+        goodsCostPrice: false,
         "spGoodsInfo._id": false,
         "spGoodsInfo.price": false,
         "spGoodsInfo.spId": false,
@@ -77,6 +84,9 @@ module.exports = class AgentGoods {
       })
       .project({
         goodsInfo: $.mergeObjects(["$$ROOT", "$spGoodsInfo"]),
+      })
+      .project({
+        spGoodsInfo: false,
       })
       .replaceRoot({
         newRoot: "$goodsInfo",
@@ -91,6 +101,14 @@ module.exports = class AgentGoods {
     return new ResponseModal(0, data);
   }
   async update() {}
+  /**
+   * 删除所有代理商品
+   */
+  async removeAll() {
+    const res = await colAgGoods.where({ _id: dbCmd.exists(true) }).remove();
+    uniCloud.logger.log("删除所有代理商品-出参", res);
+    return res;
+  }
   /**
    * 新增代理商品
    * @param apGoodsList
@@ -121,6 +139,7 @@ module.exports = class AgentGoods {
       ele.sort = 0;
       ele.createTime = ele.updateTime = now;
       ele.appId = this.appId;
+      ele._id = `${ele.spId}-${this.appId}-${ele.goodsCode}`;
       return ele;
     });
     await this.add(agGoodsList);
