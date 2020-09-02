@@ -57,16 +57,16 @@ exports.main = async (event, context) => {
   // await store.removeAll();
   // goods.removeAll();
   // await clockedTask();
-  // if (action) {
-  //   const [model, method] = action.split("/");
-  //   let instance = new instanceMap[model]();
-  //   return instance[method]
-  //     ? await instance[method](data, event, context)
-  //     : {
-  //         code: 404,
-  //         msg: "未找到访问的接口",
-  //       };
-  // } else {
-  //   return event;
-  // }
+  if (action) {
+    const [model, method] = action.split("/");
+    let instance = new instanceMap[model]();
+    return instance[method]
+      ? await instance[method](data, event, context)
+      : {
+          code: 404,
+          msg: "未找到访问的接口",
+        };
+  } else {
+    return event;
+  }
 };

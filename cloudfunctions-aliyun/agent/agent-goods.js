@@ -45,15 +45,13 @@ module.exports = class AgentGoods {
    * 查询某个代理的所有商品信息
    */
   async getList(param = {}) {
-    const { pageSize = 11, currentPage = 1 } = param;
+    const { pageSize = 10, currentPage = 1 } = param;
     const res = await colAgGoods
       .aggregate()
       .match({
         appId: this.appId,
         _id: dbCmd.exists(true),
       })
-      .skip((currentPage - 1) * pageSize)
-      .limit(pageSize)
       .lookup({
         from: "kb-sp-goods",
         localField: "goodsId",
@@ -95,6 +93,8 @@ module.exports = class AgentGoods {
       .replaceRoot({
         newRoot: "$goodsInfo",
       })
+      .skip((currentPage - 1) * pageSize)
+      .limit(pageSize)
       .end();
     uniCloud.logger.log("查询某个代理的所有商品信息-出参", res);
     let data = res.affectedDocs ? res.data : [];
