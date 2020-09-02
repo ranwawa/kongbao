@@ -21,5 +21,6 @@ exports.main = async (event, context) => {
       msg: "未找到访问的接口2",
     };
   }
-  return await instance[method](data, event, context);
+  const res = await instance[method](data, event, context);
+  return res;
 };

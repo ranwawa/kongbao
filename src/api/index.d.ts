@@ -70,23 +70,26 @@ namespace store {
     storeCode: string;
     goodsList?: any[];
   }
+}
 
-  /**
-   * 商品列表响应体
-   */
-  interface GoodsListRes extends TypesUniCloud.DataListRes<GoodsItem> {}
+namespace goods {
+  import DataListRes = TypesUniCloud.DataListRes;
 
+  interface IGoodsListRes extends DataListRes<IGoodsItem> {}
   /**
    * 商品响应体
    */
-  interface GoodsItem {
-    code: string;
-    name: string;
-    price: number;
-    showPrice: number;
-    image: string;
+  interface IGoodsItem {
+    _id: string;
+    showPrice: string;
+    salePriceVip: number;
+    salePriceNormal: number;
+    goodsName: string;
+    imgList: Array<string>;
     sales: number;
-    storeCode: string;
+    inventory: number;
+    content: string;
     storeName: string;
+    expressName: string;
   }
 }

@@ -48,7 +48,7 @@ declare namespace TypesUniCloud {
   /**
    * 云函数响应 列表响应字段
    */
-  interface DataListRes<T> extends DataBase {
+  interface DataListRes<T> extends DataBaseRes {
     affectedDocs: number;
     data: T[];
   }
@@ -149,6 +149,58 @@ declare namespace ucCommand {
      * @param value
      */
     exists: (value: boolean) => ICommand;
+    /**
+     * 数据库聚合操作符，通过 db.command.aggregate 获取
+     */
+    aggregate: IAggregateCommand;
+  }
+
+  interface IAggregateCommand
+    extends IAggregateCommandObject,
+      IAggregateCommandCondition,
+      IAggregateCommandCompare,
+      IAggregateCommandString {}
+
+  /**
+   * 聚合操作符-对象
+   */
+  interface IAggregateCommandObject {
+    /**
+     * 聚合操作符。将多个文档合并为单个文档
+     */
+    mergeObjects: (options: string | Array<string>) => Object;
+  }
+
+  /**
+   * 聚合操作符-条件
+   */
+  interface IAggregateCommandCondition {
+    /**
+     * 聚合操作符。计算布尔表达式，返回指定的两个值其中之一
+     * @param options
+     */
+    cond: (options: { if: any; then: any; else: any }) => Object;
+  }
+  /**
+   * 聚合操作符-比较
+   */
+  interface IAggregateCommandCompare {
+    /**
+     * 聚合操作符。匹配两个值，如果前者大于后者则返回 true，否则返回 false
+     * @param options
+     */
+    gt: (options: Array<any>) => Object;
+  }
+
+  /**
+   * 聚合操作符-比较
+   */
+  interface IAggregateCommandString {
+    /**
+     * 聚合操作符。连接字符串，返回拼接后的字符串。
+     * @param options
+     */
+    concat: (options: Array<any>) => Object;
   }
 }
 declare namespace ucCollection {
@@ -293,7 +345,13 @@ declare namespace ucAggregate {
     /**
      * 标志聚合操作定义完成，发起实际聚合操作
      */
-    end: () => Array<any>;
+    end: () => Promise<{ affectedDocs: number; data: Array[Object] }>;
+    /**
+     * 聚合阶段。
+     * 指定一个已有字段作为输出的根节点，也可以指定一个计算出的新字段作为根节点。
+     * @param Object
+     */
+    replaceRoot: (Object) => IAggregate;
   }
   interface IAggregateLookUpBase {
     /**

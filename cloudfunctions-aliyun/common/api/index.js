@@ -1,10 +1,14 @@
 const requestBind = uniCloud.httpclient.request.bind(uniCloud.httpclient);
+const toString = Object.prototype.toString;
 
 class ResponseModal {
   constructor(code, data, msg = "ok") {
     this.code = code;
     this.msg = msg;
-    typeof data === "object" ? Object.assign(this, data) : (this.data = data);
+    toString.call(data) === "[object Object]"
+      ? Object.assign(this, data)
+      : (this.data = data);
+    console.log(toString.call(data));
   }
 }
 function handleResponseOK(data) {

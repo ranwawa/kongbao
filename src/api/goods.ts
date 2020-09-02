@@ -1,18 +1,18 @@
 import { Request } from "./request";
 
-const request = new Request("api-express");
-const requestStart = request.start.bind(request);
+const requestAgent = new Request("agent");
+const requestStore = new Request("api-express");
 class Goods {
   getStoreList(data = {}) {
-    return requestStart<object, store.StoreListRes>({
+    return requestStore.start<object, store.StoreListRes>({
       data,
       action: "store/getList",
     });
   }
   getGoodsList(data: { storeCode: string }) {
-    return requestStart<{ storeCode: string }, store.GoodsListRes>({
+    return requestAgent.start<{ storeCode: string }, goods.IGoodsListRes>({
       data,
-      action: "goods/getList",
+      action: "agent-goods/getList",
     });
   }
 }

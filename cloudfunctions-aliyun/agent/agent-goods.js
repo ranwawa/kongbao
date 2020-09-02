@@ -1,5 +1,7 @@
 const db = require("./db");
-const { colSpGoods, colAgGoods, dbCmd } = db;
+const api = require("api");
+const { ResponseModal } = api;
+const { colSpGoods, colAgGoods, dbCmd, $ } = db;
 module.exports = class AgentGoods {
   constructor(appId) {
     if (!appId) {
@@ -61,7 +63,8 @@ module.exports = class AgentGoods {
         updateTime: false,
         isEnable: false,
         sort: false,
-        _id: false,
+        goodsId: false,
+
         "spGoodsInfo._id": false,
         "spGoodsInfo.price": false,
         "spGoodsInfo.spId": false,
@@ -72,9 +75,20 @@ module.exports = class AgentGoods {
         "spGoodsInfo.isEnable": false,
         "spGoodsInfo.thirdObj": false,
       })
+      .project({
+        goodsInfo: $.mergeObjects(["$$ROOT", "$spGoodsInfo"]),
+      })
+      .replaceRoot({
+        newRoot: "$goodsInfo",
+      })
       .end();
-    uniCloud.logger.log("查询某个代理的所有商品信息-出参", res.data);
-    return res;
+    uniCloud.logger.log("查询某个代理的所有商品信息-出参", res);
+    let data = res.affectedDocs ? res.data : [];
+    data = data.map((ele) => {
+      ele.sales > 9999 && (ele.sales = `${(ele.sales / 10000).toFixed(1)}w`);
+      return ele;
+    });
+    return new ResponseModal(0, data);
   }
   async update() {}
   /**

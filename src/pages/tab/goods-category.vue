@@ -24,7 +24,7 @@
     </view>
     <!-- 商品列表 -->
     <view class="goods-list">
-      <goods-card />
+      <goods-card :list="goodsList" />
     </view>
   </view>
 </template>
@@ -50,8 +50,9 @@ import { goods } from "@/api/goods";
   },
 })
 export default class LoginHome extends Vue {
-  storeList: store.StoreItem[] = Array();
+  storeList: Array<store.StoreItem> = Array();
   currentStore: store.StoreItem = Object();
+  goodsList: Array<goods.IGoodsItem> = Array();
   onLoad() {
     this.getStoreList();
   }
@@ -76,8 +77,11 @@ export default class LoginHome extends Vue {
     const [err, data] = await goods.getGoodsList({
       storeCode: storeItem.storeCode,
     });
-
-    console.log(123, err, data);
+    const list = data?.data;
+    if (err || !list?.length) {
+      return;
+    }
+    this.goodsList = list;
   }
 }
 </script>

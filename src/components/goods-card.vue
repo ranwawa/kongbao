@@ -1,23 +1,20 @@
 <template>
   <view class="goods-list">
-    <view class="goods-card">
-      <image
-        class="goods-card__img"
-        mode="aspectFill"
-        src="https://images.jixugou.cn/c60d70ca-a0d6-4d86-8c24-435022508d34.jpg"
-      />
+    <view v-for="item in list" :key="item._id" class="goods-card">
+      <image class="goods-card__img" mode="aspectFill" :src="item.imgList" />
       <view class="goods-card__title">
         <uv-tag
           type="primary"
           custom-style="margin-right: 8rpx; font-size: 20rpx;"
           round
-          >顺丰
+        >
+          {{ item.expressName }}
         </uv-tag>
-        标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题标题
+        {{ item.goodsName }}
       </view>
       <view class="goods-card__desc">
         <uv-price price="22" size="10"></uv-price>
-        <view class="goods-card__record">已售10000件</view>
+        <view class="goods-card__record">已售{{ item.sales }}件</view>
         <uv-button size="mini" custom-class="theme-style__button"
           >购买</uv-button
         >
@@ -36,6 +33,12 @@ import UvPrice from "uni-vant/lib/price.vue";
   components: {
     UvTag,
     UvPrice,
+  },
+  props: {
+    list: {
+      type: Array,
+      default: Array,
+    },
   },
 })
 export default class LoginHome extends Vue {}
