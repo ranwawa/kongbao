@@ -1,5 +1,6 @@
 const db = require("./db");
 const api = require("api");
+const md5 = require("md5");
 const { ResponseModal } = api;
 const { colSpGoods, colAgGoods, dbCmd, $ } = db;
 module.exports = class AgentGoods {
@@ -44,12 +45,15 @@ module.exports = class AgentGoods {
    * 查询某个代理的所有商品信息
    */
   async getList(param = {}) {
+    const { pageSize = 11, currentPage = 1 } = param;
     const res = await colAgGoods
       .aggregate()
       .match({
         appId: this.appId,
         _id: dbCmd.exists(true),
       })
+      .skip((currentPage - 1) * pageSize)
+      .limit(pageSize)
       .lookup({
         from: "kb-sp-goods",
         localField: "goodsId",
@@ -139,7 +143,7 @@ module.exports = class AgentGoods {
       ele.sort = 0;
       ele.createTime = ele.updateTime = now;
       ele.appId = this.appId;
-      ele._id = `${ele.spId}-${this.appId}-${ele.goodsCode}`;
+      ele._id = md5(`${this.appId}-${ele.goodsId}`);
       return ele;
     });
     await this.add(agGoodsList);

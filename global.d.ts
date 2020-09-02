@@ -352,6 +352,16 @@ declare namespace ucAggregate {
      * @param Object
      */
     replaceRoot: (Object) => IAggregate;
+    /**
+     * 聚合阶段。指定一个正整数，跳过对应数量的文档，输出剩下的文档。
+     * @param value
+     */
+    skip: (value: number) => IAggregate;
+    /**
+     * 聚合阶段。限制输出到下一阶段的记录数
+     * @param value
+     */
+    limit: (value: number) => IAggregate;
   }
   interface IAggregateLookUpBase {
     /**
