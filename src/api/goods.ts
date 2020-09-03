@@ -9,7 +9,11 @@ class Goods {
       action: "store/getList",
     });
   }
-  getGoodsList(data: { storeCode: string }) {
+  getGoodsList(data: {
+    storeCode: string;
+    pageSize: number;
+    currentPage: number;
+  }) {
     return requestAgent.start<{ storeCode: string }, goods.IGoodsListRes>({
       data,
       action: "agent-goods/getList",

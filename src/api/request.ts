@@ -17,6 +17,7 @@ export class Request {
   async start<TReq, TRes>(
     param: TypesUniCloud.DataReq<TReq>
   ): Promise<[any | null, TRes | null]> {
+    await uniWrapper.showLoadingText();
     try {
       const res = await this.uniCloud.callFunction({
         name: this.name,
@@ -24,6 +25,7 @@ export class Request {
           ...param,
         },
       });
+      uniWrapper.hideLoading();
       return this.handleCallFunctionRes<TRes>(res);
     } catch (e) {
       return [e.message, null];

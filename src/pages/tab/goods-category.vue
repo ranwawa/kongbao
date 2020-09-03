@@ -17,7 +17,7 @@
         :key="item.code"
         :class="{ 'uv-tab-active': item.storeCode === currentStore.storeCode }"
         class="uv-tab"
-        @click="currentStore = item"
+        @click="switchStoreTab(item)"
       >
         {{ item.storeName }}
       </view>
@@ -34,6 +34,8 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import GoodsCard from "@/components/goods-card.vue";
 import { goods } from "@/api/goods";
+import { BasePage } from "@/assets/js/base-model";
+import { uniWrapper } from "@/assets/js/uni-wrapper";
 
 @Component({
   components: {
@@ -53,8 +55,17 @@ export default class LoginHome extends Vue {
   storeList: Array<store.StoreItem> = Array();
   currentStore: store.StoreItem = Object();
   goodsList: Array<goods.IGoodsItem> = Array();
+  pageInfo: BasePage = new BasePage();
   onLoad() {
     this.getStoreList();
+  }
+  onReachBottom() {
+    if (this.pageInfo.haveMore) {
+      this.pageInfo.currentPage += 1;
+      this.getGoodsList(this.currentStore);
+    } else {
+      uniWrapper.showToastText("已经到底啦");
+    }
   }
 
   /**
@@ -71,17 +82,29 @@ export default class LoginHome extends Vue {
   }
 
   /**
+   * 切换仓库选项卡
+   */
+  switchStoreTab(storeItem: store.StoreItem) {
+    this.pageInfo = new BasePage();
+    this.goodsList = Array();
+    this.currentStore = storeItem;
+  }
+
+  /**
    * 根据仓库编号查询商品列表
    */
   async getGoodsList(storeItem: store.StoreItem) {
     const [err, data] = await goods.getGoodsList({
+      pageSize: this.pageInfo.pageSize,
+      currentPage: this.pageInfo.currentPage,
       storeCode: storeItem.storeCode,
     });
     const list = data?.data;
     if (err || !list?.length) {
+      this.pageInfo.haveMore = false;
       return;
     }
-    this.goodsList = list;
+    this.goodsList = this.goodsList.concat(list);
   }
 }
 </script>
