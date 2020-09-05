@@ -10,7 +10,7 @@ class UniWrapper {
       icon: "none",
     });
   }
-  navigateToPage(url: ROUTE) {
+  navigateToPage(url: string) {
     return navigateTo({
       url,
       fail(err) {

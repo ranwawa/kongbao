@@ -1,6 +1,11 @@
 <template>
   <view class="goods-list">
-    <view v-for="item in list" :key="item._id" class="goods-card">
+    <view
+      v-for="item in list"
+      :key="item._id"
+      class="goods-card"
+      @click.capture="$emit('click-item', item)"
+    >
       <image class="goods-card__img" mode="aspectFill" :src="item.imgList" />
       <view class="goods-card__title">
         <uv-tag

@@ -44,6 +44,6 @@ export class Request {
       uniWrapper.showToastText(result.msg);
       return [result, null];
     }
-    return [null, result];
+    return [null, result.data];
   }
 }

@@ -24,7 +24,7 @@
     </view>
     <!-- 商品列表 -->
     <view class="goods-list">
-      <goods-card :list="goodsList" />
+      <goods-card :list="goodsList" @click-item="goDetail" />
     </view>
   </view>
 </template>
@@ -36,6 +36,7 @@ import GoodsCard from "@/components/goods-card.vue";
 import { goods } from "@/api/goods";
 import { BasePage } from "@/assets/js/base-model";
 import { uniWrapper } from "@/assets/js/uni-wrapper";
+import { ROUTE } from "@/assets/constant/common";
 
 @Component({
   components: {
@@ -105,6 +106,13 @@ export default class LoginHome extends Vue {
       return;
     }
     this.goodsList = this.goodsList.concat(list);
+  }
+
+  /**
+   * 前往商品详情
+   */
+  async goDetail(item: goods.IGoodsItem) {
+    uniWrapper.navigateToPage(`${ROUTE.GOODS_DETAIL}?goodsId=${item._id}`);
   }
 }
 </script>

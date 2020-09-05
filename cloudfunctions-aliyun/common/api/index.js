@@ -5,10 +5,7 @@ class ResponseModal {
   constructor(code, data, msg = "ok") {
     this.code = code;
     this.msg = msg;
-    toString.call(data) === "[object Object]"
-      ? Object.assign(this, data)
-      : (this.data = data);
-    console.log(toString.call(data));
+    this.data = data;
   }
 }
 function handleResponseOK(data) {

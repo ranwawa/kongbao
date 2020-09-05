@@ -91,5 +91,7 @@ namespace goods {
     content: string;
     storeName: string;
     expressName: string;
+    shipAddress: string;
+    notSendAddress: string;
   }
 }

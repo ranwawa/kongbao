@@ -104,6 +104,63 @@ module.exports = class AgentGoods {
     });
     return new ResponseModal(0, data);
   }
+  /**
+   * 根据商品ID查询商品信息
+   * @param param
+   */
+  async get(param = {}) {
+    uniCloud.logger.log("根据商品ID查询商品信息-入参", param);
+    const res = await colAgGoods
+      .aggregate()
+      .match({
+        appId: this.appId,
+        _id: param.goodsId,
+        isEnable: true,
+      })
+      .lookup({
+        from: "kb-sp-goods",
+        localField: "goodsId",
+        foreignField: "_id",
+        as: "spGoodsInfo",
+      })
+      .unwind({
+        path: "$spGoodsInfo",
+      })
+      .lookup({
+        from: "kb-sp-stores",
+        localField: "spGoodsInfo.storeCode",
+        foreignField: "storeCode",
+        as: "spStoreInfo",
+      })
+      .unwind({
+        path: "$spStoreInfo",
+      })
+      .replaceRoot({
+        newRoot: {
+          _id: "$_id",
+          showPrice: "$showPrice",
+          salePriceVip: "$salePriceVip",
+          salePriceNormal: "$salePriceNormal",
+          goodsName: "$spGoodsInfo.goodsName",
+          imgList: "$spGoodsInfo.imgList",
+          content: "$spGoodsInfo.content",
+          sales: "$spGoodsInfo.sales",
+          storeName: "$spGoodsInfo.storeName",
+          expressName: "$spGoodsInfo.expressName",
+          shipAddress: "$spStoreInfo.shipAddress",
+          notSendAddress: "$spStoreInfo.notSendAddress",
+        },
+      })
+      .end();
+
+    uniCloud.logger.log("根据商品ID查询商品信息-出参", res.data);
+    let data = [];
+    if (res.affectedDocs) {
+      data = res.data[0];
+      typeof data.imgList === "string" && (data.imgList = [data.imgList]);
+    }
+    return new ResponseModal(0, data);
+  }
   async update() {}
   /**
    * 删除所有代理商品

@@ -2,41 +2,48 @@
   <view class="rww-container">
     <!-- 头部图片价格标题 -->
     <div class="goods-header">
-      <image
-        class="goods-header__img"
-        mode="aspectFill"
-        src="https://images.jixugou.cn/c60d70ca-a0d6-4d86-8c24-435022508d34.jpg"
-      />
+      <swiper class="goods-header__swiper">
+        <swiper-item v-for="item in goodsInfo.imgList" :key="item">
+          <image class="goods-header__img" mode="aspectFill" :src="item" />
+        </swiper-item>
+      </swiper>
+
       <view class="goods-header__row">
-        <uv-price price="22"></uv-price>
-        <view class="goods-header__origin">市场价: 333</view>
-        <view class="goods-header__record">已售20000件</view>
+        <uv-price :amount="goodsInfo.salePriceNormal"></uv-price>
+        <view class="goods-header__origin"
+          >市场价: {{ goodsInfo.showPrice }}</view
+        >
+        <view class="goods-header__record">已售{{ goodsInfo.sales }}件</view>
       </view>
       <view class="goods-header__title">
-        <uv-tag type="danger" custom-style="margin-right: 8rpx;" round
-          >顺丰
+        <uv-tag type="danger" custom-style="margin-right: 8rpx;" round>
+          {{ goodsInfo.expressName }}
         </uv-tag>
-        标题标题 标题标题 标题标题 标题标题
+        {{ goodsInfo.goodsName }}
       </view>
     </div>
     <!-- 商品参数 -->
     <uv-cell-group>
       <uv-cell
-        icon="phone"
+        icon="hotel-o"
         title="发货仓库"
-        label="北京"
-        value="大唐市在要要要要要要 要要森要要要要要要"
-      ></uv-cell>
+        :label="goodsInfo.storeName"
+        :value="goodsInfo.shipAddress"
+      />
       <uv-cell
         :border="false"
-        icon="phone"
+        icon="logistics"
         title="承运快递"
-        value="圆通"
+        :label="goodsInfo.expressName"
+        :value="goodsInfo.notSendAddress"
       ></uv-cell>
     </uv-cell-group>
     <!-- 商品详情 -->
     <view class="goods-content">
       <view class="goods-content__title">商品详情</view>
+      <view class="goods-content__body">
+        {{ goodsInfo.content }}
+      </view>
     </view>
     <!-- 底部按钮 -->
     <view class="goods-fixed">
@@ -61,6 +68,8 @@ import UvIcon from "uni-vant/lib/icon.vue";
 import UvCell from "uni-vant/lib/cell.vue";
 import UvPrice from "uni-vant/lib/price.vue";
 import UvCellGroup from "uni-vant/lib/cell-group.vue";
+import { uniWrapper } from "@/assets/js/uni-wrapper";
+import { goods } from "@/api/goods";
 
 @Component({
   components: {
@@ -71,16 +80,45 @@ import UvCellGroup from "uni-vant/lib/cell-group.vue";
     UvCellGroup,
   },
 })
-export default class LoginHome extends Vue {}
+export default class LoginHome extends Vue {
+  goodsInfo: goods.IGoodsItem = Object();
+  onLoad(e: { goodsId: string }) {
+    if (!e.goodsId) {
+      uniWrapper.showToastText("该商品已被抢光");
+      setTimeout(uni.navigateBack, 1688);
+    }
+    this.getGoodsDetail(e.goodsId);
+  }
+
+  /**
+   * 查询商品详情
+   * @param goodsId
+   */
+  async getGoodsDetail(goodsId: string) {
+    const [err, data] = await goods.getGoodsDetail({ goodsId });
+    if (err || !data?._id) {
+      return;
+    }
+    console.log(data);
+    data.notSendAddress = `暂不发货区域: ${data.notSendAddress}`;
+    this.goodsInfo = data;
+  }
+}
 </script>
 
 <style lang="scss" scoped>
+.rww-container {
+  padding-bottom: px2rpx(88);
+}
 /* 头部图片价格标题 */
 .goods-header {
   background-color: #fff;
+  &__swiper {
+    height: px2rpx(365);
+  }
   &__img {
     width: 100%;
-    height: px2rpx(365);
+    height: inherit;
   }
   &__row {
     @include flex-row;

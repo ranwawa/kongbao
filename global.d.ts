@@ -49,7 +49,6 @@ declare namespace TypesUniCloud {
    * 云函数响应 列表响应字段
    */
   interface DataListRes<T> extends DataBaseRes {
-    affectedDocs: number;
     data: T[];
   }
 
@@ -80,7 +79,11 @@ declare namespace TypesUniCloud {
     /**
      * 云函数执行结果
      */
-    result: T;
+    result: {
+      code: number;
+      msg: string;
+      data: T;
+    };
     /**
      * 请求序列号，用于错误排查
      */
@@ -292,7 +295,7 @@ declare namespace ucDocument {
     /**
      * 获取记录数据，或获取根据查询条件筛选后的记录数据
      */
-    get: () => Promise<Object>;
+    get: () => Promise<{ affectedDocs: number; data: Array<Object> }>;
     /**
      * 删除一条记录
      */
