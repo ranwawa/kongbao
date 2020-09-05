@@ -75,7 +75,7 @@ namespace store {
 namespace goods {
   import DataListRes = TypesUniCloud.DataListRes;
 
-  interface IGoodsListRes extends DataListRes<IGoodsItem> {}
+  interface IGoodsListRes extends Array<IGoodsItem> {}
   /**
    * 商品响应体
    */
@@ -95,3 +95,12 @@ namespace goods {
     notSendAddress: string;
   }
 }
+
+namespace service {
+  interface IItem {
+    phone: string;
+    name: string;
+  }
+}
+
+namespace address {}

@@ -119,7 +119,6 @@ declare namespace TypesUniCloud {
     endpoint?: string;
   }
 }
-
 declare namespace uc {
   interface IUniCloud {
     /**
@@ -408,7 +407,6 @@ declare namespace ucAggregate {
     preserveNullAndEmptyArrays?: boolean;
   }
 }
-
 declare namespace ucLogger {
   /**
    * 高级日志
@@ -421,5 +419,4 @@ declare namespace ucLogger {
     error: (title: string, ...param) => void;
   }
 }
-
 declare const uniCloud: TypesUniCloud.UniCloud;

@@ -26,4 +26,25 @@ page {
 .theme-style__button {
   @include theme-style__button;
 }
+.section {
+  margin: $s-sm 0;
+  background-color: #fff;
+  &__header {
+    @include flex-row;
+    @include bd-hairline-bottom;
+    justify-content: space-between;
+    padding: $s-sm $s-sm;
+  }
+  &__title {
+    font-size: $fz-lg;
+  }
+  &__desc {
+    @include flex-row;
+    color: $c-light;
+    font-size: $fz-sm;
+  }
+  &__body {
+    padding: $s-md $s-sm;
+  }
+}
 </style>

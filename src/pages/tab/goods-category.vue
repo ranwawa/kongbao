@@ -100,12 +100,11 @@ export default class LoginHome extends Vue {
       currentPage: this.pageInfo.currentPage,
       storeCode: storeItem.storeCode,
     });
-    const list = data?.data;
-    if (err || !list?.length) {
+    if (err || !data?.length) {
       this.pageInfo.haveMore = false;
       return;
     }
-    this.goodsList = this.goodsList.concat(list);
+    this.goodsList = this.goodsList.concat(data);
   }
 
   /**

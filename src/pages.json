@@ -41,8 +41,18 @@
 					}
 				}
 			]
+		},
+		{
+			"root": "pages/order",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"navigationBarTitleText": "确认订单"
+					}
+				}
+			]
 		}
-
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

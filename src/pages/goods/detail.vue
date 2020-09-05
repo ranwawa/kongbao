@@ -55,7 +55,7 @@
         <uv-icon name="phone" />
         分享好友
       </view>
-      <uv-button>立即购买</uv-button>
+      <uv-button @click="submit">立即购买</uv-button>
     </view>
   </view>
 </template>
@@ -64,20 +64,15 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import UvTag from "uni-vant/lib/tag.vue";
-import UvIcon from "uni-vant/lib/icon.vue";
-import UvCell from "uni-vant/lib/cell.vue";
 import UvPrice from "uni-vant/lib/price.vue";
-import UvCellGroup from "uni-vant/lib/cell-group.vue";
 import { uniWrapper } from "@/assets/js/uni-wrapper";
 import { goods } from "@/api/goods";
+import { ROUTE } from "@/assets/constant/common";
 
 @Component({
   components: {
     UvTag,
-    UvIcon,
-    UvCell,
     UvPrice,
-    UvCellGroup,
   },
 })
 export default class LoginHome extends Vue {
@@ -89,7 +84,6 @@ export default class LoginHome extends Vue {
     }
     this.getGoodsDetail(e.goodsId);
   }
-
   /**
    * 查询商品详情
    * @param goodsId
@@ -102,6 +96,11 @@ export default class LoginHome extends Vue {
     console.log(data);
     data.notSendAddress = `暂不发货区域: ${data.notSendAddress}`;
     this.goodsInfo = data;
+  }
+  submit() {
+    uniWrapper.navigateToPage(
+      `${ROUTE.ORDER_INDEX}?goodsId=${this.goodsInfo._id}`
+    );
   }
 }
 </script>
