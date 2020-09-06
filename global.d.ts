@@ -13,7 +13,7 @@ declare namespace TypesUniCloud {
     /**
      * 云函数访问HTTP服务-node端
      */
-    httpclient: any;
+    httpclient: ucHttpClient.IHttpClient;
     /**
      * 获取数据库的引用-node端
      */
@@ -251,6 +251,17 @@ declare namespace ucCollection {
      * 注意只支持通过匹配 where 语句来删除，不支持 skip 和 limit。
      */
     remove: () => Promise<{ affectedDocs: number; deleted: number }>;
+    /**
+     * 指定查询排序条件
+     * @param fieldPath
+     * @param order
+     */
+    orderBy: (fieldPath: string, order: string) => ICollection;
+    /**
+     * 指定查询结果集数量上限
+     * @param value
+     */
+    limit: (value: number) => ICollection;
   }
 
   /**
@@ -417,6 +428,18 @@ declare namespace ucLogger {
     info: (title: string, ...param) => void;
     warn: (title: string, ...param) => void;
     error: (title: string, ...param) => void;
+  }
+}
+declare namespace ucHttpClient {
+  interface IHttpClient {
+    request: (url: string, option: IHttpClientOption) => any;
+  }
+  interface IHttpClientOption {
+    method?: "GET" | "POST" | "PUT" | "DELETE";
+    data?: Object;
+    dataAsQueryString?: boolean;
+    contentType?: string;
+    dataType?: "" | "json" | "text";
   }
 }
 declare const uniCloud: TypesUniCloud.UniCloud;

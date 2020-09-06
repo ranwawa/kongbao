@@ -14,14 +14,20 @@ function handleResponseOK(data) {
       return [null, data.data];
     default:
       uniCloud.logger.error("第3方api数据异常", data);
-      return [data.msg, null];
+      return [data, null];
   }
 }
 module.exports.request = async function (options) {
-  const { url = "", method = "get", data = {} } = options;
+  const {
+    url = "",
+    method = "GET",
+    data = {},
+    contentType = "application/x-www-form-urlencoded",
+  } = options;
   const res = await requestBind(url, {
     method,
     data,
+    contentType,
     dataType: "json",
   });
   switch (res.status) {
@@ -30,7 +36,7 @@ module.exports.request = async function (options) {
       return handleResponseOK(res.data);
     default:
       uniCloud.logger.error("第3方api异常响应", res);
-      return [res.status, null];
+      return [res, null];
   }
 };
 

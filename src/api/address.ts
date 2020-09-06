@@ -1,6 +1,6 @@
 import { Request } from "./request";
 
-const requestAddress = new Request("agent");
+const requestAddress = new Request("customer");
 class Address {
   /**
    * 删除一条地址

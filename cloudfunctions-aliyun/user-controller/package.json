@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "api": "file:../common/api",
     "uni-id": "file:../common/uni-id"
   }
 }

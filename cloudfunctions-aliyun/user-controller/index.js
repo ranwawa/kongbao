@@ -9,6 +9,7 @@ class User {
   async register(data, appId) {
     return await uniId.register({
       appId: appId,
+      isVip: false,
       balance: 0,
       ...data,
     });

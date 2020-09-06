@@ -1,8 +1,6 @@
 const uniID = require("uni-id");
-const api = require("api");
-const db = require("./db");
-const { ResponseModal } = api;
-const { colAgAddress } = db;
+const { ResponseModal, request } = require("api");
+const { colAgAddress } = require("./db");
 module.exports = class AgentAddress {
   constructor(appId = "", uniIdToken = "") {
     this.appId = appId;
@@ -20,7 +18,7 @@ module.exports = class AgentAddress {
     }
     const res = await uniID.checkToken(this.uniIdToken);
     uniCloud.logger.log("验证token-出参", res);
-    if (res.code !== undefined && res.code !== 0) {
+    if (res.code !== 0) {
       return res;
     }
     if (res.appId === this.appId) {
@@ -210,6 +208,38 @@ module.exports = class AgentAddress {
       })
       .update(param);
     return this.processResponseData(res, "修改一条地址", false);
+  }
+  /**
+   * 智能解析收货地址
+   */
+  async resolveAddress(option) {
+    const appId = "100687";
+    const method = "cloud.address.resolve";
+    const ts = Date.now();
+    const appKey = "ed51dbd0ffb2a5bbbb8aede0c3bdc1ec40b41de1";
+    // 计算签名
+    const signStr = appId + method + ts + appKey;
+    const crypto = require("crypto");
+    const h = crypto.createHash("md5");
+    h.update(signStr);
+    const sign = h.digest("hex");
+    const data = JSON.stringify({
+      text: option.addressStr,
+      multimode: true,
+    });
+    return await request({
+      url: "https://kop.kuaidihelp.com/api",
+      method: "POST",
+      contentType: "application/x-www-form-urlencoded",
+      dataType: "json",
+      data: {
+        app_id: appId,
+        method: method,
+        ts: ts,
+        sign: sign,
+        data,
+      },
+    });
   }
   /**
    * 加工查询数据

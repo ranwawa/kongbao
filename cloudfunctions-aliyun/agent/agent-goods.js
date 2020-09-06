@@ -31,10 +31,11 @@ module.exports = class AgentGoods {
         path: "$storeInfo",
       })
       .project({
-        goodsId: "$_id",
+        spGoodsId: "$_id",
         goodsCode: "$goodsCode",
         spId: "$spId",
         goodsCostPrice: true,
+        _id: false,
         expressCostPrice: "$storeInfo.expressCostPrice",
       })
       .end();
@@ -54,7 +55,7 @@ module.exports = class AgentGoods {
       })
       .lookup({
         from: "kb-sp-goods",
-        localField: "goodsId",
+        localField: "spGoodsId",
         foreignField: "_id",
         as: "spGoodsInfo",
       })
@@ -119,7 +120,7 @@ module.exports = class AgentGoods {
       })
       .lookup({
         from: "kb-sp-goods",
-        localField: "goodsId",
+        localField: "spGoodsId",
         foreignField: "_id",
         as: "spGoodsInfo",
       })
@@ -200,7 +201,7 @@ module.exports = class AgentGoods {
       ele.sort = 0;
       ele.createTime = ele.updateTime = now;
       ele.appId = this.appId;
-      ele._id = md5(`${this.appId}-${ele.goodsId}`);
+      ele._id = md5(`${this.appId}-${ele.spGoodsId}`);
       return ele;
     });
     await this.add(agGoodsList);

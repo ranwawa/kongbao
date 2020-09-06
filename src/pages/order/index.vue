@@ -226,7 +226,7 @@ export default class LoginHome extends Vue {
       color: $c-light;
       text-align: center;
       &::after {
-        content: "请添加收货地址";
+        content: "请点击添加收货地址";
       }
     }
   }

@@ -80,5 +80,27 @@
     "sort": 1,
     "isEnable": 1,
     "isDelete": false
+  }, "CsFund": {
+  "appId": "__UNI__0CA1D11",
+  "userId": "5f5340292805da00018e9532",
+  "price": 0,
+  "income": false,
+  "balance": 0,
+  "createTime": 0,
+  "remark": 123,
+  "type": 11
+},
+  "spInfo": {
+    "appId": "__UNI__0CA1D11",
+    "wechat": "charm8932",
+    "apiUrl": "http://www.alihuocang.com/api",
+    "name": "阿里货仓-test",
+    "officalUrl": "http://www.alihuocang.com",
+    "accessToken": "202008291546_dce61a33962345acb3835b180cbb2c3c",
+    "isEnable": true,
+    "isDelete": false,
+    "sort": 0,
+    "createTime": 0,
+    "updateTime": 0
   }
 }

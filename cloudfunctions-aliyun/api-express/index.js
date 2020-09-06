@@ -55,8 +55,8 @@ exports.main = async (event, context) => {
   // const goods = new Goods();
   // const store = new Store();
   // await store.removeAll();
-  // goods.removeAll();
-  // await clockedTask();
+  // await goods.removeAll();
+  await clockedTask();
   if (action) {
     const [model, method] = action.split("/");
     let instance = new instanceMap[model]();

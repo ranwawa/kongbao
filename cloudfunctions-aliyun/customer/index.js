@@ -1,4 +1,5 @@
-const AgentGoods = require("./agent-goods");
+const CustomerAddress = require("./customer-address");
+const CustomerOrder = require("./customer-order");
 exports.main = async (event, context) => {
   const { action, data, uniIdToken } = event;
   const { APPID } = context;
@@ -6,7 +7,8 @@ exports.main = async (event, context) => {
   context.CLIENTUA =
     "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1";
   const instanceMap = {
-    "agent-goods": AgentGoods,
+    "customer-address": CustomerAddress,
+    "customer-order": CustomerOrder,
   };
   if (!action) {
     return {
@@ -16,8 +18,6 @@ exports.main = async (event, context) => {
   }
   const [instanceKey, method] = action.split("/");
   const instance = new instanceMap[instanceKey](APPID, uniIdToken);
-  // await instance.removeAll();
-  // await instance.syncInfo(APPID);
   if (!instance || !instance[method]) {
     return {
       code: 404,
@@ -26,12 +26,8 @@ exports.main = async (event, context) => {
   }
   if (instance.checkToken) {
     const res = await instance.checkToken();
-    if (res.code !== 0) {
-      return {
-        code: 401,
-        msg: "请登录后访问",
-      };
-    }
+    return res.code !== 0
+      ? res
+      : await instance[method](data, APPID, event, context);
   }
-  return await instance[method](data, APPID, event, context);
 };

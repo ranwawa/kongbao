@@ -32,7 +32,6 @@ module.exports = class Goods {
       goodsName: goodsItem.goodsName,
     };
   }
-
   /**
    * 整合商品实体
    * 需要将第3方商品信息,转换成标准的仓库信息
@@ -48,6 +47,7 @@ module.exports = class Goods {
     });
     entity.storeCode = storeItem.storeCode;
     entity.storeName = storeItem.storeName;
+    entity.storeId = storeItem._id;
     entity.thirdObj = thirdGoodsItem;
     entity._id = md5(`${this.spId}-${entity.storeCode}-${entity.goodsCode}`);
     entity.spId = this.spId;
