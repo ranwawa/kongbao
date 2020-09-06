@@ -24,7 +24,11 @@
     </view>
     <!-- 商品列表 -->
     <view class="goods-list">
-      <goods-card :list="goodsList" @click-item="goDetail" />
+      <goods-card
+        :list="goodsList"
+        @click-item="goDetail"
+        @click-btn="goToOrder"
+      />
     </view>
   </view>
 </template>
@@ -110,8 +114,16 @@ export default class LoginHome extends Vue {
   /**
    * 前往商品详情
    */
-  async goDetail(item: goods.IGoodsItem) {
+  goDetail(item: goods.IGoodsItem) {
     uniWrapper.navigateToPage(`${ROUTE.GOODS_DETAIL}?goodsId=${item._id}`);
+  }
+
+  /**
+   * 前往下单页面
+   * @param item
+   */
+  goToOrder(item: goods.IGoodsItem) {
+    uniWrapper.navigateToPage(`${ROUTE.ORDER_INDEX}?goodsId=${item._id}`);
   }
 }
 </script>

@@ -1,4 +1,5 @@
 const uniId = require("uni-id");
+const { ResponseModal } = require("api");
 
 class User {
   constructor(event, context) {
@@ -7,15 +8,18 @@ class User {
   }
   async register(data, appId) {
     return await uniId.register({
-      app_id: appId,
+      appId: appId,
+      balance: 0,
       ...data,
     });
   }
   async login(data) {
-    return await uniId.login({
+    const res = await uniId.login({
       ...data,
       queryField: ["username", "email", "mobile"],
     });
+    uniCloud.logger.info("帐户密码登录-出参", res);
+    return new ResponseModal(res.code, res, res.msg);
   }
 }
 

@@ -17,12 +17,12 @@
         </uv-tag>
         {{ item.goodsName }}
       </view>
-      <view class="goods-card__desc">
+      <view class="goods-card__desc" @click.stop="$emit('click-btn', item)">
         <uv-price price="22" size="10"></uv-price>
         <view class="goods-card__record">已售{{ item.sales }}件</view>
         <uv-button size="mini" custom-class="theme-style__button"
-          >购买</uv-button
-        >
+          >购买
+        </uv-button>
       </view>
     </view>
   </view>
@@ -74,12 +74,14 @@ export default class LoginHome extends Vue {}
       @include text-truncate;
       margin: $s-xs $s-xxs $s-xxs;
     }
+
     &__desc {
       @include flex-row;
       align-items: flex-end;
       justify-content: space-between;
       margin: $s-xxs $s-xxs $s-xs;
     }
+
     &__record {
       flex-grow: 1;
       margin-left: $s-xs;

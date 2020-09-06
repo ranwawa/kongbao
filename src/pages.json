@@ -52,6 +52,16 @@
 					}
 				}
 			]
+		},{
+			"root": "pages/address",
+			"pages": [
+				{
+					"path": "list",
+					"style": {
+						"navigationBarTitleText": "售后信息"
+					}
+				}
+			]
 		}
 	],
 	"globalStyle": {

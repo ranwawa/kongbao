@@ -61,6 +61,7 @@
     "regenerator-runtime": "^0.12.1",
     "rww-sass": "^1.0.18",
     "sass-loader": "^9.0.3",
+    "simple-address": "^1.0.0",
     "uni-vant": "^1.1.10",
     "vue": "^2.6.12",
     "vue-class-component": "^6.3.2",

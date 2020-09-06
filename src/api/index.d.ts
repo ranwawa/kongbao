@@ -103,4 +103,18 @@ namespace service {
   }
 }
 
-namespace address {}
+namespace address {
+  /**
+   * 单条地址
+   */
+  interface IAddressItem {
+    _id: string;
+    name: string;
+    mobile: string;
+    provinceName: string;
+    cityName: string;
+    areaName: string;
+    address: string;
+    default: boolean;
+  }
+}

@@ -1,5 +1,6 @@
 <script lang="ts">
 import Vue from "vue";
+
 export default Vue.extend({
   mpType: "app",
   onLaunch() {
@@ -23,28 +24,39 @@ page {
   color: $c-base;
   font-size: $fz-md;
 }
+
 .theme-style__button {
   @include theme-style__button;
 }
+
 .section {
   margin: $s-sm 0;
   background-color: #fff;
+
   &__header {
     @include flex-row;
     @include bd-hairline-bottom;
     justify-content: space-between;
     padding: $s-sm $s-sm;
   }
+
   &__title {
     font-size: $fz-lg;
   }
+
   &__desc {
     @include flex-row;
     color: $c-light;
     font-size: $fz-sm;
   }
+
   &__body {
     padding: $s-md $s-sm;
   }
+}
+/* 省市区选择 */
+.simple-address-content,
+.simple-address-mask {
+  z-index: $z-popover !important;
 }
 </style>

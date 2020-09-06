@@ -1,5 +1,6 @@
 import { uniWrapper } from "@/assets/js/uni-wrapper";
 import { config } from "@/config";
+import { ROUTE } from "@/assets/constant/common";
 
 export class Request {
   name: string = "";
@@ -28,6 +29,7 @@ export class Request {
       uniWrapper.hideLoading();
       return this.handleCallFunctionRes<TRes>(res);
     } catch (e) {
+      uniWrapper.hideLoading();
       return [e.message, null];
     }
   }
@@ -40,10 +42,28 @@ export class Request {
       return [options, null];
     }
     const { result }: any = options;
-    if (result.code !== 0) {
-      uniWrapper.showToastText(result.msg);
-      return [result, null];
+    switch (result.code) {
+      case 0:
+        return [null, result.data];
+      case 401:
+        const routeList = getCurrentPages();
+        const route = routeList[routeList.length - 1];
+        let redirectUrl =
+          route.route === ROUTE.USER_LOGIN_HOME
+            ? ROUTE.TAB_CATEGORY
+            : route.route;
+        // @ts-ignore
+        const option = Object.entries(route.options)
+          .map(([key, value]) => `${key}=${value}`)
+          .join("&");
+        redirectUrl = encodeURIComponent(`/${redirectUrl}?${option}`);
+        uniWrapper.navigateToPage(
+          `${ROUTE.USER_LOGIN_HOME}?redirect=${redirectUrl}`
+        );
+        return [result, null];
+      default:
+        uniWrapper.showToastText(result.msg);
+        return [result, null];
     }
-    return [null, result.data];
   }
 }

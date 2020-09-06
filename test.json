@@ -65,5 +65,20 @@
       "url": 123,
       "title": 123
     }
+  },
+  "address": {
+    "appId": 123,
+    "uId": 123,
+    "phone": 123,
+    "name": 123,
+    "address": 123,
+    "province": 123,
+    "city": 123,
+    "area": 123,
+    "createTime": 123,
+    "updateTime": 123,
+    "sort": 1,
+    "isEnable": 1,
+    "isDelete": false
   }
 }

@@ -1,14 +1,33 @@
 import { ROUTE } from "@/assets/constant/common";
 
-const { showToast, navigateTo, redirectTo, showLoading, hideLoading } = uni;
+const {
+  showToast,
+  showModal,
+  navigateTo,
+  redirectTo,
+  showLoading,
+  hideLoading,
+} = uni;
 
 class UniWrapper {
   isLoading: boolean = false;
+  isModal: boolean = false;
   showToastText(title: string) {
     return showToast({
       title,
       icon: "none",
     });
+  }
+  async showModalText(content: string, showCancel: boolean = false) {
+    if (this.isModal) return;
+    this.isModal = true;
+    const res = await showModal({
+      title: "提示",
+      content,
+      showCancel,
+    });
+    this.isModal = false;
+    return res;
   }
   navigateToPage(url: string) {
     return navigateTo({
@@ -18,7 +37,7 @@ class UniWrapper {
       },
     });
   }
-  redirectToPage(url: ROUTE) {
+  redirectToPage(url: string) {
     return redirectTo({
       url,
       fail(err) {
@@ -29,7 +48,6 @@ class UniWrapper {
   async showLoadingText(title: string = "正在加载") {
     if (this.isLoading) return;
     const res = await showLoading({ title });
-    console.log("是之后");
     this.isLoading = true;
     return res;
   }
