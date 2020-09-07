@@ -1,6 +1,6 @@
 const uniID = require("uni-id");
 const { ResponseModal, request } = require("api");
-const { colAgAddress } = require("./db");
+const { colCsAddress } = require("./db");
 module.exports = class AgentAddress {
   constructor(appId = "", uniIdToken = "") {
     this.appId = appId;
@@ -14,7 +14,7 @@ module.exports = class AgentAddress {
    */
   async checkToken() {
     if (!this.uniIdToken) {
-      return new ResponseModal(30010, "请登录后访问");
+      return new ResponseModal(401, "请登录后访问");
     }
     const res = await uniID.checkToken(this.uniIdToken);
     uniCloud.logger.log("验证token-出参", res);
@@ -26,61 +26,6 @@ module.exports = class AgentAddress {
     }
     this.userId = res.uid;
     return res;
-  }
-  /*
-   * 查询当前用户所有地址信息
-   */
-  async getList() {
-    const param = {
-      appId: this.appId,
-      userId: this.userId,
-      isDelete: false,
-    };
-    uniCloud.logger.log("查询当前用户所有地址-入参", param);
-    const res = await colAgAddress
-      .where(param)
-      .field({
-        _id: true,
-        name: true,
-        mobile: true,
-        provinceName: true,
-        cityName: true,
-        areaName: true,
-        address: true,
-        default: true,
-      })
-      .get();
-    return this.processResponseData(res, "查询当前用户所有地址", false);
-  }
-  /**
-   * 查询一条地址
-   */
-  async getSingle(option = {}) {
-    const param = {
-      appId: this.appId,
-      userId: this.userId,
-      isDelete: false,
-      _id: option.addressId,
-    };
-    uniCloud.logger.log("查询一条地址-入参", param);
-    const res = await colAgAddress.where(param).get();
-    return this.processResponseData(res, "查询一条地址", true);
-  }
-  /**
-   * 查询默认地址
-   * @param option
-   * @returns {Promise<ResponseModal>}
-   */
-  async getDefault(option = {}) {
-    const param = {
-      appId: this.appId,
-      userId: this.userId,
-      isDelete: false,
-      default: true,
-    };
-    uniCloud.logger.log("查询默认地址-入参", param);
-    const res = await colAgAddress.where(param).get();
-    return this.processResponseData(res, "查询默认地址", true);
   }
   /**
    * 添加地址
@@ -118,7 +63,7 @@ module.exports = class AgentAddress {
       isDelete: false,
     };
     uniCloud.logger.log("添加地址-入参", paramData);
-    const res = await colAgAddress.add(paramData);
+    const res = await colCsAddress.add(paramData);
     return this.processResponseData(res, "添加地址");
   }
   /**
@@ -134,7 +79,7 @@ module.exports = class AgentAddress {
       isDelete: false,
     };
     uniCloud.logger.log("删除一条地址-入参", param);
-    const res = await colAgAddress.where(param).update({
+    const res = await colCsAddress.where(param).update({
       isDelete: true,
       updateTime: Date.now(),
     });
@@ -154,11 +99,11 @@ module.exports = class AgentAddress {
       _id: option.addressId,
     };
     uniCloud.logger.log("设置为默认地址-入参", pubParam, param);
-    await colAgAddress.where(pubParam).update({
+    await colCsAddress.where(pubParam).update({
       default: false,
       updateTime: Date.now(),
     });
-    const res = await colAgAddress
+    const res = await colCsAddress
       .where({
         ...pubParam,
         ...param,
@@ -200,7 +145,7 @@ module.exports = class AgentAddress {
       updateTime: Date.now(),
     };
     uniCloud.logger.log("修改一条地址-入参", param);
-    const res = await colAgAddress
+    const res = await colCsAddress
       .where({
         appId: this.appId,
         userId: this.userId,
@@ -208,6 +153,61 @@ module.exports = class AgentAddress {
       })
       .update(param);
     return this.processResponseData(res, "修改一条地址", false);
+  }
+  /*
+   * 查询当前用户所有地址信息
+   */
+  async getList() {
+    const param = {
+      appId: this.appId,
+      userId: this.userId,
+      isDelete: false,
+    };
+    uniCloud.logger.log("查询当前用户所有地址-入参", param);
+    const res = await colCsAddress
+      .where(param)
+      .field({
+        _id: true,
+        name: true,
+        mobile: true,
+        provinceName: true,
+        cityName: true,
+        areaName: true,
+        address: true,
+        default: true,
+      })
+      .get();
+    return this.processResponseData(res, "查询当前用户所有地址", false);
+  }
+  /**
+   * 查询一条地址
+   */
+  async getSingle(option = {}) {
+    const param = {
+      appId: this.appId,
+      userId: this.userId,
+      isDelete: false,
+      _id: option.addressId,
+    };
+    uniCloud.logger.log("查询一条地址-入参", param);
+    const res = await colCsAddress.where(param).get();
+    return this.processResponseData(res, "查询一条地址", true);
+  }
+  /**
+   * 查询默认地址
+   * @param option
+   * @returns {Promise<ResponseModal>}
+   */
+  async getDefault(option = {}) {
+    const param = {
+      appId: this.appId,
+      userId: this.userId,
+      isDelete: false,
+      default: true,
+    };
+    uniCloud.logger.log("查询默认地址-入参", param);
+    const res = await colCsAddress.where(param).limit(1).get();
+    return this.processResponseData(res, "查询默认地址", true);
   }
   /**
    * 智能解析收货地址

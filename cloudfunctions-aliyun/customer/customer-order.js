@@ -16,26 +16,56 @@ module.exports = class Order {
   /**
    * 添加一个订单
    */
-  async add(option) {
+  async add(option = {}) {
     uniCloud.logger.log("添加一个订单-入参", option);
     // 处理商品信息
-    // 根据身份计算金额是否足够
-    // 查询分站的余额是否足够
-    // 去第3方下单
-    // 扣减用户余额
-    // 扣减分站余额
-    // 新增资金明细
-    // 创建订单-已经支付
-    // 发起下单请求
-    // 改变订单状态-正在出库
+    // 创建订单
     const goodsResult = await this.getGoodsInfo(option.goodsInfo);
     if (!goodsResult) {
       return new ResponseModal(400, {}, "商品数据数据异常");
     }
     const { csGoodsInfo } = goodsResult;
-    const goodsAmount =
-      +(this.isVip ? csGoodsInfo.salePriceVip : csGoodsInfo.salePriceNormal) *
-      100;
+    const { serviceInfo = {}, addressInfo = [] } = option;
+    const { length = 0 } = addressInfo;
+    if (typeof length !== "number" || length < 1) {
+      return new ResponseModal(400, {}, "请填写收货地址");
+    }
+    // 根据用户身份取成交价
+    const dealPrice = +(this.isVip
+      ? csGoodsInfo.salePriceVip
+      : csGoodsInfo.salePriceNormal);
+    const customerAmount = dealPrice * 100 * length; // 用户成交价
+    const agentAmount = +csGoodsInfo.costPrice * 100 * length; // 分站成交价
+    const addRes = await this.addOrder(customerAmount, agentAmount, {
+      serviceInfo,
+      addressInfo,
+      ...goodsResult,
+    });
+    if (!addRes) {
+      return new ResponseModal(400, {}, "创建订单失败,请稍后再试");
+    }
+    return new ResponseModal(0, addRes);
+  }
+  async pay(option) {
+    // 查询订单信息
+    // 判断用户金额是否足够
+    // 判断分站金额是否足够
+    // 更新用户和分站资金明细表
+    // 更新订单表
+    // 根据收货地址数量跳第3方下单
+    // 更新订单表
+    const { orderId } = option;
+    if (!orderId) {
+      return new ResponseModal(400, "该订单不存在");
+    }
+    const orderRes = await colCsOrder
+      .where({
+        appId: this.appId,
+        userId: this.userId,
+        _id: orderId,
+        isDelete: false,
+      })
+      .get();
     const balanceCustomer = await this.getCustomerBalance(goodsAmount);
     if (balanceCustomer < 0) {
       return new ResponseModal(400, {}, "帐户余额告急,请充值");
@@ -44,29 +74,23 @@ module.exports = class Order {
     if (balanceAgent < 0) {
       return new ResponseModal(400, {}, "库存告急,请联系管理员");
     }
-    option.goodsInfo = csGoodsInfo;
-    const addRes = await this.addOrder(goodsAmount, option);
-    if (!addRes) {
-      return new ResponseModal(400, {}, "创建订单失败,请稍后再试");
-    }
-    const { goodsInfo, serviceInfo, addressInfo } = option;
-    const updateRes = await this.updateBalance(
-      addRes,
-      balanceCustomer,
-      balanceAgent
-    );
-    if (!updateRes) {
-      return new ResponseModal(400, {}, "扣款失败,请稍后再试");
-    }
-    const buyRes = await this.buyOne(
-      goodsInfo,
-      serviceInfo,
-      addressInfo,
-      addRes.orderId
-    );
-    if (!buyRes) {
-      return new ResponseModal(400, {}, "下单失败,请稍后再试");
-    }
+    // const updateRes = await this.updateBalance(
+    //   addRes,
+    //   balanceCustomer,
+    //   balanceAgent
+    // );
+    // if (!updateRes) {
+    //   return new ResponseModal(400, {}, "扣款失败,请稍后再试");
+    // }
+    // const buyRes = await this.buyOne(
+    //   csGoodsInfo,
+    //   serviceInfo,
+    //   addressInfo,
+    //   addRes.orderId
+    // );
+    // if (!buyRes) {
+    //   return new ResponseModal(400, {}, "下单失败,请稍后再试");
+    // }
     return new ResponseModal(0, {});
   }
   /**
@@ -109,24 +133,20 @@ module.exports = class Order {
   /**
    * 添加订单
    */
-  async addOrder(goodsAmount, orderInfo) {
-    const param = {
+  async addOrder(csAmount, agAmount, orderInfo) {
+    const res = await colCsOrder.add({
+      ...orderInfo,
       appId: this.appId,
       userId: this.userId,
-      price: goodsAmount,
+      csAmount,
+      agAmount,
       isDelete: false,
       createTime: Date.now(),
-    };
-    const res = await colCsOrder.add({
-      ...param,
-      ...orderInfo,
       status: 1, // 1已创建,待支付 2,已支付,待提交到供应商 3,已提交到供应,待供应商响应(待收货) 4,
       // 已收货,待发货(出物流纪录)
     });
     uniCloud.logger.log("新增订单-出参", res);
-    const { id } = res;
-    param.orderId = id;
-    return id ? param : null;
+    return res;
   }
   /**
    * 更新余额
@@ -158,6 +178,26 @@ module.exports = class Order {
     });
     uniCloud.logger.log("更新余额后更新订单状态-出参", res2);
     return res2.updated;
+  }
+  /**
+   * 查询单条订单
+   */
+  async getSingle(option) {
+    uniCloud.logger.log("查询单条订单-入参", option);
+    if (!option.orderId) {
+      return new ResponseModal(400, {}, "订单信息有误");
+    }
+    const res = await colCsOrder
+      .where({
+        appId: this.appId,
+        userId: this.userId,
+        _id: option.orderId,
+        isDelete: false,
+      })
+      .limit(1)
+      .get();
+    uniCloud.logger.log("查询单条订单-出参", res);
+    return res;
   }
   /**
    * 单条同步下单
@@ -206,6 +246,7 @@ module.exports = class Order {
    * 获取商品的完整信息,用来做快照
    */
   async getGoodsInfo(option) {
+    if (!option._id) return;
     const res = await colAgGoods
       .aggregate()
       .match({
@@ -288,7 +329,7 @@ module.exports = class Order {
    */
   async checkToken() {
     if (!this.uniIdToken) {
-      return new ResponseModal(30010, "请登录后访问");
+      return new ResponseModal(401, "请登录后访问");
     }
     const res = await uniID.checkToken(this.uniIdToken);
     uniCloud.logger.log("验证token-出参", res);

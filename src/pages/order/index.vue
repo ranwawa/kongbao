@@ -52,14 +52,11 @@
         </view>
       </view>
       <view class="order-amount__content">
-        <uv-cell title="商品" :value="computedGoodsAmount"> </uv-cell>
-        <uv-cell :border="false" title="运费" value="包邮"> </uv-cell>
+        <uv-cell title="商品" :value="computedGoodsAmount" />
+        <uv-cell :border="false" title="运费" value="包邮" />
       </view>
     </view>
-    <!-- 余额支付 -->
-    <view class="order-pay">
-      <uv-cell :border="false" title="余额支付" value="可用余额"></uv-cell>
-    </view>
+
     <!-- 底部按钮 -->
     <view class="order-footer">
       <view class="order-footer__amount">
@@ -68,9 +65,12 @@
       <uv-button
         custom-class="theme-style__button"
         custom-style="border-radius: 0 !important;border-width: 0 !important;margin: 0;"
+        :disabled="isDisablePayBtn"
+        :loading="isDisablePayBtn"
+        @click="submit"
       >
-        立即支付</uv-button
-      >
+        立即支付
+      </uv-button>
     </view>
     <!-- 添加地址弹框 -->
     <address-add
@@ -103,6 +103,7 @@ import { vm } from "@/assets/js/event-bus";
 import SimpleAddress from "simple-address";
 import AddressAdd from "@/components/address-add.vue";
 import { address } from "@/api/address";
+import { order } from "@/api/order";
 
 @Component({
   components: {
@@ -118,11 +119,18 @@ export default class LoginHome extends Vue {
   addressList: Array<any> = Array();
   isShowAddressAdd: boolean = false; // 是否显示添加地址弹框
   cityInfo = ""; // 选中的省市区信息
+  isDisablePayBtn: boolean = false;
 
+  /**
+   * 订单总金额
+   */
   get computedGoodsAmount() {
     const price = this.goodsInfo.salePriceNormal || 0;
     return price * this.addressList.length;
   }
+  /**
+   * 显示的售后信息
+   */
   get computedAddressInfo() {
     const {
       name,
@@ -144,6 +152,7 @@ export default class LoginHome extends Vue {
       }, 1688);
     }
     this.getGoodsDetail(e.goodsId);
+    this.getDefaultAddress();
     vm.$on("updateService", (item: address.IAddressItem) => {
       this.serviceInfo = item;
     });
@@ -160,7 +169,14 @@ export default class LoginHome extends Vue {
     data.notSendAddress = `暂不发货区域: ${data.notSendAddress}`;
     this.goodsInfo = data;
   }
-
+  /**
+   * 查询默认地址
+   */
+  async getDefaultAddress() {
+    const [err, data] = await address.getAddressDefault();
+    if (err || !data?._id) return;
+    this.serviceInfo = data;
+  }
   /**
    * 前往售后服务地址
    */
@@ -181,7 +197,6 @@ export default class LoginHome extends Vue {
   handleConfirm(e: { label: string }) {
     this.cityInfo = e.label;
   }
-
   /**
    * 添加或清空收货地址
    */
@@ -198,6 +213,22 @@ export default class LoginHome extends Vue {
       }
       this.addressList = [];
     }
+  }
+  /**
+   * 立即支付
+   */
+  async submit() {
+    this.isDisablePayBtn = true;
+    const [err, data] = await order.add({
+      goodsInfo: this.goodsInfo,
+      serviceInfo: this.serviceInfo,
+      addressInfo: this.addressList,
+    });
+    this.isDisablePayBtn = false;
+    if (err || !data?.id) {
+      return;
+    }
+    uniWrapper.redirectToPage(`${ROUTE.ORDER_PAY}?orderId=${data.id}`);
   }
 }
 </script>

@@ -3,6 +3,7 @@ export enum ROUTE {
   "USER_LOGIN_HOME" = "/pages/user/login-home",
   "GOODS_DETAIL" = "/pages/goods/detail",
   "ORDER_INDEX" = "/pages/order/index",
+  "ORDER_PAY" = "/pages/order/pay",
   "TAB_CATEGORY" = "/pages/tab/goods-category",
   "ADDRESS_LIST" = "/pages/address/list",
 }

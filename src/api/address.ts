@@ -3,22 +3,21 @@ import { Request } from "./request";
 const requestAddress = new Request("customer");
 class Address {
   /**
-   * 删除一条地址
+   * 添加一条地址
    */
   add(data: address.IAddressItem) {
     return requestAddress.start<object, { _id: string }>({
       data,
-      action: "agent-address/add",
+      action: "customer-address/add",
     });
   }
-
   /**
    * 删除一条地址
    */
   del(data: { addressId: string }) {
     return requestAddress.start<object, Array<address.IAddressItem>>({
       data,
-      action: "agent-address/del",
+      action: "customer-address/del",
     });
   }
   /**
@@ -27,7 +26,7 @@ class Address {
   setDefault(data: { addressId: string }) {
     return requestAddress.start<object, Array<address.IAddressItem>>({
       data,
-      action: "agent-address/setDefault",
+      action: "customer-address/setDefault",
     });
   }
   /**
@@ -36,7 +35,7 @@ class Address {
   update(data: address.IAddressItem) {
     return requestAddress.start<object, { _id: string }>({
       data,
-      action: "agent-address/update",
+      action: "customer-address/update",
     });
   }
   /**
@@ -46,7 +45,17 @@ class Address {
   getAddressList(data = {}) {
     return requestAddress.start<object, Array<address.IAddressItem>>({
       data,
-      action: "agent-address/getList",
+      action: "customer-address/getList",
+    });
+  }
+  /**
+   * 查询默认地址
+   * @param data
+   */
+  getAddressDefault(data = {}) {
+    return requestAddress.start<object, address.IAddressItem>({
+      data,
+      action: "customer-address/getDefault",
     });
   }
 }

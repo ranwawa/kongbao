@@ -30,15 +30,16 @@ export class Request {
       return this.handleCallFunctionRes<TRes>(res);
     } catch (e) {
       uniWrapper.hideLoading();
-      return [e.message, null];
+      uniWrapper.showToastText("网络异常,请稍后再度");
+      return [e, null];
     }
   }
 
   handleCallFunctionRes<T>(
     options: TypesUniCloud.CallFunctionRes<T>
   ): [any | null, T | null] {
-    console.log(options);
     if (!options.success) {
+      options.error && uniWrapper.showToastText(options.error.message);
       return [options, null];
     }
     const { result }: any = options;

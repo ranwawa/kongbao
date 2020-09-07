@@ -90,6 +90,14 @@ declare namespace TypesUniCloud {
     requestId: string;
     success: boolean;
     header: any;
+    /**
+     * 错误信息,当success为false时才会有
+     */
+    error?: {
+      code: string;
+      message: string;
+      httpStatus: number;
+    };
   }
   /**
    * 初始化服务空间同意参

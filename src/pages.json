@@ -1,18 +1,31 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
-			"path": "pages/index/index",
+			"path": "pages/tab/profile",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "我的",
+				"navigationStyle": "custom"
 			}
 		},
 		{
 			"path": "pages/tab/goods-category",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "首页",
+				"navigationStyle": "custom"
 			}
 		}
 	],
+	"tabBar": {
+		"list": [
+			{
+				"pagePath": "pages/tab/goods-category",
+				"text": "首页"
+			},{
+				"pagePath": "pages/tab/profile",
+				"text": "我的"
+			}
+		]
+	},
 	"subPackages": [
 		{
 			"root": "pages/user",
@@ -49,6 +62,11 @@
 					"path": "index",
 					"style": {
 						"navigationBarTitleText": "确认订单"
+					}
+				},{
+					"path": "pay",
+					"style": {
+						"navigationBarTitleText": "订单支付"
 					}
 				}
 			]

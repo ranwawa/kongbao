@@ -118,3 +118,11 @@ namespace address {
     default: boolean;
   }
 }
+
+namespace order {
+  interface IConfirmReq {
+    goodsInfo: goods.IGoodsItem;
+    serviceInfo: address.IAddressItem;
+    addressInfo: Array<address.IAddressItem>;
+  }
+}
