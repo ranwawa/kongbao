@@ -196,8 +196,8 @@ module.exports = class Order {
       return;
     }
     const res2 = await colCsOrder.doc(orderId).update({
-      remark: "供应商单号:" + data.recordId,
-      type: 3,
+      remark: "供应商单号:" + res.recordId,
+      status: 3,
     });
     uniCloud.logger.log("下单成功,更新订单状态-出参", res2);
     return res2.updated;
