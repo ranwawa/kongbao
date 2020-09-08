@@ -120,9 +120,44 @@ namespace address {
 }
 
 namespace order {
+  /**
+   * 确认订单请求参数
+   */
   interface IConfirmReq {
+    /**
+     * 商品信息
+     */
     goodsInfo: goods.IGoodsItem;
+    /**
+     * 售后信息
+     */
     serviceInfo: address.IAddressItem;
+    /**
+     * 收货地址
+     */
     addressInfo: Array<address.IAddressItem>;
+  }
+
+  /**
+   * 商品详情响应数据
+   */
+  interface IDetailRes {
+    /**
+     * 售后信息
+     */
+    serviceInfo: string;
+    /**
+     * 收货地址
+     */
+    addressInfo: Array<string>;
+    /**
+     * 商品信息
+     */
+    goodsInfo: object;
+    /**
+     * 订单总金额
+     */
+    amount: number;
+    orderId: string;
   }
 }

@@ -28,7 +28,7 @@ class Order {
    * @param data
    */
   getSingle(data: { orderId: string }) {
-    return requestAddress.start<object, { _id: string }>({
+    return requestAddress.start<object, order.IDetailRes>({
       data,
       action: "customer-order/getSingle",
     });

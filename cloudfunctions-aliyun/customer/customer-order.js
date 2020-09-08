@@ -188,16 +188,26 @@ module.exports = class Order {
       return new ResponseModal(400, {}, "订单信息有误");
     }
     const res = await colCsOrder
-      .where({
+      .aggregate()
+      .match({
         appId: this.appId,
         userId: this.userId,
         _id: option.orderId,
         isDelete: false,
       })
       .limit(1)
-      .get();
-    uniCloud.logger.log("查询单条订单-出参", res);
-    return res;
+      // .project({
+      //   status: true,
+      //   amount: '$csAmount'
+      // })
+      .end();
+    res.data = res.data.map((ele) => ({
+      serviceInfo: ele.serviceInfo.formattedAddress,
+      addressInfo: ele.addressInfo.map((address) => address.formattedAddress),
+      goodsInfo: _.pick(ele.csGoodsInfo, ["_id"]),
+      amount: ele.csAmount,
+    }));
+    return this.processResponseData(res, "查询单条订单", true);
   }
   /**
    * 单条同步下单

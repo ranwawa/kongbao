@@ -1,15 +1,35 @@
 <template>
   <view class="rww-container">
-    <!-- 可用余额 -->
-    <view class="order-pay">
-      <uv-cell :border="false" title="余额支付" value="可用余额"></uv-cell>
+    <!-- 支付金额 -->
+    <view class="pay__amount">
+      <uv-price
+        :amount="orderInfo.amount"
+        :size="18"
+        custom-style="margin: 60rpx auto;"
+      />
     </view>
-    <uv-button custom-class="theme-style__button" size="large">
-      余额告急, 请充值
-    </uv-button>
-    <uv-button custom-class="theme-style__button" size="large">
-      立即支付
-    </uv-button>
+    <!-- 可用余额 -->
+    <uv-cell
+      :border="false"
+      :value="computedBalance"
+      icon="balance-o"
+      title="余额支付"
+    />
+    <view class="pay__btn">
+      <uv-button
+        v-if="userInfo.balance"
+        :disabled="isDisableSubmit"
+        :load="isDisableSubmit"
+        custom-class="theme-style__button"
+        size="large"
+        @click="submit"
+      >
+        立即支付
+      </uv-button>
+      <uv-button custom-class="theme-style__button" size="large">
+        余额告急, 请充值
+      </uv-button>
+    </view>
   </view>
 </template>
 
@@ -18,14 +38,28 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { uniWrapper } from "@/assets/js/uni-wrapper";
 import { order } from "@/api/order";
+import UvPrice from "uni-vant/lib/price.vue";
 
-@Component({})
+@Component({
+  components: {
+    UvPrice,
+  },
+})
 export default class LoginHome extends Vue {
+  userInfo = {}; // 用户信息
+  orderInfo: order.IDetailRes = Object(); // 订单详情
+  isDisableSubmit: boolean = false; // 是否禁用提交按钮
+
+  get computedBalance() {
+    const { balance } = this.userInfo;
+    return "可用余额" + (balance ? (balance / 100).toFixed(2) : 0) + "元";
+  }
   onLoad(e: { orderId?: string }) {
     if (!e.orderId) {
       uniWrapper.showToastText("订单信息有误");
       return;
     }
+    this.getOrderInfo(e.orderId);
   }
 
   /**
@@ -33,6 +67,10 @@ export default class LoginHome extends Vue {
    */
   async getOrderInfo(orderId: string) {
     const [err, data] = await order.getSingle({ orderId });
+    if (err || !data?.amount) {
+      return;
+    }
+    this.orderInfo = data;
     console.log(err, data);
   }
 
@@ -40,7 +78,25 @@ export default class LoginHome extends Vue {
    * 查询用户信息
    */
   async getUserBalance() {}
+
+  /**
+   * 付款
+   */
+  async submit() {
+    this.isDisableSubmit = true;
+  }
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+/* 支付金额 */
+.pay__amount {
+  margin-bottom: $s-sm;
+  text-align: center;
+  background-color: #fff;
+}
+/* 按钮 */
+.pay__btn {
+  margin: $s-xxl $s-sm 0;
+}
+</style>
