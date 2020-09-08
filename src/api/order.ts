@@ -16,10 +16,10 @@ class Order {
    * 支付订单
    * @param data
    */
-  pay(data: { orderId: string; payType: number }) {
+  pay(data: { orderId: string; payType?: number }) {
     return requestAddress.start<object, { _id: string }>({
       data,
-      action: "customer-order/add",
+      action: "customer-order/pay",
     });
   }
 

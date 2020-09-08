@@ -26,7 +26,7 @@
       >
         立即支付
       </uv-button>
-      <uv-button custom-class="theme-style__button" size="large">
+      <uv-button v-else custom-class="theme-style__button" size="large">
         余额告急, 请充值
       </uv-button>
     </view>
@@ -39,6 +39,7 @@ import Component from "vue-class-component";
 import { uniWrapper } from "@/assets/js/uni-wrapper";
 import { order } from "@/api/order";
 import UvPrice from "uni-vant/lib/price.vue";
+import { user } from "@/api/user";
 
 @Component({
   components: {
@@ -46,20 +47,23 @@ import UvPrice from "uni-vant/lib/price.vue";
   },
 })
 export default class LoginHome extends Vue {
-  userInfo = {}; // 用户信息
+  userInfo: user.IUserInfoRes = Object(); // 用户信息
   orderInfo: order.IDetailRes = Object(); // 订单详情
   isDisableSubmit: boolean = false; // 是否禁用提交按钮
+  orderId: string = "";
 
   get computedBalance() {
     const { balance } = this.userInfo;
-    return "可用余额" + (balance ? (balance / 100).toFixed(2) : 0) + "元";
+    return "可用" + (balance ? (balance / 100).toFixed(2) : 0) + "元";
   }
   onLoad(e: { orderId?: string }) {
     if (!e.orderId) {
       uniWrapper.showToastText("订单信息有误");
       return;
     }
+    this.orderId = e.orderId;
     this.getOrderInfo(e.orderId);
+    this.getUserInfo();
   }
 
   /**
@@ -70,6 +74,7 @@ export default class LoginHome extends Vue {
     if (err || !data?.amount) {
       return;
     }
+    data.amount = data.amount / 100;
     this.orderInfo = data;
     console.log(err, data);
   }
@@ -77,13 +82,24 @@ export default class LoginHome extends Vue {
   /**
    * 查询用户信息
    */
-  async getUserBalance() {}
+  async getUserInfo() {
+    const [err, data] = await user.getUserInfo();
+    if (err || !data) {
+      return;
+    }
+    this.userInfo = data;
+  }
 
   /**
    * 付款
    */
   async submit() {
     this.isDisableSubmit = true;
+    const [err, data] = await order.pay({
+      orderId: this.orderId,
+    });
+    this.isDisableSubmit = false;
+    console.log(err, data);
   }
 }
 </script>

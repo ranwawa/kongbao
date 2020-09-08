@@ -1,39 +1,41 @@
-const uniId = require("uni-id");
-const { ResponseModal } = require("api");
+const UserNormal = require("./user-normal");
+const UserAuth = require("./user-auth");
+const NOT_FOUND = {
+  code: 404,
+  msg: "未找到访问的接口",
+};
 
-class User {
-  constructor(event, context) {
-    this.event = event;
-    this.context = context;
-  }
-  async register(data, appId) {
-    return await uniId.register({
-      appId: appId,
-      isVip: false,
-      balance: 0,
-      ...data,
-    });
-  }
-  async login(data) {
-    const res = await uniId.login({
-      ...data,
-      queryField: ["username", "email", "mobile"],
-    });
-    uniCloud.logger.info("帐户密码登录-出参", res);
-    return new ResponseModal(res.code, res, res.msg);
-  }
-}
-
-try {
-  exports.main = async function (event, context) {
-    const { action, data } = event;
-    const { APPID } = context;
-    const user = new User(event, context);
-    const controller = user[action];
-    return controller
-      ? await controller(data, APPID, event, context)
-      : { code: 404, msg: "未找到访问的接口" };
+exports.main = async function (event, context) {
+  const { action, data, uniIdToken } = event;
+  const { APPID } = context;
+  // todo 上线时删掉这个
+  context.CLIENTUA =
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1";
+  const classMap = {
+    "user-normal": UserNormal,
+    "user-auth": UserAuth,
   };
-} catch (e) {
-  return { code: 500, msg: e.message };
-}
+  const [classKey, method] = action.split("/");
+  if (!action || !classKey || !method) {
+    return NOT_FOUND;
+  }
+  let instance = classMap[classKey];
+  if (!instance) {
+    return NOT_FOUND;
+  }
+  instance = new instance(APPID, uniIdToken);
+  console.log(instance);
+  if (!instance[method]) {
+    return NOT_FOUND;
+  }
+  if (instance.checkToken) {
+    const res = await instance.checkToken();
+    if (res.code !== 0) {
+      return {
+        code: 401,
+        msg: "请登录后访问",
+      };
+    }
+  }
+  return await instance[method](data, event, context);
+};

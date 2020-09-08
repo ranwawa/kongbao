@@ -10,7 +10,7 @@ class User {
   register(data: user.RegisterReq) {
     return requestStart<user.RegisterReq, user.RegisterRes>({
       data,
-      action: "register",
+      action: "user-normal/register",
     });
   }
 
@@ -21,7 +21,7 @@ class User {
   login(data: user.LoginReq) {
     return requestStart<user.LoginReq, user.LoginRes>({
       data,
-      action: "login",
+      action: "user-normal/login",
     });
   }
 
@@ -29,8 +29,8 @@ class User {
    * 获取用户信息
    */
   getUserInfo() {
-    return requestStart<user.LoginReq, user.LoginRes>({
-      action: "getUserInfo",
+    return requestStart<any, user.IUserInfoRes>({
+      action: "user-auth/getUserInfo",
     });
   }
 }

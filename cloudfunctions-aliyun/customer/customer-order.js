@@ -46,6 +46,10 @@ module.exports = class Order {
     }
     return new ResponseModal(0, addRes);
   }
+  /**
+   * 支付订单
+   * @param option
+   */
   async pay(option) {
     // 查询订单信息
     // 判断用户金额是否足够
@@ -55,8 +59,9 @@ module.exports = class Order {
     // 根据收货地址数量跳第3方下单
     // 更新订单表
     const { orderId } = option;
+    uniCloud.logger.log("支付订单-入参", option);
     if (!orderId) {
-      return new ResponseModal(400, "该订单不存在");
+      return new ResponseModal(400, "订单信息有误");
     }
     const orderRes = await colCsOrder
       .where({
@@ -65,32 +70,40 @@ module.exports = class Order {
         _id: orderId,
         isDelete: false,
       })
+      .field({
+        _id: true,
+        csAmount: true,
+        agAmount: true,
+        csGoodsInfo: true,
+        serviceInfo: true,
+        addressInfo: true,
+      })
+      .limit(1)
       .get();
-    const balanceCustomer = await this.getCustomerBalance(goodsAmount);
+    uniCloud.logger.log("支付订单,查询订单信息-出参", orderRes);
+    if (orderRes.affectedDocs < 1) {
+      return new ResponseModal(400, "订单信息有误");
+    }
+    const {
+      data: [orderData],
+    } = orderRes;
+    const balanceCustomer = await this.getCustomerBalance(orderData.csAmount);
     if (balanceCustomer < 0) {
       return new ResponseModal(400, {}, "帐户余额告急,请充值");
     }
-    const balanceAgent = await this.getAgentBalance(goodsAmount);
+    const balanceAgent = await this.getAgentBalance(orderData.agAmount);
     if (balanceAgent < 0) {
       return new ResponseModal(400, {}, "库存告急,请联系管理员");
     }
-    // const updateRes = await this.updateBalance(
-    //   addRes,
-    //   balanceCustomer,
-    //   balanceAgent
-    // );
-    // if (!updateRes) {
-    //   return new ResponseModal(400, {}, "扣款失败,请稍后再试");
-    // }
-    // const buyRes = await this.buyOne(
-    //   csGoodsInfo,
-    //   serviceInfo,
-    //   addressInfo,
-    //   addRes.orderId
-    // );
-    // if (!buyRes) {
-    //   return new ResponseModal(400, {}, "下单失败,请稍后再试");
-    // }
+    const updateRes = await this.updateBalance(
+      orderData,
+      balanceCustomer,
+      balanceAgent
+    );
+    if (!updateRes) {
+      return new ResponseModal(400, {}, "支付失败,请稍后再试");
+    }
+    this.buyOne(orderData);
     return new ResponseModal(0, {});
   }
   /**
@@ -151,20 +164,26 @@ module.exports = class Order {
   /**
    * 更新余额
    */
-  async updateBalance(pubParam, balanceCustomer, balanceAgent) {
+  async updateBalance(orderInfo, balanceCustomer, balanceAgent) {
+    const now = Date.now();
     const param = {
-      ...pubParam,
-      remark: pubParam.orderId,
+      remark: orderInfo._id,
       type: 21,
       isIncome: false,
+      isDelete: false,
+      createTime: now,
+      appId: this.appId,
+      userId: this.userId,
     };
     const allPromise = [
       colCsFund.add({
         ...param,
+        price: orderInfo.csAmount,
         balance: balanceCustomer,
       }),
       colAgFund.add({
         ...param,
+        price: orderInfo.agAmount,
         balance: balanceAgent,
       }),
     ];
@@ -173,8 +192,9 @@ module.exports = class Order {
     if (res.length && res.length < 2) {
       return;
     }
-    const res2 = await colCsOrder.doc(pubParam.orderId).update({
+    const res2 = await colCsOrder.doc(orderInfo._id).update({
       status: 2,
+      payTime: now,
     });
     uniCloud.logger.log("更新余额后更新订单状态-出参", res2);
     return res2.updated;
@@ -211,25 +231,24 @@ module.exports = class Order {
   }
   /**
    * 单条同步下单
-   * @param goodsInfo
-   * @param serviceInfo
-   * @param addressInfo
-   * @param orderId
    * @returns {Promise<void>}
    */
-  async buyOne(goodsInfo, serviceInfo, addressInfo, orderId) {
+  async buyOne(orderInfo) {
+    const { csGoodsInfo, serviceInfo, addressInfo } = orderInfo;
+    const [addressInfoOne] = addressInfo;
+    const orderId = orderInfo._id;
     const data = {
       accessToken: this.accessToken,
-      storehouseCode: goodsInfo.storeCode,
-      goodsCode: goodsInfo.goodsCode,
-      minSingleGoodsWeight: goodsInfo.min,
-      maxSingleGoodsWeight: goodsInfo.max,
-      receiver: addressInfo.name,
-      receiverPhone: addressInfo.mobile,
-      receiverProvinceName: addressInfo.provinceName,
-      receiverCityName: addressInfo.cityName,
-      receiverAreaName: addressInfo.areaName,
-      receiverAddress: addressInfo.address,
+      storehouseCode: csGoodsInfo.storeCode,
+      goodsCode: csGoodsInfo.goodsCode,
+      minSingleGoodsWeight: csGoodsInfo.min,
+      maxSingleGoodsWeight: csGoodsInfo.max,
+      receiver: addressInfoOne.name,
+      receiverPhone: addressInfoOne.mobile,
+      receiverProvinceName: addressInfoOne.provinceName,
+      receiverCityName: addressInfoOne.cityName,
+      receiverAreaName: addressInfoOne.areaName,
+      receiverAddress: addressInfoOne.address,
       thirdOrderNo: orderId,
       goodsNum: 1,
       shipperName: serviceInfo.name,
@@ -247,7 +266,9 @@ module.exports = class Order {
     }
     const res2 = await colCsOrder.doc(orderId).update({
       remark: "供应商单号:" + res.recordId,
+      spAmount: +res.amount * 100,
       status: 3,
+      spBuyTime: Date.now(),
     });
     uniCloud.logger.log("下单成功,更新订单状态-出参", res2);
     return res2.updated;

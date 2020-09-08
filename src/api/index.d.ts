@@ -54,6 +54,13 @@ namespace user {
    * 登录响应参数
    */
   interface LoginRes extends RegisterRes {}
+
+  /**
+   * 用户信息响应
+   */
+  interface IUserInfoRes {
+    balance: number;
+  }
 }
 
 namespace store {
