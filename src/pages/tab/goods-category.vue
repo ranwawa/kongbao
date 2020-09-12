@@ -73,6 +73,12 @@ export default class LoginHome extends Vue {
     }
   }
 
+  onPullDownRefresh() {
+    this.goodsList = [];
+    this.pageInfo = new BasePage();
+    this.getGoodsList(this.currentStore);
+    setTimeout(uni.stopPullDownRefresh, 1000);
+  }
   /**
    * 获取仓库列表
    */
@@ -115,7 +121,7 @@ export default class LoginHome extends Vue {
    * 前往商品详情
    */
   goDetail(item: goods.IGoodsItem) {
-    uniWrapper.navigateToPage(`${ROUTE.GOODS_DETAIL}?goodsId=${item._id}`);
+    uniWrapper.navigateToPage(`${ROUTE.GOODS_DETAIL}?goodsId=${item.goodsId}`);
   }
 
   /**
@@ -123,7 +129,7 @@ export default class LoginHome extends Vue {
    * @param item
    */
   goToOrder(item: goods.IGoodsItem) {
-    uniWrapper.navigateToPage(`${ROUTE.ORDER_INDEX}?goodsId=${item._id}`);
+    uniWrapper.navigateToPage(`${ROUTE.ORDER_INDEX}?goodsId=${item.goodsId}`);
   }
 }
 </script>

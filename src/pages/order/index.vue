@@ -69,7 +69,7 @@
         :loading="isDisablePayBtn"
         @click="submit"
       >
-        立即支付
+        确认订单
       </uv-button>
     </view>
     <!-- 添加地址弹框 -->
@@ -163,7 +163,7 @@ export default class LoginHome extends Vue {
    */
   async getGoodsDetail(goodsId: string) {
     const [err, data] = await goods.getGoodsDetail({ goodsId });
-    if (err || !data?._id) {
+    if (err || !data?.goodsId) {
       return;
     }
     data.notSendAddress = `暂不发货区域: ${data.notSendAddress}`;
@@ -218,6 +218,14 @@ export default class LoginHome extends Vue {
    * 立即支付
    */
   async submit() {
+    if (!this.serviceInfo.name) {
+      uniWrapper.showToastText("请选择售后信息");
+      return;
+    }
+    if (!this.addressList.length) {
+      uniWrapper.showToastText("请添加收货地址");
+      return;
+    }
     this.isDisablePayBtn = true;
     const [err, data] = await order.add({
       goodsInfo: this.goodsInfo,

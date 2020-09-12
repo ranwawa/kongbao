@@ -1,5 +1,9 @@
 <template>
-  <view v-show="goodsInfo._id" class="goods-cell">
+  <view
+    v-show="goodsInfo.goodsId"
+    class="goods-cell"
+    @click="$emit('click-goods', goodsInfo)"
+  >
     <image :src="computedImgSrc" class="goods-cell__img" mode="aspectFill" />
     <view class="goods-cell__content">
       <view class="goods-cell__name">
@@ -40,6 +44,7 @@ import UvPrice from "uni-vant/lib/price.vue";
 })
 export default class LoginHome extends Vue {
   [x: string]: any;
+
   get computedImgSrc() {
     return this.goodsInfo.imgList ? this.goodsInfo.imgList[0] : "";
   }
@@ -51,12 +56,14 @@ export default class LoginHome extends Vue {
   @include flex-row;
   align-items: stretch;
   height: px2rpx(90);
+
   &__img {
     min-width: px2rpx(90);
     width: px2rpx(90);
     height: inherit;
     margin-right: $s-xs;
   }
+
   &__content {
     @include flex-column;
     flex-grow: 1;
@@ -64,9 +71,11 @@ export default class LoginHome extends Vue {
     justify-content: space-between;
     height: inherit;
   }
+
   &__title {
     @include text-truncate(2);
   }
+
   &__bottom {
     @include flex-row;
     justify-content: space-between;

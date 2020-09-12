@@ -35,7 +35,11 @@ module.exports = class UserAuth {
   async getUserInfo() {
     const res = await colCsFund
       .where({ userId: this.userInfo._id })
-      .field({ balance: true })
+      .field({
+        _id: false,
+        balance: true,
+        isVip: true,
+      })
       .orderBy("createTime", "desc")
       .limit(1)
       .get();

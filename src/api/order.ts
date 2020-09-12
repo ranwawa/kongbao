@@ -27,10 +27,20 @@ class Order {
    * 查询订单详情
    * @param data
    */
-  getSingle(data: { orderId: string }) {
-    return requestAddress.start<object, order.IDetailRes>({
+  getSingle<T = { orderId: string }>(data: T) {
+    return requestAddress.start<T, order.IDetailRes>({
       data,
       action: "customer-order/getSingle",
+    });
+  }
+  /**
+   * 查询订单列表
+   * @param data
+   */
+  getList<T = { status: number }>(data: T) {
+    return requestAddress.start<T, Array<order.IDetailRes>>({
+      data,
+      action: "customer-order/getList",
     });
   }
 }

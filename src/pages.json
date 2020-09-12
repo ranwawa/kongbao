@@ -1,9 +1,10 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
-			"path": "pages/tab/profile",
+			"path": "pages/tab/home",
 			"style": {
 				"navigationBarTitleText": "我的",
+				"enablePullDownRefresh": true,
 				"navigationStyle": "custom"
 			}
 		},
@@ -11,6 +12,15 @@
 			"path": "pages/tab/goods-category",
 			"style": {
 				"navigationBarTitleText": "首页",
+				"enablePullDownRefresh": true,
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/tab/order-list",
+			"style": {
+				"navigationBarTitleText": "订单",
+				"enablePullDownRefresh": true,
 				"navigationStyle": "custom"
 			}
 		}
@@ -20,8 +30,13 @@
 			{
 				"pagePath": "pages/tab/goods-category",
 				"text": "首页"
-			},{
-				"pagePath": "pages/tab/profile",
+			},
+			{
+				"pagePath": "pages/tab/order-list",
+				"text": "订单"
+			},
+			{
+				"pagePath": "pages/tab/home",
 				"text": "我的"
 			}
 		]
@@ -67,6 +82,11 @@
 					"path": "pay",
 					"style": {
 						"navigationBarTitleText": "订单支付"
+					}
+				},{
+					"path": "detail",
+					"style": {
+						"navigationBarTitleText": "订单详情"
 					}
 				}
 			]

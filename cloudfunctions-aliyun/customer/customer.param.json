@@ -1,8 +1,10 @@
 // 本文件中的json内容将在云函数【运行】时作为参数传给云函数。
 // 配置教程参考：https://uniapp.dcloud.net.cn/uniCloud/quickstart?id=runparam
 {
-	"action": "customer-order/add",
+	"action": "customer-order/getSingle",
 	"data": {
+		"status": 2,
+		"orderId": "5f5c3b1ca48d3800018bf1cb",
 		"goodsInfo": {
 			"_id": "02cf195a81d7f41664ca1d937e9c67d8",
 			"storeCode": "00001",
@@ -15,14 +17,14 @@
 			"mobile": "133333333333"
 			
 		},
-		"addressInfo":{
+		"addressInfo":[{
 			"name": "abc",
 			"mobile":"15555555555",
 			"provinceName":"重庆",
 			"cityName":"重庆市",
 			"areaName":"江北区",
 			"address":"红旗河沟社大食堂"
-		}
+		}]
 	},
 	"clientInfo": {
 		"PLATFORM": "h5",

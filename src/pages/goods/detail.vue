@@ -90,7 +90,8 @@ export default class LoginHome extends Vue {
    */
   async getGoodsDetail(goodsId: string) {
     const [err, data] = await goods.getGoodsDetail({ goodsId });
-    if (err || !data?._id) {
+    console.log(err, data);
+    if (err || !data?.goodsId) {
       return;
     }
     console.log(data);
@@ -99,7 +100,7 @@ export default class LoginHome extends Vue {
   }
   submit() {
     uniWrapper.navigateToPage(
-      `${ROUTE.ORDER_INDEX}?goodsId=${this.goodsInfo._id}`
+      `${ROUTE.ORDER_INDEX}?goodsId=${this.goodsInfo.goodsId}`
     );
   }
 }

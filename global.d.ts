@@ -72,6 +72,7 @@ declare namespace TypesUniCloud {
      */
     data?: object;
   }
+
   /**
    * 客户端调用云函数响应
    */
@@ -99,6 +100,7 @@ declare namespace TypesUniCloud {
       httpStatus: number;
     };
   }
+
   /**
    * 初始化服务空间同意参
    */
@@ -169,7 +171,24 @@ declare namespace ucCommand {
     extends IAggregateCommandObject,
       IAggregateCommandCondition,
       IAggregateCommandCompare,
-      IAggregateCommandString {}
+      IAggregateCommandString,
+      IAggregateCommandArray,
+      IAggregateCommandMath {}
+
+  /**
+   * 聚合操作符-算术操作符
+   */
+  interface IAggregateCommandMath {
+    /**
+     * 聚合操作符。取传入的数字参数相乘的结果
+     */
+    multiply: (options: Array<any>) => object;
+    /**
+     * 聚合操作符。传入被除数和除数，求商
+     * @param options
+     */
+    divide: (options: [any, any]) => object;
+  }
 
   /**
    * 聚合操作符-对象
@@ -191,6 +210,7 @@ declare namespace ucCommand {
      */
     cond: (options: { if: any; then: any; else: any }) => Object;
   }
+
   /**
    * 聚合操作符-比较
    */
@@ -199,11 +219,16 @@ declare namespace ucCommand {
      * 聚合操作符。匹配两个值，如果前者大于后者则返回 true，否则返回 false
      * @param options
      */
-    gt: (options: Array<any>) => Object;
+    gt: (options: [any, any]) => object;
+    /**
+     * 聚合操作符。匹配两个值， * 如果相等则返回 true，否则返回 false。
+     * @param options
+     */
+    eq: (options: [any, any]) => object;
   }
 
   /**
-   * 聚合操作符-比较
+   * 聚合操作符-字符串
    */
   interface IAggregateCommandString {
     /**
@@ -211,6 +236,36 @@ declare namespace ucCommand {
      * @param options
      */
     concat: (options: Array<any>) => Object;
+    /**
+     * 聚合操作符。
+     * 按照分隔符分隔数组，并且删除分隔符，返回子字符串组成的数组。
+     * 如果字符串无法找到分隔符进行分隔，返回原字符串作为数组的唯一元素。
+     * @param options
+     */
+    split: (options: [string, string]) => object;
+  }
+
+  /**
+   * 聚合操作符-数组
+   */
+  interface IAggregateCommandArray {
+    /**
+     * 聚合操作符。返回数组长度
+     * @param options
+     */
+    size: (options: string) => Object;
+    /**
+     * 聚合操作符。
+     * 类似 JavaScript Array 上的 map 方法，
+     * 将给定数组的每个元素按给定转换方法转换后得出新的数组。
+     * @param options
+     */
+    map: (options: { input: any; as?: string; in: any }) => object;
+    /**
+     * 聚合操作符。返回在指定数组下标的元素
+     * @param options
+     */
+    arrayElemAt: (options: [any, any]) => object;
   }
 }
 declare namespace ucCollection {
@@ -229,7 +284,7 @@ declare namespace ucCollection {
      * 若指定了 _id，则不能与已有记录冲突
      * @param options
      */
-    add: (options: Object) => Promise<AddRes>;
+    add: (options: object) => Promise<AddRes>;
     /**
      * 发起聚合操作，
      * 定义完聚合流水线阶段之后需调用 end 方法标志结束定义并实际发起聚合操作
@@ -239,21 +294,21 @@ declare namespace ucCollection {
      * 指定返回结果中记录需返回的字段
      * @param projection
      */
-    field: (projection: Object) => ICollection;
+    field: (projection: object) => ICollection;
     /**
      * 获取集合数据，
      * 或获取根据查询条件筛选后的集合数据。
      */
-    get: () => Promise<{ affectedDocs: number; data: Array<Object> }>;
+    get: () => Promise<{ affectedDocs: number; data: Array<object> }>;
     /**
      * 更新多条记录
      */
-    update: (options) => Promise<Object>;
+    update: (options) => Promise<object>;
     /**
      * 指定查询条件，返回带新查询条件的新的集合引用
      * @param condition
      */
-    where: (condition: Object) => ICollection;
+    where: (condition: object) => ICollection;
     /**
      * 删除多条记录。
      * 注意只支持通过匹配 where 语句来删除，不支持 skip 和 limit。
@@ -313,21 +368,21 @@ declare namespace ucDocument {
     /**
      * 获取记录数据，或获取根据查询条件筛选后的记录数据
      */
-    get: () => Promise<{ affectedDocs: number; data: Array<Object> }>;
+    get: () => Promise<{ affectedDocs: number; data: Array<object> }>;
     /**
      * 删除一条记录
      */
-    remove: () => Promise<Object>;
+    remove: () => Promise<object>;
     /**
      * 替换更新一条记录
      * @param options
      */
-    set: (options: Object) => Promise<Object>;
+    set: (options: object) => Promise<object>;
     /**
      * 更新一条记录
      * @param options
      */
-    update: (options: Object) => Promise<Object>;
+    update: (options: object) => Promise<object>;
   }
 }
 declare namespace ucAggregate {
@@ -347,14 +402,14 @@ declare namespace ucAggregate {
      * 根据条件过滤文档，并且把符合条件的文档传递给下一个流水线阶段。
      * @param options
      */
-    match: (options: Object) => IAggregate;
+    match: (options: object) => IAggregate;
     /**
      * 聚合阶段。
      * 把指定的字段传递给下一个流水线，
      * 指定的字段可以是某个已经存在的字段，也可以是计算出来的新字段。
      * @param options
      */
-    project: (options: Object) => IAggregate;
+    project: (options: object) => IAggregate;
     /**
      * 聚合阶段。
      * 使用指定的数组字段中的每个元素，对文档进行拆分。
@@ -372,7 +427,7 @@ declare namespace ucAggregate {
      * 指定一个已有字段作为输出的根节点，也可以指定一个计算出的新字段作为根节点。
      * @param Object
      */
-    replaceRoot: (Object) => IAggregate;
+    replaceRoot: (object) => IAggregate;
     /**
      * 聚合阶段。指定一个正整数，跳过对应数量的文档，输出剩下的文档。
      * @param value
@@ -383,7 +438,22 @@ declare namespace ucAggregate {
      * @param value
      */
     limit: (value: number) => IAggregate;
+    /**
+     * 聚合阶段。根据指定的字段，对输入的文档进行排序
+     * 1 代表升序排列（从小到大）；
+     * -1 代表降序排列（从大到小）；
+     * @param options
+     */
+    sort: (options: { [key: string]: number }) => IAggregate;
+    /**
+     * 聚合阶段。添加新字段到输出的记录。
+     * 经过 addFields 聚合阶段，输出的所有记录中除了输入时带有的字段外，
+     * 还将带有 addFields 指定的字段。
+     * @param object
+     */
+    addFields: (object) => IAggregate;
   }
+
   interface IAggregateLookUpBase {
     /**
      * 要进行连接的另外一个集合的名字
@@ -396,6 +466,7 @@ declare namespace ucAggregate {
      */
     as: string;
   }
+
   interface IAggregateLookUpBaseEqual extends IAggregateLookUpBase {
     /**
      * 当前流水线的输入记录的字段名，
@@ -410,6 +481,7 @@ declare namespace ucAggregate {
      */
     foreignField: string;
   }
+
   interface IAggregateUnwindObject {
     /**
      * 想要拆分的数组的字段名，需要以 $ 开头。
@@ -442,6 +514,7 @@ declare namespace ucHttpClient {
   interface IHttpClient {
     request: (url: string, option: IHttpClientOption) => any;
   }
+
   interface IHttpClientOption {
     method?: "GET" | "POST" | "PUT" | "DELETE";
     data?: Object;

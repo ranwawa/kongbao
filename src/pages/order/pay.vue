@@ -40,6 +40,7 @@ import { uniWrapper } from "@/assets/js/uni-wrapper";
 import { order } from "@/api/order";
 import UvPrice from "uni-vant/lib/price.vue";
 import { user } from "@/api/user";
+import { ROUTE } from "@/assets/constant/common";
 
 @Component({
   components: {
@@ -99,7 +100,10 @@ export default class LoginHome extends Vue {
       orderId: this.orderId,
     });
     this.isDisableSubmit = false;
-    console.log(err, data);
+    if (err || !data) {
+      return;
+    }
+    uniWrapper.switchTabPage(ROUTE.ORDER_LIST);
   }
 }
 </script>

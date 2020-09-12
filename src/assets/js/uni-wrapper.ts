@@ -5,6 +5,7 @@ const {
   showModal,
   navigateTo,
   redirectTo,
+  switchTab,
   showLoading,
   hideLoading,
 } = uni;
@@ -44,6 +45,9 @@ class UniWrapper {
         console.error(err);
       },
     });
+  }
+  switchTabPage(url: string) {
+    return switchTab({ url });
   }
   async showLoadingText(title: string = "正在加载") {
     if (this.isLoading) return;

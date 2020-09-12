@@ -2,9 +2,9 @@
   <view class="goods-list">
     <view
       v-for="item in list"
-      :key="item._id"
+      :key="item.goodsId"
       class="goods-card"
-      @click.capture="$emit('click-item', item)"
+      @click="$emit('click-item', item)"
     >
       <image class="goods-card__img" mode="aspectFill" :src="item.imgList" />
       <view class="goods-card__title">
@@ -18,10 +18,10 @@
         {{ item.goodsName }}
       </view>
       <view class="goods-card__desc" @click.stop="$emit('click-btn', item)">
-        <uv-price price="22" size="10"></uv-price>
+        <uv-price :amount="item.salePriceNormal" size="10" />
         <view class="goods-card__record">已售{{ item.sales }}件</view>
-        <uv-button size="mini" custom-class="theme-style__button"
-          >购买
+        <uv-button size="mini" custom-class="theme-style__button">
+          购买
         </uv-button>
       </view>
     </view>
@@ -89,5 +89,9 @@ export default class LoginHome extends Vue {}
       font-size: $fz-sm;
     }
   }
+}
+
+/deep/ .uv-btn-text {
+  margin-left: 0;
 }
 </style>

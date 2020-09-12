@@ -122,28 +122,26 @@ module.exports = class AgentGoods {
         from: "kb-sp-goods",
         localField: "spGoodsId",
         foreignField: "_id",
-        as: "spGoodsInfo",
-      })
-      .unwind({
-        path: "$spGoodsInfo",
+        as: "spGoodsInfoList",
       })
       .lookup({
         from: "kb-sp-stores",
         localField: "spGoodsInfo.storeCode",
         foreignField: "storeCode",
-        as: "spStoreInfo",
+        as: "spStoreInfoList",
       })
-      .unwind({
-        path: "$spStoreInfo",
+      .addFields({
+        spGoodsInfo: $.arrayElemAt(["$spGoodsInfoList", 0]),
+        spStoreInfo: $.arrayElemAt(["$spStoreInfoList", 0]),
       })
       .replaceRoot({
         newRoot: {
-          _id: "$_id",
+          goodsId: "$_id",
           showPrice: "$showPrice",
           salePriceVip: "$salePriceVip",
           salePriceNormal: "$salePriceNormal",
           goodsName: "$spGoodsInfo.goodsName",
-          imgList: "$spGoodsInfo.imgList",
+          imgList: $.split(["$spGoodsInfo.imgList", "----"]),
           content: "$spGoodsInfo.content",
           sales: "$spGoodsInfo.sales",
           storeName: "$spGoodsInfo.storeName",
@@ -153,14 +151,51 @@ module.exports = class AgentGoods {
         },
       })
       .end();
-
-    uniCloud.logger.log("根据商品ID查询商品信息-出参", res.data);
-    let data = [];
-    if (res.affectedDocs) {
-      data = res.data[0];
-      typeof data.imgList === "string" && (data.imgList = [data.imgList]);
-    }
-    return new ResponseModal(0, data);
+    return this.processResponseData(res, "根据商品ID查询商品信息", true);
+  }
+  /**
+   * 查询推荐商品
+   * @returns {Promise<void>}
+   */
+  async getRecommend() {
+    const res = await colAgGoods
+      .aggregate()
+      .match({
+        appId: this.appId,
+        isEnable: true,
+      })
+      .sort({ sort: 1 })
+      .lookup({
+        from: "kb-sp-goods",
+        localField: "spGoodsId",
+        foreignField: "_id",
+        as: "spGoodsInfoList",
+      })
+      .addFields({
+        spGoodsInfo: $.arrayElemAt(["$spGoodsInfoList", 0]),
+      })
+      .project({
+        showPrice: true,
+        salePriceVip: true,
+        salePriceNormal: true,
+        spGoodsInfo: true,
+        goodsId: "$_id",
+        imgList: "$spGoodsInfo.imgList",
+        expressName: "$spGoodsInfo.expressName",
+        goodsName: "$spGoodsInfo.goodsName",
+        sales: "$spGoodsInfo.sales",
+      })
+      .project({
+        _id: false,
+        spGoodsInfo: false,
+      })
+      .limit(10)
+      .end();
+    res.data = res.data.map((ele) => {
+      ele.sales > 9999 && (ele.sales = `${(ele.sales / 10000).toFixed(1)}w`);
+      return ele;
+    });
+    return this.processResponseData(res, "查询推荐商品", false);
   }
   async update() {}
   /**
@@ -205,5 +240,18 @@ module.exports = class AgentGoods {
       return ele;
     });
     await this.add(agGoodsList);
+  }
+  /**
+   * 加工查询数据
+   * 用于按固定格式返回前端
+   * @param res
+   * @param title
+   * @param isPickFirst
+   */
+  async processResponseData(res, title = "--", isPickFirst = false) {
+    uniCloud.logger.log(title + "-出参", res);
+    let data = res.affectedDocs ? res.data || [] : [];
+    isPickFirst && (data = data[0] || {});
+    return new ResponseModal(0, data);
   }
 };

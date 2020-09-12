@@ -41,7 +41,7 @@ import { ROUTE, STORAGE_KEY } from "@/assets/constant/common";
 export default class LoginHome extends Super {
   redirect = ""; // 登录成功后的回跳页面
   onLoad(e: { redirect: string }) {
-    this.redirect = e.redirect || ROUTE.USER_LOGIN_HOME;
+    this.redirect = e.redirect || ROUTE.TAB_HOME;
   }
   /**
    * 登录
@@ -49,12 +49,11 @@ export default class LoginHome extends Super {
   async submit(e: RegisterForm<string>) {
     if (!this.validateForm(e)) return;
     const [err, data] = await user.login(e);
-    console.log(data);
     if (err || !data) return;
     uni.setStorageSync(STORAGE_KEY.UNI_ID_TOKEN, data.token);
     uniWrapper.showToastText("登录成功 ");
     setTimeout(() => {
-      uniWrapper.redirectToPage(this.redirect);
+      uniWrapper.switchTabPage(ROUTE.TAB_HOME);
     }, 1688);
   }
   goPage(url: ROUTE) {

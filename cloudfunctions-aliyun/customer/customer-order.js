@@ -4,6 +4,8 @@ const {
   colAgGoods,
   colAgFund,
   colSpInfos,
+  $,
+  dbCmd,
 } = require("./db");
 const { ResponseModal, request } = require("api");
 const _ = require("lodash");
@@ -68,6 +70,7 @@ module.exports = class Order {
         appId: this.appId,
         userId: this.userId,
         _id: orderId,
+        status: 1,
         isDelete: false,
       })
       .field({
@@ -155,11 +158,21 @@ module.exports = class Order {
       agAmount,
       isDelete: false,
       createTime: Date.now(),
-      status: 1, // 1已创建,待支付 2,已支付,待提交到供应商 3,已提交到供应,待供应商响应(待收货) 4,
+      status: 1, // 1已创建,待支付 2,已支付,待提交到供应商 3,已提交到供应,待供应商响应(待收货) 5,
       // 已收货,待发货(出物流纪录)
     });
     uniCloud.logger.log("新增订单-出参", res);
     return res;
+  }
+  /**
+   * 删除所有订单
+   * @returns {Promise<void>}
+   */
+  async removeAll() {
+    // const res = await colCsOrder.where({
+    //   _id: dbCmd.exists(true)
+    // }).remove();
+    // uniCloud.logger.log("删除所有订单-出参", res);
   }
   /**
    * 更新余额
@@ -216,19 +229,76 @@ module.exports = class Order {
         isDelete: false,
       })
       .limit(1)
-      // .project({
-      //   status: true,
-      //   amount: '$csAmount'
-      // })
+      .project({
+        orderId: "$_id",
+        _id: false,
+        status: true,
+        createTime: true,
+        payTime: true,
+        storeTime: "$spBuyTime",
+        amount: "$csAmount",
+        num: $.size("$addressInfo"),
+        serviceInfo: "$serviceInfo.formattedAddress",
+        addressInfo: $.map({
+          input: "$addressInfo",
+          as: "this",
+          in: { formattedAddress: "$$this.formattedAddress" },
+        }),
+        goodsInfo: {
+          goodsId: "$csGoodsInfo._id",
+          expressName: "$spGoodsInfo.expressName",
+          goodsName: "$spGoodsInfo.goodsName",
+          salePriceNormal: $.divide(["$csAmount", $.size("$addressInfo")]),
+          imgList: $.split(["$spGoodsInfo.imgList", "---"]),
+        },
+      })
       .end();
-    res.data = res.data.map((ele) => ({
-      serviceInfo: ele.serviceInfo.formattedAddress,
-      addressInfo: ele.addressInfo.map((address) => address.formattedAddress),
-      goodsInfo: _.pick(ele.csGoodsInfo, ["_id"]),
-      amount: ele.csAmount,
-    }));
     return this.processResponseData(res, "查询单条订单", true);
   }
+  /**
+   * 根据分类查询订单
+   * @param option
+   */
+  async getList(option) {
+    const { currentPage = 1, pageSize = 10, status = -1 } = option;
+    uniCloud.logger.log("根据分类查询订单-入参", {
+      appId: this.appId,
+      userId: this.userId,
+      status: status === -1 ? undefined : status,
+      isDelete: false,
+    });
+    const res = await colCsOrder
+      .aggregate()
+      .match({
+        appId: this.appId,
+        userId: this.userId,
+        status: status === -1 ? undefined : status,
+        isDelete: false,
+      })
+      .sort({
+        createTime: -1,
+      })
+      .skip((currentPage - 1) * pageSize)
+      .limit(pageSize)
+      .project({
+        _id: false,
+        status: true,
+        createTime: true,
+        orderId: "$_id",
+        num: $.size("$addressInfo"),
+        amount: "$csAmount",
+        goodsInfo: {
+          goodsId: "$csGoodsInfo._id",
+          expressName: "$spGoodsInfo.expressName",
+          goodsName: "$spGoodsInfo.goodsName",
+          salePriceNormal: $.divide(["$csAmount", $.size("$addressInfo")]),
+          imgList: $.split(["$spGoodsInfo.imgList", "---"]),
+        },
+      })
+      .end();
+    return this.processResponseData(res, "根据分类查询订单");
+  }
+
   /**
    * 单条同步下单
    * @returns {Promise<void>}

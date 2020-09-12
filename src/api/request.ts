@@ -30,7 +30,7 @@ export class Request {
       return this.handleCallFunctionRes<TRes>(res);
     } catch (e) {
       uniWrapper.hideLoading();
-      uniWrapper.showToastText("网络异常,请稍后再度");
+      uniWrapper.showToastText("网络异常,请稍后再试");
       return [e, null];
     }
   }

@@ -3,7 +3,7 @@
 // 配置教程参考：https://uniapp.dcloud.net.cn/uniCloud/quickstart?id=runparam
 
 {
-	"action": "agent-order/add",
+	"action": "agent-goods/getRecommend",
 	"data": {
 		"goodsInfo": {
 			"_id": "02cf195a81d7f41664ca1d937e9c67d8"

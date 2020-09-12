@@ -60,6 +60,7 @@ namespace user {
    */
   interface IUserInfoRes {
     balance: number;
+    isVip: boolean;
   }
 }
 
@@ -87,7 +88,7 @@ namespace goods {
    * 商品响应体
    */
   interface IGoodsItem {
-    _id: string;
+    goodsId: string;
     showPrice: string;
     salePriceVip: number;
     salePriceNormal: number;
@@ -156,7 +157,7 @@ namespace order {
     /**
      * 收货地址
      */
-    addressInfo: Array<string>;
+    addressInfo: Array<{ formattedAddress: string }>;
     /**
      * 商品信息
      */
@@ -166,5 +167,24 @@ namespace order {
      */
     amount: number;
     orderId: string;
+    createTime: string;
+    payTime: string;
+    storeTime: string;
+  }
+
+  /**
+   * 订单选项
+   */
+  interface ITabItem {
+    name: string;
+    /**
+     * 订单状态
+     * -1所有订单
+     * 1已创建,待支付
+     * 2已支付,待提交到供应商
+     * 3已提交到供应,待供应商响应(待收货)
+     * 4已收货,待发货(出物流纪录)
+     */
+    status: number;
   }
 }

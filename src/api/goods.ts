@@ -39,6 +39,16 @@ class Goods {
       action: "agent-goods/get",
     });
   }
+  /**
+   * 查询推荐商品
+   * @param data
+   */
+  getGoodsRecommend(data = {}) {
+    return requestAgent.start<{}, Array<goods.IGoodsItem>>({
+      data,
+      action: "agent-goods/getRecommend",
+    });
+  }
 }
 
 export const goods = new Goods();
