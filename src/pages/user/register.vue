@@ -49,11 +49,12 @@ export default class LoginHome extends Super {
     const [err, data] = await user.register(
       _.pick(e, ["username", "password"])
     );
+    console.log(err, data);
     this.isHandlingSubmit = false;
     if (err || !data) return;
     uni.setStorageSync(STORAGE_KEY.UNI_ID_TOKEN, data.token);
     uniWrapper.showToastText(data.msg);
-    setTimeout(this.goLoginHome, 2000);
+    setTimeout(this.goLoginHome, 1688);
   }
   goLoginHome() {
     uniWrapper.redirectToPage(ROUTE.USER_LOGIN_HOME);

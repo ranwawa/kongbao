@@ -57,7 +57,6 @@ export default class LoginHome extends Vue {
   pageInfo: BasePage = new BasePage();
 
   onLoad(e: { status: STATUS } = { status: STATUS.ALL }) {
-    console.log(e);
     this.currentTab.status = +e.status || -1;
     this.getOrderList(this.currentTab);
   }
@@ -118,7 +117,7 @@ export default class LoginHome extends Vue {
 .order {
   /* 顶部tab */
   &-tabs {
-    @include fixed-top;
+    @include fixed-top(px2rpx(44));
     @include flex-row;
     margin-bottom: $s-sm;
     overflow: auto;

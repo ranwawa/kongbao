@@ -5,7 +5,7 @@ export enum ROUTE {
   "ORDER_INDEX" = "/pages/order/index",
   "ORDER_PAY" = "/pages/order/pay",
   "ORDER_DETAIL" = "/pages/order/detail",
-  "ORDER_LIST" = "/pages/tab/order-list",
+  "ORDER_LIST" = "/pages/order/list",
   "TAB_CATEGORY" = "/pages/tab/goods-category",
   "TAB_HOME" = "/pages/tab/home",
   "ADDRESS_LIST" = "/pages/address/list",

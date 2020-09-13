@@ -15,29 +15,23 @@
 				"enablePullDownRefresh": true,
 				"navigationStyle": "custom"
 			}
-		},
-		{
-			"path": "pages/tab/order-list",
-			"style": {
-				"navigationBarTitleText": "订单",
-				"enablePullDownRefresh": true,
-				"navigationStyle": "custom"
-			}
 		}
 	],
 	"tabBar": {
+    "color": "#ccc",
+		"selectedColor": "#ff5000",
 		"list": [
 			{
 				"pagePath": "pages/tab/goods-category",
-				"text": "首页"
-			},
-			{
-				"pagePath": "pages/tab/order-list",
-				"text": "订单"
+				"text": "首页",
+				"iconPath": "/static/home.png",
+				"selectedIconPath": "/static/home_active.png"
 			},
 			{
 				"pagePath": "pages/tab/home",
-				"text": "我的"
+				"text": "我的",
+				"iconPath": "/static/mine.png",
+				"selectedIconPath": "/static/mine_active.png"
 			}
 		]
 	},
@@ -55,6 +49,33 @@
 					"path": "register",
 					"style": {
 						"navigationBarTitleText": "注册"
+					}
+				},{
+					"path": "setting",
+					"style": {
+						"navigationBarTitleText": "设置"
+					}
+				}
+			]
+		},
+		{
+			"root": "pages/fund",
+			"pages": [
+				{
+					"path": "list",
+					"style": {
+						"navigationBarTitleText": "资金明细"
+					}
+				},
+				{
+					"path": "vip",
+					"style": {
+						"navigationBarTitleText": "vip特权"
+					}
+				},{
+					"path": "balance",
+					"style": {
+						"navigationBarTitleText": "余额充值"
 					}
 				}
 			]
@@ -88,9 +109,15 @@
 					"style": {
 						"navigationBarTitleText": "订单详情"
 					}
+				},{
+					"path": "list",
+					"style": {
+						"navigationBarTitleText": "我的订单"
+					}
 				}
 			]
-		},{
+		},
+		{
 			"root": "pages/address",
 			"pages": [
 				{

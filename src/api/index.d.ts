@@ -59,6 +59,7 @@ namespace user {
    * 用户信息响应
    */
   interface IUserInfoRes {
+    nickname: string;
     balance: number;
     isVip: boolean;
   }

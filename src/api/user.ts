@@ -24,7 +24,16 @@ class User {
       action: "user-normal/login",
     });
   }
-
+  /**
+   * 退出登录
+   * @param data
+   */
+  logout(data = {}) {
+    return requestStart<{}, {}>({
+      data,
+      action: "user-auth/logout",
+    });
+  }
   /**
    * 获取用户信息
    */

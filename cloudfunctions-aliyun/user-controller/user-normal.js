@@ -9,12 +9,15 @@ module.exports = class UserNormal {
    * @param data
    */
   async register(data) {
-    return await uniID.register({
+    const res = await uniID.register({
       appId: this.appId,
       isVip: false,
       balance: 0,
-      ...data,
+      nickname: data.username,
+      password: data.password,
     });
+    uniCloud.logger.info("注册-出参", res);
+    return new ResponseModal(res.code, res, res.msg);
   }
   /**
    * 登录
@@ -27,6 +30,11 @@ module.exports = class UserNormal {
       queryField: ["username", "email", "mobile"],
     });
     uniCloud.logger.info("帐户密码登录-出参", res);
+    const res2 = await uniID.updateUser({
+      uid: res.uid,
+      token: [res.token],
+    });
+    uniCloud.logger.info("单点登录,清空其他token-出参", res2);
     return new ResponseModal(res.code, res, res.msg);
   }
 };

@@ -51,10 +51,7 @@ export default class LoginHome extends Super {
     const [err, data] = await user.login(e);
     if (err || !data) return;
     uni.setStorageSync(STORAGE_KEY.UNI_ID_TOKEN, data.token);
-    uniWrapper.showToastText("登录成功 ");
-    setTimeout(() => {
-      uniWrapper.switchTabPage(ROUTE.TAB_HOME);
-    }, 1688);
+    uniWrapper.switchTabPage(ROUTE.TAB_HOME);
   }
   goPage(url: ROUTE) {
     uniWrapper.navigateToPage(url);
@@ -64,9 +61,8 @@ export default class LoginHome extends Super {
 
 <style lang="scss" scoped>
 .rww-container {
-  height: 100vh;
-  max-height: 100vh;
-  padding: 0 $s-md;
+  box-sizing: border-box;
+  padding: 0 $s-md $s-lg;
   background-color: #fff;
 }
 .login-tip {

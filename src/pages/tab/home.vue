@@ -1,39 +1,53 @@
 <template>
   <view class="rww-container">
     <!-- 头部区域 -->
-    <view class="home-head">
+    <view class="home-head" @click="goAuthPage('/pages/user/setting')">
       <image
         class="home-head__avatar"
         mode="aspectFill"
         src="https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2141623099,2896788564&fm=26&gp=0.jpg"
       />
       <view class="home-head__body">
-        <view class="home-head__nickname">
-          昵称
-          <view
-            class="home-head__level"
-            :class="{ 'home-head__level-vip': !userInfo.isVip }"
-          >
-            <uv-icon
-              name="gem"
-              custom-style="transform: translateY(1px); margin: 0 1px 0 8px;"
-            />
-            普通会员
+        <template v-if="userInfo.nickname">
+          <view class="home-head__nickname">
+            {{ userInfo.nickname }}
+            <view
+              class="home-head__level"
+              :class="{ 'home-head__level-vip': userInfo.isVip }"
+              @click.stop="goAuthPage('/pages/fund/vip')"
+            >
+              <uv-icon
+                name="gem"
+                custom-style="transform: translateY(1px); margin: 0 1px 0 8px;"
+              />
+              {{ userInfo.isVip ? "vip会员" : "普通会员" }}
+            </view>
           </view>
-        </view>
-        <view class="home-head__balance">
-          帐户余额: {{ userInfo.balance }}元
-        </view>
+          <view
+            class="home-head__balance"
+            @click.stop="goAuthPage('/pages/fund/balance')"
+          >
+            帐户余额: {{ userInfo.balance }}元
+          </view>
+        </template>
+        <uv-button
+          v-else
+          size="small"
+          custom-style="border-color: #ccc;"
+          round
+          @click="goPage('/pages/user/login-home')"
+          >登录/注册
+        </uv-button>
       </view>
     </view>
     <!-- 订单区域 -->
     <view class="home-order">
-      <view class="home-order__title"> 我的订单 </view>
+      <view class="home-order__title"> 我的订单</view>
       <view class="home-order__body">
         <view
           v-for="item in tabList"
           class="tab__item"
-          @click="goOrderList(item.status)"
+          @click="goAuthPage('/pages/order/list?status=' + item.status)"
         >
           <uv-icon :name="item.icon" :color="item.color" size="32" />
           {{ item.title }}
@@ -42,38 +56,40 @@
     </view>
     <!-- 快捷功能 -->
     <view class="home-quick">
-      <view class="home-order__title"> 快捷功能 </view>
+      <view class="home-order__title"> 快捷功能</view>
       <view class="home-quick__body">
-        <view class="tab__item" @click="goPage('/pages/address/list')">
+        <view class="tab__item" @click="goAuthPage('/pages/address/list')">
           <uv-icon name="smile-o" size="32" />
           售后信息
         </view>
-        <view class="tab__item" @click="goPage('/pages/address/list')">
+        <view class="tab__item" @click="goAuthPage('/pages/fund/list')">
           <uv-icon name="balance-list-o" size="32" />
           资金明细
         </view>
-        <view class="tab__item" @click="goPage('/pages/address/list')">
+        <view class="tab__item" @click="goAuthPage('/pages/address/list')">
           <uv-icon name="service-o" size="32" />
           联系客服
         </view>
-        <view class="tab__item" @click="goPage('/pages/address/list')">
+        <view class="tab__item" @click="goAuthPage('/pages/user/setting')">
           <uv-icon name="setting-o" size="32" />
           设置
         </view>
-        <view class="tab__item">
-          <uv-icon name="upgrade" size="32" />
+        <view v-if="userInfo.nickname" class="tab__item">
+          <uv-icon name="upgrade" size="32" @click="logout" />
           退出登录
         </view>
       </view>
     </view>
     <!-- 推荐商品 -->
     <view class="home-recommend">
-      <view class="home-recommend__title"> 热销推荐 </view>
+      <view class="home-recommend__title"> 热销推荐</view>
       <view class="home-recommend__body">
         <goods-card
           :list="goodsList"
           @click-item="goPage('/pages/goods/detail?goodsId=' + $event.goodsId)"
-          @click-btn="goPage('/pages/order/index?goodsId=' + $event.goodsId)"
+          @click-btn="
+            goAuthPage('/pages/order/index?goodsId=' + $event.goodsId)
+          "
         />
       </view>
     </view>
@@ -86,7 +102,7 @@ import Component from "vue-class-component";
 import GoodsCard from "@/components/goods-card.vue";
 import { user } from "@/api/user";
 import { uniWrapper } from "@/assets/js/uni-wrapper";
-import { ROUTE } from "@/assets/constant/common";
+import { ROUTE, STORAGE_KEY } from "@/assets/constant/common";
 import { goods } from "@/api/goods";
 
 @Component({
@@ -114,19 +130,25 @@ export default class LoginHome extends Vue {
       icon: "credit-pay",
       color: "#004b44",
       title: "待出库",
-      status: -1,
+      status: 2,
     },
     {
       icon: "debit-pay",
       color: "#7f2b11",
-      title: "已完成",
-      status: -1,
+      title: "待揽件",
+      status: 3,
     },
   ];
 
   onLoad() {
-    this.getUserInfo();
     this.getGoodsRecommend();
+  }
+
+  onShow() {
+    console.log(uni.getStorageSync("uni_id_token"));
+    if (uni.getStorageSync("uni_id_token")) {
+      this.getUserInfo();
+    }
   }
 
   /**
@@ -144,7 +166,7 @@ export default class LoginHome extends Vue {
    * 订单页面
    */
   goOrderList(status: number) {
-    uniWrapper.switchTabPage(`${ROUTE.ORDER_LIST}?status=${status}`);
+    uniWrapper.navigateToPage(`${ROUTE.ORDER_LIST}?status=${status}`);
   }
 
   /**
@@ -162,8 +184,27 @@ export default class LoginHome extends Vue {
   /**
    * 前往商品详情
    */
+  goAuthPage(url: string) {
+    if (this.userInfo.nickname) {
+      uniWrapper.navigateToPage(url);
+    } else {
+      uniWrapper.navigateToPage(ROUTE.USER_LOGIN_HOME);
+    }
+  }
   goPage(url: string) {
     uniWrapper.navigateToPage(url);
+  }
+  /**
+   * 退出登录
+   */
+  async logout() {
+    const [err] = await user.logout();
+    if (err) {
+      return;
+    }
+    uni.setStorageSync(STORAGE_KEY.UNI_ID_TOKEN, "");
+    this.userInfo = Object();
+    uniWrapper.switchTabPage(ROUTE.TAB_CATEGORY);
   }
 }
 </script>
@@ -236,6 +277,7 @@ export default class LoginHome extends Vue {
 .home-quick {
   background-color: #fff;
 }
+
 .home-quick__body {
   @include flex-row;
   padding: $s-sm;
@@ -246,10 +288,11 @@ export default class LoginHome extends Vue {
 /* 推荐商品 */
 .home-recommend {
   margin: $s-sm 0;
-}
-.home-recommend__title {
-  padding: $s-sm;
-  background-color: #fff;
-  font-size: $fz-lg;
+
+  &__title {
+    padding: $s-sm;
+    background-color: #fff;
+    font-size: $fz-lg;
+  }
 }
 </style>
