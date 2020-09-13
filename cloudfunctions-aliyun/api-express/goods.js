@@ -53,6 +53,9 @@ module.exports = class Goods {
     entity.spId = this.spId;
     entity.sort = 0;
     entity.updateTime = Date.now();
+    if (typeof entity.goodsCostPrice === "string") {
+      entity.goodsCostPrice = +entity.goodsCostPrice * 100;
+    }
     uniCloud.logger.log("合并商品实体数据-出参", entity);
     return entity;
   }

@@ -58,6 +58,16 @@ class Address {
       action: "customer-address/getDefault",
     });
   }
+  /**
+   * 查询默认地址
+   * @param data
+   */
+  resolveAddress<T = { addressStr: "" }>(data: T) {
+    return requestAddress.start<T, Array<address.IAddressItem>>({
+      data,
+      action: "customer-address/resolveAddress",
+    });
+  }
 }
 
 export const address = new Address();

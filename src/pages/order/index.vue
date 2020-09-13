@@ -63,10 +63,11 @@
         实付款: <uv-price :amount="computedGoodsAmount" size="8" />
       </view>
       <uv-button
-        custom-class="theme-style__button"
-        custom-style="border-radius: 0 !important;border-width: 0 !important;margin: 0;"
         :disabled="isDisablePayBtn"
         :loading="isDisablePayBtn"
+        size="large"
+        custom-class="theme-style__button"
+        custom-style="border-width: 0 !important; margin-left: 2em;  flex-grow: 1; min-width: 8em !important;"
         @click="submit"
       >
         确认订单
@@ -76,9 +77,11 @@
     <address-add
       v-show="isShowAddressAdd"
       :city-info="cityInfo"
+      is-show-auto
       @click-city="$refs.simpleAddress.open()"
       @close="isShowAddressAdd = false"
       @submit="handleSubmit"
+      @submit-auto="handleSubmitAuto"
     />
     <!-- 省市区 -->
     <simple-address
@@ -104,6 +107,7 @@ import SimpleAddress from "simple-address";
 import AddressAdd from "@/components/address-add.vue";
 import { address } from "@/api/address";
 import { order } from "@/api/order";
+import IAddressItem = address.IAddressItem;
 
 @Component({
   components: {
@@ -188,6 +192,13 @@ export default class LoginHome extends Vue {
    */
   handleSubmit(item: address.IAddressItem) {
     this.addressList.push(item);
+    this.isShowAddressAdd = false;
+  }
+  /**
+   * 智能解析金条地址
+   */
+  handleSubmitAuto(addressList: Array<address.IAddressItem>) {
+    this.addressList = this.addressList.concat(addressList);
     this.isShowAddressAdd = false;
   }
   /**
@@ -282,10 +293,10 @@ export default class LoginHome extends Vue {
   @include bd-hairline-top;
   @include fixed-bottom(0);
   justify-content: space-between;
+  padding: $s-sm $s-sm $s-xl;
   background-color: #fff;
 
   &__amount {
-    flex-grow: 1;
     text-align: center;
   }
 }

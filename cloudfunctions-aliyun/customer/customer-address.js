@@ -213,6 +213,7 @@ module.exports = class AgentAddress {
    * 智能解析收货地址
    */
   async resolveAddress(option) {
+    uniCloud.logger.log("智能解析收货地址-入参", option);
     const appId = "100687";
     const method = "cloud.address.resolve";
     const ts = Date.now();
@@ -223,11 +224,11 @@ module.exports = class AgentAddress {
     const h = crypto.createHash("md5");
     h.update(signStr);
     const sign = h.digest("hex");
-    const data = JSON.stringify({
+    const param = JSON.stringify({
       text: option.addressStr,
       multimode: true,
     });
-    return await request({
+    let [err, data] = await request({
       url: "https://kop.kuaidihelp.com/api",
       method: "POST",
       contentType: "application/x-www-form-urlencoded",
@@ -237,9 +238,25 @@ module.exports = class AgentAddress {
         method: method,
         ts: ts,
         sign: sign,
-        data,
+        data: param,
       },
     });
+    if (err) {
+      uniCloud.logger.log("智能解析收货地址异常-报错", err);
+      return new ResponseModal(500, err, "服务器异常");
+    } else {
+      data = data.map((ele) => ({
+        name: ele.name,
+        mobile: ele.mobile,
+        provinceName: ele.province_name,
+        cityName: ele.city_name,
+        areaName: ele.county_name,
+        address: ele.detail,
+        formattedAddress: ele.original,
+        isDefault: false,
+      }));
+      return new ResponseModal(0, data, "解析成功");
+    }
   }
   /**
    * 加工查询数据

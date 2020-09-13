@@ -9,28 +9,22 @@ exports.main = async (event, context) => {
     "agent-goods": AgentGoods,
   };
   if (!action) {
-    return {
-      code: 404,
-      msg: "未找到访问的接口",
-    };
+    return { code: 404, msg: "未找到访问的接口" };
   }
   const [instanceKey, method] = action.split("/");
-  const instance = new instanceMap[instanceKey](APPID, uniIdToken);
+  const instance = new instanceMap[instanceKey](
+    APPID || data.appId,
+    uniIdToken
+  );
   // await instance.removeAll();
   // await instance.syncInfo(APPID);
   if (!instance || !instance[method]) {
-    return {
-      code: 404,
-      msg: "未找到访问的接口2",
-    };
+    return { code: 404, msg: "未找到访问的接口2" };
   }
   if (instance.checkToken) {
     const res = await instance.checkToken();
     if (res.code !== 0) {
-      return {
-        code: 401,
-        msg: "请登录后访问",
-      };
+      return { code: 401, msg: "请登录后访问" };
     }
   }
   return await instance[method](data, APPID, event, context);

@@ -38,7 +38,7 @@
         custom-class="theme-style__button"
         @click="handleAddClick"
       >
-        添加收货地址
+        添加售后信息
       </uv-button>
     </view>
     <!-- 添加地址弹框 -->
@@ -46,6 +46,7 @@
       v-show="isShowAddressAdd"
       :address-info="currentAddress"
       :city-info="cityInfo"
+      title="添加售后信息"
       @click-city="$refs.simpleAddress.open()"
       @close="isShowAddressAdd = false"
       @submit="handleSubmit"

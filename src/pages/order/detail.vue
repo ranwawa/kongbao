@@ -29,7 +29,7 @@
       </view>
       <view
         v-for="(item, index) in orderInfo.addressInfo"
-        :key="item.formattedAddress"
+        :key="index"
         class="od-address__item"
       >
         <view class="od-address__label" :data-index="index">

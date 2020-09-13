@@ -55,7 +55,12 @@
         <uv-icon name="phone" />
         分享好友
       </view>
-      <uv-button @click="submit">立即购买</uv-button>
+      <uv-button
+        size="large"
+        custom-style="min-width: 8em !important;"
+        @click="submit"
+        >立即购买</uv-button
+      >
     </view>
   </view>
 </template>
@@ -123,7 +128,7 @@ export default class LoginHome extends Vue {
   &__row {
     @include flex-row;
     align-items: flex-end;
-    padding: 0 $s-sm;
+    padding: $s-xs $s-sm 0;
     color: $c-light;
     font-size: $fz-sm;
   }
@@ -151,7 +156,7 @@ export default class LoginHome extends Vue {
   @include flex-row;
   @include bd-hairline-top;
   @include fixed-bottom;
-  padding: $s-sm 0 $s-xs;
+  padding: $s-sm 0 $s-lg;
   background-color: #fff;
   &__service {
     @include flex-column;

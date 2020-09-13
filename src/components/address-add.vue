@@ -1,20 +1,31 @@
 <template>
-  <view class="address-add">
+  <view class="address-add" @touchstart.stop @touchmove.stop>
     <!-- 遮罩 -->
     <view class="address-add__mask" @click="$emit('close')"></view>
     <view class="address-add__wrapper">
       <!-- 标题  -->
       <view class="address-add__head">
-        <text class="address-add__title"> 添加收货地址 </text>
+        <text class="address-add__title">
+          {{ title }}
+        </text>
         <uv-icon
           name="close"
           size="18"
           custom-style="float: right;padding: 8rpx 24rpx 0 0;"
           @click="$emit('close')"
-        ></uv-icon>
+        />
       </view>
       <!-- 主体 -->
-      <view class="address-add__body">
+      <view v-if="isAuto" class="address-add__body">
+        <uv-field
+          v-model="addressStr"
+          class="address-add__textarea"
+          type="textarea"
+          placeholder="请将收货地址粘贴于此,每行一条"
+          autosize
+        />
+      </view>
+      <view v-else class="address-add__body">
         <uv-field
           v-model="formData.name"
           :maxlength="16"
@@ -52,12 +63,25 @@
         />
       </view>
       <!-- 底部按钮 -->
-      <view class="address-add__foot">
+      <view
+        :class="{ 'address-add__foot-between': isShowAuto }"
+        class="address-add__foot"
+      >
         <uv-button
+          v-if="isShowAuto"
+          custom-style="border-color: #eee; margin-right: 8px;"
+          round
+          @click="isAuto = !isAuto"
+        >
+          {{ isAuto ? "手动添加" : "智能识别" }}
+        </uv-button>
+        <uv-button
+          :disabled="isDisableSubmit"
+          :loading="isDisableSubmit"
           custom-class="theme-style__button"
-          size="large"
           @click="submit"
-          >保存
+        >
+          保存
         </uv-button>
       </view>
     </view>
@@ -69,9 +93,14 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { uniWrapper } from "@/assets/js/uni-wrapper";
 import { cellPhoneReg, userNameReg } from "@/assets/js/regular";
+import { address } from "@/api/address";
 
 @Component({
   props: {
+    title: {
+      type: String,
+      default: "添加收货地址",
+    },
     cityInfo: {
       type: String,
       default: "请点击选择省市区",
@@ -79,6 +108,10 @@ import { cellPhoneReg, userNameReg } from "@/assets/js/regular";
     addressInfo: {
       type: Object,
       default: Object,
+    },
+    isShowAuto: {
+      type: Boolean,
+      default: false,
     },
   },
   watch: {
@@ -98,9 +131,15 @@ import { cellPhoneReg, userNameReg } from "@/assets/js/regular";
 })
 export default class LoginHome extends Vue {
   [x: string]: any;
-  formData: address.IAddressItem = Object();
+  isAuto: boolean = false; // 是否为智能识别模式
+  isDisableSubmit: boolean = false; // 是否禁用保存按钮
+  formData: address.IAddressItem = Object(); // 手动添加的表单数据
+  addressStr: string = ""; // 智能识别的地址信息
 
-  submit() {
+  /**
+   * 手动添加
+   */
+  submitLabour() {
     const { _id, name, mobile, address } = this.formData;
     if (!name || !userNameReg.test(name)) {
       uniWrapper.showToastText("请填写正确的姓名");
@@ -131,6 +170,38 @@ export default class LoginHome extends Vue {
       formattedAddress: `${name},${mobile} ${provinceName}${cityName}${areaName}${address}`,
       isDefault: false,
     });
+  }
+
+  /**
+   * 智能识别
+   */
+  async submitAuto() {
+    if (this.addressStr.length < 10) {
+      uniWrapper.showToastText("请填写正确的收货信息");
+      this.isDisableSubmit = false;
+      return;
+    }
+    if (this.addressStr.split("\n").length > 168) {
+      uniWrapper.showToastText("一次最多添加168条收货地址");
+      this.isDisableSubmit = false;
+      return;
+    }
+    const [err, data] = await address.resolveAddress({
+      addressStr: this.addressStr,
+    });
+    this.isDisableSubmit = false;
+    if (err || !data?.length) {
+      return;
+    }
+    this.$emit("submit-auto", data);
+  }
+
+  /**
+   * 可在
+   */
+  submit() {
+    this.isDisableSubmit = true;
+    this.isAuto ? this.submitAuto() : this.submitLabour();
   }
 }
 </script>
@@ -170,9 +241,34 @@ export default class LoginHome extends Vue {
     padding-right: $s-sm;
   }
 
+  &__textarea {
+    height: 18em;
+
+    /deep/ .uni-textarea-textarea {
+      height: 18em;
+      max-height: 18em;
+      overflow: auto !important;
+    }
+
+    .uni-textarea-placeholder {
+      overflow: visible;
+    }
+  }
+
   &__foot {
+    @include flex-row;
+    justify-content: center;
     text-align: center;
     margin: $s-lg;
+
+    &-between {
+      justify-content: space-between;
+    }
+    /deep/ .uv-btn {
+      width: 100%;
+      padding: 0;
+      margin: 0;
+    }
   }
 }
 </style>

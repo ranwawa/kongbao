@@ -51,16 +51,16 @@ module.exports = class AgentGoods {
       .aggregate()
       .match({
         appId: this.appId,
-        _id: dbCmd.exists(true),
+        isEnable: true,
       })
       .lookup({
         from: "kb-sp-goods",
         localField: "spGoodsId",
         foreignField: "_id",
-        as: "spGoodsInfo",
+        as: "spGoodsInfoList",
       })
-      .unwind({
-        path: "$spGoodsInfo",
+      .addFields({
+        spGoodsInfo: $.arrayElemAt(["$spGoodsInfoList", 0]),
       })
       .match({
         "spGoodsInfo.storeCode": param.storeCode,
@@ -68,42 +68,28 @@ module.exports = class AgentGoods {
         "spGoodsInfo.isEnable": true,
       })
       .project({
-        createTime: false,
-        updateTime: false,
-        isEnable: false,
-        sort: false,
-        goodsId: false,
-        expressCostPrice: false,
-        goodsCostPrice: false,
-        "spGoodsInfo._id": false,
-        "spGoodsInfo.price": false,
-        "spGoodsInfo.spId": false,
-        "spGoodsInfo.sort": false,
-        "spGoodsInfo.updateTime": false,
-        "spGoodsInfo.createTime": false,
-        "spGoodsInfo.isDeleted": false,
-        "spGoodsInfo.isEnable": false,
-        "spGoodsInfo.thirdObj": false,
+        showPrice: true,
+        salePriceVip: true,
+        salePriceNormal: true,
+        spGoodsInfo: true,
+        goodsId: "$_id",
+        imgList: "$spGoodsInfo.imgList",
+        expressName: "$spGoodsInfo.expressName",
+        goodsName: "$spGoodsInfo.goodsName",
+        sales: "$spGoodsInfo.sales",
       })
       .project({
-        goodsInfo: $.mergeObjects(["$$ROOT", "$spGoodsInfo"]),
-      })
-      .project({
+        _id: false,
         spGoodsInfo: false,
-      })
-      .replaceRoot({
-        newRoot: "$goodsInfo",
       })
       .skip((currentPage - 1) * pageSize)
       .limit(pageSize)
       .end();
-    uniCloud.logger.log("查询某个代理的所有商品信息-出参", res);
-    let data = res.affectedDocs ? res.data : [];
-    data = data.map((ele) => {
+    res.data = res.data.map((ele) => {
       ele.sales > 9999 && (ele.sales = `${(ele.sales / 10000).toFixed(1)}w`);
       return ele;
     });
-    return new ResponseModal(0, data);
+    return this.processResponseData(res, "查询推荐商品", false);
   }
   /**
    * 根据商品ID查询商品信息
@@ -217,6 +203,7 @@ module.exports = class AgentGoods {
     uniCloud.logger.log("新增代理商品-出参", res);
     return res.inserted ? res.ids : [];
   }
+
   async syncInfo() {
     // 查询所有可用的供应商商品
     // 计算代理成本价 = 供应商成本价 + 0.1
@@ -226,12 +213,8 @@ module.exports = class AgentGoods {
     const now = Date.now();
     const agGoodsList = spGoodsList.map((ele) => {
       let { goodsCostPrice, expressCostPrice } = ele;
-      goodsCostPrice = +goodsCostPrice;
-      expressCostPrice = +expressCostPrice;
-      const costPrice = goodsCostPrice + expressCostPrice + 0.1;
-      ele.costPrice = ele.salePriceNormal = ele.salePriceVip = ele.showPrice = costPrice.toFixed(
-        2
-      );
+      const costPrice = goodsCostPrice + expressCostPrice + 10;
+      ele.costPrice = ele.salePriceNormal = ele.salePriceVip = ele.showPrice = costPrice;
       ele.isEnable = true;
       ele.sort = 0;
       ele.createTime = ele.updateTime = now;

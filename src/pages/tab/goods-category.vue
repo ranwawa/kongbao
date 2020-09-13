@@ -121,6 +121,7 @@ export default class LoginHome extends Vue {
    * 前往商品详情
    */
   goDetail(item: goods.IGoodsItem) {
+    console.log(123123123, item);
     uniWrapper.navigateToPage(`${ROUTE.GOODS_DETAIL}?goodsId=${item.goodsId}`);
   }
 

@@ -68,6 +68,10 @@ module.exports = class Store {
     entity._id = md5(`${this.spId}-${entity.storeCode}`);
     entity.sort = 0;
     entity.updateTime = Date.now();
+    // 将金额转换成分为单位的
+    if (typeof entity.expressCostPrice === "string") {
+      entity.expressCostPrice = +entity.expressCostPrice * 100;
+    }
     uniCloud.logger.log("合并仓库实体数据-出参", entity);
     return entity;
   }

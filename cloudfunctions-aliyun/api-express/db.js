@@ -11,6 +11,7 @@ const colSpGoods = db.collection("kb-sp-goods");
 // 代理商品表
 const colAgGoods = db.collection("kb-ag-goods");
 const colModelMap = db.collection("kb-model-map");
+const colCsOrder = db.collection("kb-cs-order");
 
 module.exports = {
   dbCmd,
@@ -19,4 +20,5 @@ module.exports = {
   colSpGoods,
   colAgGoods,
   colModelMap,
+  colCsOrder,
 };

@@ -8,8 +8,11 @@ const {
   dbCmd,
 } = require("./db");
 const { ResponseModal, request } = require("api");
-const _ = require("lodash");
 const uniID = require("uni-id");
+const md5 = require("md5");
+function isId(id) {
+  return typeof id === "string" && id.length === 32;
+}
 module.exports = class Order {
   constructor(appId, uniIdToken) {
     this.uniIdToken = uniIdToken;
@@ -20,28 +23,33 @@ module.exports = class Order {
    */
   async add(option = {}) {
     uniCloud.logger.log("添加一个订单-入参", option);
-    // 处理商品信息
-    // 创建订单
-    const goodsResult = await this.getGoodsInfo(option.goodsInfo);
-    if (!goodsResult) {
-      return new ResponseModal(400, {}, "商品数据数据异常");
+    const { goodsInfo = {}, serviceInfo = {}, addressInfo = [] } = option;
+    if (!isId(goodsInfo.goodsId)) {
+      return new ResponseModal(400, {}, "该商品已下架");
     }
-    const { csGoodsInfo } = goodsResult;
-    const { serviceInfo = {}, addressInfo = [] } = option;
-    const { length = 0 } = addressInfo;
-    if (typeof length !== "number" || length < 1) {
+    if (!Array.isArray(addressInfo) || addressInfo.length < 1) {
       return new ResponseModal(400, {}, "请填写收货地址");
     }
+    // 处理商品信息
+    // 创建订单
+    const goodsResult = await this.getGoodsInfo(goodsInfo);
+    if (!goodsResult.length) {
+      return new ResponseModal(400, {}, "商品数据异常");
+    }
+    const { csGoodsInfo, spGoodsInfo, spStoreInfo } = goodsResult[0];
+    const { length = 0 } = addressInfo;
     // 根据用户身份取成交价
     const dealPrice = +(this.isVip
       ? csGoodsInfo.salePriceVip
       : csGoodsInfo.salePriceNormal);
-    const customerAmount = dealPrice * 100 * length; // 用户成交价
-    const agentAmount = +csGoodsInfo.costPrice * 100 * length; // 分站成交价
+    const customerAmount = dealPrice * length; // 用户成交价
+    const agentAmount = +csGoodsInfo.costPrice * length; // 分站成交价
     const addRes = await this.addOrder(customerAmount, agentAmount, {
       serviceInfo,
       addressInfo,
-      ...goodsResult,
+      csGoodsInfo,
+      spGoodsInfo,
+      spStoreInfo,
     });
     if (!addRes) {
       return new ResponseModal(400, {}, "创建订单失败,请稍后再试");
@@ -62,51 +70,32 @@ module.exports = class Order {
     // 更新订单表
     const { orderId } = option;
     uniCloud.logger.log("支付订单-入参", option);
-    if (!orderId) {
+    if (!isId(orderId)) {
       return new ResponseModal(400, "订单信息有误");
     }
-    const orderRes = await colCsOrder
-      .where({
-        appId: this.appId,
-        userId: this.userId,
-        _id: orderId,
-        status: 1,
-        isDelete: false,
-      })
-      .field({
-        _id: true,
-        csAmount: true,
-        agAmount: true,
-        csGoodsInfo: true,
-        serviceInfo: true,
-        addressInfo: true,
-      })
-      .limit(1)
-      .get();
-    uniCloud.logger.log("支付订单,查询订单信息-出参", orderRes);
-    if (orderRes.affectedDocs < 1) {
+    const orderInfo = await this.getSingleComplete(orderId);
+    if (!orderInfo || !orderInfo._id) {
       return new ResponseModal(400, "订单信息有误");
     }
-    const {
-      data: [orderData],
-    } = orderRes;
-    const balanceCustomer = await this.getCustomerBalance(orderData.csAmount);
+    const balanceCustomer = await this.getCustomerBalance(orderInfo.csAmount);
     if (balanceCustomer < 0) {
       return new ResponseModal(400, {}, "帐户余额告急,请充值");
     }
-    const balanceAgent = await this.getAgentBalance(orderData.agAmount);
+    const balanceAgent = await this.getAgentBalance(orderInfo.agAmount);
     if (balanceAgent < 0) {
       return new ResponseModal(400, {}, "库存告急,请联系管理员");
     }
     const updateRes = await this.updateBalance(
-      orderData,
+      orderInfo,
       balanceCustomer,
       balanceAgent
     );
     if (!updateRes) {
       return new ResponseModal(400, {}, "支付失败,请稍后再试");
     }
-    this.buyOne(orderData);
+    orderInfo.addressInfo.length > 1
+      ? this.buyMore(orderInfo)
+      : this.buyOne(orderInfo);
     return new ResponseModal(0, {});
   }
   /**
@@ -121,11 +110,13 @@ module.exports = class Order {
         userId: this.userId,
       })
       .orderBy("createTime", "desc")
+      .field({
+        balance: true,
+      })
       .limit(1)
       .get();
     uniCloud.logger.log("查询用户余额-出参", res);
-    const { data } = res;
-    const [{ balance = 0 }] = data;
+    const balance = res.data[0] ? res.data[0].balance : 0;
     return balance - goodsAmount;
   }
   /**
@@ -139,25 +130,34 @@ module.exports = class Order {
         appId: this.appId,
       })
       .orderBy("createTime", "desc")
+      .field({
+        balance: true,
+      })
       .limit(1)
       .get();
     uniCloud.logger.log("查询分站余额-出参", res);
-    const { data } = res;
-    const [{ balance = 0 }] = data;
+    const balance = res.data[0] ? res.data[0].balance : 0;
     return balance - goodsAmount;
   }
   /**
    * 添加订单
    */
   async addOrder(csAmount, agAmount, orderInfo) {
+    const now = Date.now();
+    const orderId = md5(`${this.appId}${this.userId}${csAmount}${now}`);
+    orderInfo.addressInfo = orderInfo.addressInfo.map((ele, index) => ({
+      ...ele,
+      addressId: md5(`${orderId}${index}`),
+    }));
     const res = await colCsOrder.add({
-      ...orderInfo,
-      appId: this.appId,
-      userId: this.userId,
       csAmount,
       agAmount,
+      ...orderInfo,
+      _id: orderId,
+      appId: this.appId,
+      userId: this.userId,
       isDelete: false,
-      createTime: Date.now(),
+      createTime: now,
       status: 1, // 1已创建,待支付 2,已支付,待提交到供应商 3,已提交到供应,待供应商响应(待收货) 5,
       // 已收货,待发货(出物流纪录)
     });
@@ -256,6 +256,31 @@ module.exports = class Order {
     return this.processResponseData(res, "查询单条订单", true);
   }
   /**
+   * 查询完整的订单信息
+   */
+  async getSingleComplete(orderId) {
+    const orderRes = await colCsOrder
+      .where({
+        appId: this.appId,
+        userId: this.userId,
+        _id: orderId,
+        status: 1,
+        isDelete: false,
+      })
+      .field({
+        _id: true,
+        csAmount: true,
+        agAmount: true,
+        csGoodsInfo: true,
+        serviceInfo: true,
+        addressInfo: true,
+      })
+      .limit(1)
+      .get();
+    uniCloud.logger.log("支付订单,查询订单信息-出参", orderRes);
+    return orderRes.data[0];
+  }
+  /**
    * 根据分类查询订单
    * @param option
    */
@@ -298,44 +323,83 @@ module.exports = class Order {
       .end();
     return this.processResponseData(res, "根据分类查询订单");
   }
-
+  /**
+   * 加工传递给供应商的订单信息
+   */
+  getPostData(csGoodsInfo, addressInfoItem, serviceInfo) {
+    return {
+      storehouseCode: csGoodsInfo.storeCode,
+      goodsCode: csGoodsInfo.goodsCode,
+      minSingleGoodsWeight: csGoodsInfo.min || 0.6,
+      maxSingleGoodsWeight: csGoodsInfo.max || 0.8,
+      receiver: addressInfoItem.name,
+      receiverPhone: addressInfoItem.mobile,
+      receiverProvinceName: addressInfoItem.provinceName,
+      receiverCityName: addressInfoItem.cityName,
+      receiverAreaName: addressInfoItem.areaName,
+      receiverAddress: addressInfoItem.address,
+      thirdOrderNo: addressInfoItem.addressId,
+      goodsNum: 1,
+      shipperName: serviceInfo.name,
+      shipperPhone: serviceInfo.mobile,
+    };
+  }
+  /**
+   * 多条地址异步下单
+   */
+  async buyMore(orderInfo) {
+    const { csGoodsInfo, serviceInfo, addressInfo } = orderInfo;
+    const orderId = orderInfo._id;
+    const param = {
+      accessToken: this.accessToken,
+      datas: JSON.stringify(
+        addressInfo.map((ele) =>
+          this.getPostData(csGoodsInfo, ele, serviceInfo)
+        )
+      ),
+    };
+    uniCloud.logger.log("多条地址异步下单-入参", param);
+    const [err, res] = await request({
+      url: "http://www.alihuocang.com/api/createOrder/merchantCreateOrderList",
+      method: "POST",
+      data: param,
+    });
+    uniCloud.logger.log("多条地址异步下单-出参", [err, res]);
+    if (err || res.length < 1) {
+      return;
+    }
+    const res2 = await colCsOrder.doc(orderId).update({
+      batchNo: res[0].batchNo,
+      spAmount: +res.amount * 100,
+      status: 3,
+      spBuyTime: Date.now(),
+    });
+    uniCloud.logger.log("多条地址异步下单成功,更新订单状态-出参", res2);
+    return res2.updated;
+  }
   /**
    * 单条同步下单
-   * @returns {Promise<void>}
    */
   async buyOne(orderInfo) {
     const { csGoodsInfo, serviceInfo, addressInfo } = orderInfo;
     const [addressInfoOne] = addressInfo;
     const orderId = orderInfo._id;
-    const data = {
-      accessToken: this.accessToken,
-      storehouseCode: csGoodsInfo.storeCode,
-      goodsCode: csGoodsInfo.goodsCode,
-      minSingleGoodsWeight: csGoodsInfo.min,
-      maxSingleGoodsWeight: csGoodsInfo.max,
-      receiver: addressInfoOne.name,
-      receiverPhone: addressInfoOne.mobile,
-      receiverProvinceName: addressInfoOne.provinceName,
-      receiverCityName: addressInfoOne.cityName,
-      receiverAreaName: addressInfoOne.areaName,
-      receiverAddress: addressInfoOne.address,
-      thirdOrderNo: orderId,
-      goodsNum: 1,
-      shipperName: serviceInfo.name,
-      shipperPhone: serviceInfo.mobile,
-    };
-    uniCloud.logger.log("单条同步下单-入参", data);
+    const param = this.getPostData(csGoodsInfo, addressInfoOne, serviceInfo);
+    uniCloud.logger.log("单条同步下单-入参", param);
     const [err, res] = await request({
       url: "http://www.alihuocang.com/api/createOrder/merchantCreateOrder",
       method: "POST",
-      data,
+      data: {
+        accessToken: this.accessToken,
+        ...param,
+      },
     });
     uniCloud.logger.log("单条同步下单-出参", [err, res]);
     if (err) {
       return;
     }
     const res2 = await colCsOrder.doc(orderId).update({
-      remark: "供应商单号:" + res.recordId,
+      addressInfo: [addressInfoOne],
       spAmount: +res.amount * 100,
       status: 3,
       spBuyTime: Date.now(),
@@ -346,68 +410,53 @@ module.exports = class Order {
   /**
    * 获取商品的完整信息,用来做快照
    */
-  async getGoodsInfo(option) {
-    if (!option._id) return;
+  async getGoodsInfo(options) {
     const res = await colAgGoods
       .aggregate()
       .match({
-        _id: option._id,
+        _id: options.goodsId,
+        appId: this.appId,
+        isEnable: true,
       })
       .lookup({
         from: "kb-sp-goods",
         localField: "spGoodsId",
         foreignField: "_id",
-        as: "spGoodsInfo",
+        as: "spGoodsInfoList",
+      })
+      .addFields({
+        spGoodsInfo: $.arrayElemAt(["$spGoodsInfoList", 0]),
       })
       .lookup({
         from: "kb-sp-stores",
         localField: "spGoodsInfo.storeId",
         foreignField: "_id",
-        as: "spStoreInfo",
+        as: "spStoreInfoList",
+      })
+      .addFields({
+        spStoreInfo: $.arrayElemAt(["$spStoreInfoList", 0]),
+      })
+      .replaceRoot({
+        newRoot: {
+          csGoodsInfo: {
+            goodsId: "$_id",
+            spGoodsId: "$spGoodsId",
+            expressCostPrice: "$expressCostPrice",
+            goodsCostPrice: "$goodsCostPrice",
+            costPrice: "$costPrice",
+            isEnable: "$isEnable",
+            salePriceVip: "$salePriceVip",
+            salePriceNormal: "$salePriceNormal",
+            storeCode: "$spGoodsInfo.storeCode",
+            goodsCode: "$goodsCode",
+          },
+          spGoodsInfo: "$spGoodsInfo",
+          spStoreInfo: "$spStoreInfo",
+        },
       })
       .end();
-    uniCloud.logger.log("获取商品的完整信息-出参", res);
-    const { affectedDocs, data } = res;
-    const [goodsInfo] = data;
-    if (affectedDocs !== 1) {
-      uniCloud.logger.log(
-        "加工添加订单的请求参数",
-        "商品信息异常,一个商品id必须要对应一个商品的"
-      );
-      return;
-    }
-    const [spGoodsInfo] = goodsInfo.spGoodsInfo;
-    const [spStoreInfo] = goodsInfo.spStoreInfo;
-    if (!spGoodsInfo || !spStoreInfo) {
-      uniCloud.logger.log(
-        "加工添加订单的请求参数",
-        "商品信息异常,商品必须对应供应商商品和仓库信息"
-      );
-      return;
-    }
-    // 只有vip才可以自定义重量
-    goodsInfo.min = this.isVip ? goodsInfo.minWeight || 0.6 : 0.6;
-    goodsInfo.max = this.isVip ? goodsInfo.maxWeight || 0.8 : 0.8;
-    goodsInfo.storeCode = spGoodsInfo.storeCode;
-    goodsInfo.goodsCode = spGoodsInfo.goodsCode;
-    return {
-      spGoodsInfo,
-      spStoreInfo,
-      csGoodsInfo: _.pick(goodsInfo, [
-        "_id",
-        "spGoodsId",
-        "expressCostPrice",
-        "goodsCostPrice",
-        "costPrice",
-        "isEnable",
-        "salePriceVip",
-        "salePriceNormal",
-        "min",
-        "max",
-        "storeCode",
-        "goodsCode",
-      ]),
-    };
+    uniCloud.logger.log("查询完整商品信息-出参", res);
+    return res.data;
   }
   /**
    * 加工查询数据

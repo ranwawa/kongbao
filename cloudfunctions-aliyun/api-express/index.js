@@ -1,6 +1,7 @@
 "use strict";
 const Store = require("./store");
 const Goods = require("./goods");
+const { colCsOrder } = require("./db");
 const ModelMap = require("./model-map");
 const instanceMap = {
   store: Store,
@@ -50,8 +51,43 @@ async function clockedTask() {
   }
 }
 exports.main = async (event, context) => {
-  const { action, data } = event;
+  const { action, data, path, body } = event;
   const { APPID } = context;
+  // 批量下单回调
+  if (path === "/cb/alihuocang") {
+    uniCloud.logger.log("阿里货仓回调-入参", body);
+    const newBody = JSON.parse(decodeURIComponent(body).split("=")[1] || []);
+    if (!Array.isArray(newBody) || newBody.length < 1) {
+      return;
+    }
+    console.log(newBody);
+    const res = await colCsOrder
+      .where({
+        batchNo: newBody[0].batchNo,
+      })
+      .field({ addressInfo: true })
+      .get();
+    uniCloud.logger.log("阿里货仓回调,查询订单-出参", res);
+    if (res.data.length < 1) {
+      return;
+    }
+    const { _id, addressInfo } = res.data[0];
+    const addressInfoNew = addressInfo.map((ele) => {
+      const addressItem = newBody.find(
+        (item) => item.thirdOrderNo === ele.addressId
+      );
+      return {
+        ...ele,
+        recordId: addressItem.recordId,
+        spAmount: addressItem.amount,
+      };
+    });
+    const res2 = await colCsOrder.doc(_id).update({
+      addressInfo: addressInfoNew,
+    });
+    uniCloud.logger.log("阿里货仓回调,查询订单-出参", res2);
+    return;
+  }
   // const goods = new Goods();
   // const store = new Store();
   // await store.removeAll();
