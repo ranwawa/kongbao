@@ -55,37 +55,7 @@ exports.main = async (event, context) => {
   const { APPID } = context;
   // 批量下单回调
   if (path === "/cb/alihuocang") {
-    uniCloud.logger.log("阿里货仓回调-入参", body);
-    const newBody = JSON.parse(decodeURIComponent(body).split("=")[1] || []);
-    if (!Array.isArray(newBody) || newBody.length < 1) {
-      return { success: false };
-    }
-    const res = await colCsOrder
-      .where({
-        batchNo: newBody[0].batchNo,
-      })
-      .field({ addressInfo: true })
-      .get();
-    uniCloud.logger.log("阿里货仓回调,查询订单-出参", res);
-    if (res.data.length < 1) {
-      return { success: false };
-    }
-    const { _id, addressInfo } = res.data[0];
-    const addressInfoNew = addressInfo.map((ele) => {
-      const addressItem = newBody.find(
-        (item) => item.thirdOrderNo === ele.addressId
-      );
-      return {
-        ...ele,
-        recordId: addressItem.recordId,
-        spAmount: addressItem.amount,
-      };
-    });
-    const res2 = await colCsOrder.doc(_id).update({
-      addressInfo: addressInfoNew,
-    });
-    uniCloud.logger.log("阿里货仓回调,查询订单-出参", res2);
-    return { success: true };
+
   }
   // const goods = new Goods();
   // const store = new Store();

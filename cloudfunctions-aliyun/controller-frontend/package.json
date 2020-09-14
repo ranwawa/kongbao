@@ -1,8 +1,7 @@
 {
-  "name": "api",
+  "name": "controller-frontend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "main": "customer-order.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "uni-id": "file:../uni-id"
-  }
+    "api": "file:../common/api"
+  },
+  "devDependencies": {},
+  "description": ""
 }
