@@ -58,9 +58,8 @@ exports.main = async (event, context) => {
     uniCloud.logger.log("阿里货仓回调-入参", body);
     const newBody = JSON.parse(decodeURIComponent(body).split("=")[1] || []);
     if (!Array.isArray(newBody) || newBody.length < 1) {
-      return;
+      return { success: false };
     }
-    console.log(newBody);
     const res = await colCsOrder
       .where({
         batchNo: newBody[0].batchNo,
@@ -69,7 +68,7 @@ exports.main = async (event, context) => {
       .get();
     uniCloud.logger.log("阿里货仓回调,查询订单-出参", res);
     if (res.data.length < 1) {
-      return;
+      return { success: false };
     }
     const { _id, addressInfo } = res.data[0];
     const addressInfoNew = addressInfo.map((ele) => {
@@ -86,7 +85,7 @@ exports.main = async (event, context) => {
       addressInfo: addressInfoNew,
     });
     uniCloud.logger.log("阿里货仓回调,查询订单-出参", res2);
-    return;
+    return { success: true };
   }
   // const goods = new Goods();
   // const store = new Store();

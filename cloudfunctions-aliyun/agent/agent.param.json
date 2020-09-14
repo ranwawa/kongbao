@@ -3,8 +3,9 @@
 // 配置教程参考：https://uniapp.dcloud.net.cn/uniCloud/quickstart?id=runparam
 
 {
-	"action": "agent-goods/getRecommend",
+	"action": "agent-goods/getList",
 	"data": {
+		"storeCode": "00004",
 		"goodsInfo": {
 			"_id": "02cf195a81d7f41664ca1d937e9c67d8"
 		}
