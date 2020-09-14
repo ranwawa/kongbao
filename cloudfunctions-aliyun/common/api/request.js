@@ -18,7 +18,7 @@ function handleResponseOK(data) {
 module.exports.request = async function (options) {
   const {
     url = "",
-    method = "GET",
+    method = "POST",
     data = {},
     contentType = "application/x-www-form-urlencoded",
   } = options;
@@ -30,10 +30,8 @@ module.exports.request = async function (options) {
   });
   switch (res.status) {
     case 200:
-      uniCloud.logger.info("第3方api正常响应", res.data);
       return handleResponseOK(res.data);
     default:
-      uniCloud.logger.error("第3方api异常响应", res);
       return [res, null];
   }
 };

@@ -1,7 +1,8 @@
-const db = require('./db');
+const db = require("./db");
 const uniID = require("uni-id");
-const { request } = require('./request');
-const callFunc = require('./call-func');
+const { request } = require("./request");
+const callFunc = require("./call-func");
+const apiALHC = require("./api-alhc");
 
 class ResponseModal {
   constructor(code, data, msg = "ok") {
@@ -31,7 +32,7 @@ class ControllerBase {
   }
 }
 
-class ControllerAuth extends ControllerBase{
+class ControllerAuth extends ControllerBase {
   constructor(appId, uniIdToken) {
     super(appId);
     this.uniIdToken = uniIdToken;
@@ -58,9 +59,10 @@ class ControllerAuth extends ControllerBase{
 
 module.exports = {
   db,
+  apiALHC,
   request,
   callFunc,
   ResponseModal,
   ControllerBase,
   ControllerAuth,
-}
+};

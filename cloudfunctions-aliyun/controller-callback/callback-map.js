@@ -4,20 +4,23 @@
  * @author 冉娃娃 <274544338@qq.com>
  * @since 2020/9/14 10:20
  */
-const { callFunc } = require('api');
+const { callFunc } = require("api");
 const aliHuoCang = async (options) => {
-  uniCloud.logger.log('阿里货仓回调-入参', options);
+  uniCloud.logger.log("阿里货仓回调-入参", options);
   if (!options) {
     return { success: false };
   }
-  const newData = decodeURIComponent(options).split('=');
-  const newBody = JSON.parse(newData[1] || '[]');
+  // 清洗响应参数
+  // 更新响应参数
+  // 将更新后的参数同步到数据库
+  const newData = decodeURIComponent(options).split("=");
+  const newBody = JSON.parse(newData[1] || "[]");
   if (!Array.isArray(newBody) || newBody.length < 1) {
     return { success: false };
   }
   const [, data] = await callFunc({
-    name: 'controller-backend',
-    action: 'customer-order/getOrderAddressByBatchCode',
+    name: "controller-backend",
+    action: "customer-order/getOrderAddressByBatchCode",
     data: newBody[0].batchNo,
   });
   if (!data || !data._id) {
@@ -26,7 +29,7 @@ const aliHuoCang = async (options) => {
   const { _id, addressInfo } = data;
   const addressInfoNew = addressInfo.map((ele) => {
     const addressItem = newBody.find(
-      (item) => item.thirdOrderNo === ele.addressId,
+      (item) => item.thirdOrderNo === ele.addressId
     );
     return {
       ...ele,
@@ -35,10 +38,10 @@ const aliHuoCang = async (options) => {
     };
   });
   const [, data2] = await callFunc({
-    name: 'controller-backend',
-    action: 'customer-order/updateOrderAddressRecordId',
+    name: "controller-backend",
+    action: "customer-order/updateOrderSingle",
     data: {
-      orderId: _id,
+      _id,
       addressInfo: addressInfoNew,
     },
   });
@@ -50,4 +53,3 @@ const aliHuoCang = async (options) => {
 module.exports = {
   aliHuoCang,
 };
-
