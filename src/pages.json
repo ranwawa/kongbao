@@ -127,6 +127,17 @@
 					}
 				}
 			]
+		},
+		{
+			"root": "pages/admin",
+			"pages": [
+				{
+					"path": "pay-qr-code",
+					"style": {
+						"navigationBarTitleText": "收款二维码"
+					}
+				}
+			]
 		}
 	],
 	"globalStyle": {

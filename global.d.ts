@@ -18,8 +18,8 @@ declare namespace TypesUniCloud {
      * 获取数据库的引用-node端
      */
     database: () => ucDatabase.IDatabase;
-
     logger: ucLogger.ILogger;
+    uploadFile: ucUploadFile.IUploadFile,
   }
 
   /**
@@ -165,6 +165,10 @@ declare namespace ucCommand {
      * 数据库聚合操作符，通过 db.command.aggregate 获取
      */
     aggregate: IAggregateCommand;
+    /**
+     * 更新操作符，用于表示删除某个字段。
+     */
+    remove: () => void;
   }
 
   interface IAggregateCommand
@@ -521,6 +525,52 @@ declare namespace ucHttpClient {
     dataAsQueryString?: boolean;
     contentType?: string;
     dataType?: "" | "json" | "text";
+  }
+}
+declare namespace ucUploadFile {
+  /**
+   * 直接上传文件到云存储
+   */
+  interface IUploadFile {
+    (options: IUploadFileReq): Promise<IUploadFileRes>;
+  }
+
+  /**
+   * 直接上传文件到云存储。
+   * 请求参数
+   */
+  interface IUploadFileReq {
+    /**
+     * 要上传的文件对象
+     */
+    filePath: string;
+    /**
+     * 文件的绝对路径，包含文件名
+     */
+    cloudPath: string;
+    /**
+     * 文件类型，支付宝小程序、钉钉小程序必填，可选image、video、audio
+     */
+    fileType?: 'image' | 'video' | 'audio';
+    /**
+     * 上传进度回调
+     * @param options
+     */
+    onUploadProgress?: (options: any) => any;
+  }
+  /**
+   * 直接上传文件到云存储。
+   * 响应参数
+   */
+  interface IUploadFileRes {
+    /**
+     * 文件唯一 ID，用来访问文件，建议存储起来
+     */
+    fileID: string;
+    /**
+     * 请求序列号，用于错误排查
+     */
+    requestId: string;
   }
 }
 declare const uniCloud: TypesUniCloud.UniCloud;

@@ -4,17 +4,15 @@
  * @author 冉娃娃 <274544338@qq.com>
  * @since 2020/9/14 11:55
  */
-const CustomerOrder = require("./customer-order");
-const SupplierInfo = require("./supplier-info");
+const CustomerOrder = require('./customer-order');
 const fileMap = {
-  "customer-order": CustomerOrder,
-  "supplier-info": SupplierInfo,
+  'customer-order': CustomerOrder,
 };
-const NOT_FOUND = { code: 404, msg: "未找到访问的接口" };
+const NOT_FOUND = { code: 404, msg: '未找到访问的接口' };
 exports.main = async (event, context) => {
-  const { action = "", data = {}, uniIdToken = "" } = event;
+  const { action = '', data = {}, uniIdToken = '' } = event;
   const { APPID } = context;
-  const [fileName, funcName] = action.split("/");
+  const [ fileName, funcName ] = action.split('/');
   const fileClass = fileMap[fileName];
   if (!fileName || !fileClass || !funcName) {
     return NOT_FOUND;

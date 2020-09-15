@@ -19,8 +19,8 @@ class UniWrapper {
       icon: "none",
     });
   }
-  async showModalText(content: string, showCancel: boolean = false) {
-    if (this.isModal) return;
+  async showModalText<T = [any, { cancel: boolean, confirm: boolean, errMsg: string} | null] >(content: string, showCancel: boolean = false): Promise<T> {
+    if (this.isModal) return <T> <unknown> ['已经打开一个弹框了', null];
     this.isModal = true;
     const res = await showModal({
       title: "提示",
@@ -28,7 +28,7 @@ class UniWrapper {
       showCancel,
     });
     this.isModal = false;
-    return res;
+    return <T> <unknown> res;
   }
   navigateToPage(url: string) {
     return navigateTo({
