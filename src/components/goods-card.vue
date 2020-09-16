@@ -18,7 +18,7 @@
         {{ item.goodsName }}
       </view>
       <view class="goods-card__desc" @click.stop="$emit('click-btn', item)">
-        <uv-price :amount="item.salePriceNormal" size="10" />
+        <uv-price :amount="item.salePriceNormalStr" size="10" />
         <view class="goods-card__record">已售{{ item.sales }}件</view>
         <uv-button size="mini" custom-class="theme-style__button">
           购买

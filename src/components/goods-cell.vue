@@ -13,7 +13,7 @@
         {{ goodsInfo.goodsName }}
       </view>
       <view class="goods-cell__bottom">
-        <uv-price :amount="goodsInfo.salePriceNormal" size="10" />
+        <uv-price :amount="goodsInfo.salePriceNormalStr" size="10" />
         数量: x{{ goodsNum }}
       </view>
     </view>

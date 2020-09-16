@@ -13,7 +13,7 @@
         :class="{ 'order-service__content-empty': !serviceInfo.name }"
         @click="goToAddressList"
       >
-        {{ computedAddressInfo }}
+        {{ serviceInfo.formattedAddress || '请点击选择售后信息' }}
       </view>
     </view>
     <!-- 收件地址 -->
@@ -129,25 +129,10 @@ export default class LoginHome extends Vue {
    * 订单总金额
    */
   get computedGoodsAmount() {
-    const price = this.goodsInfo.salePriceNormal || 0;
+    const price = this.goodsInfo.salePriceNormalStr || 0;
     return price * this.addressList.length;
   }
-  /**
-   * 显示的售后信息
-   */
-  get computedAddressInfo() {
-    const {
-      name,
-      mobile,
-      provinceName,
-      cityName,
-      areaName,
-      address,
-    } = this.serviceInfo;
-    return name
-      ? `${name} ${mobile} ${provinceName}${cityName}${areaName}${address}`
-      : "请点击选择售后信息";
-  }
+
   onLoad(e: { goodsId: string }) {
     if (!e.goodsId) {
       uniWrapper.showToastText("该商品已被抢光");
@@ -178,7 +163,7 @@ export default class LoginHome extends Vue {
    */
   async getDefaultAddress() {
     const [err, data] = await address.getAddressDefault();
-    if (err || !data?._id) return;
+    if (err || !data?.addressId) return;
     this.serviceInfo = data;
   }
   /**

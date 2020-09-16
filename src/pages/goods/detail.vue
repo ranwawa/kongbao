@@ -9,9 +9,9 @@
       </swiper>
 
       <view class="goods-header__row">
-        <uv-price :amount="goodsInfo.salePriceNormal"></uv-price>
+        <uv-price :amount="goodsInfo.salePriceNormalStr"></uv-price>
         <view class="goods-header__origin"
-          >市场价: {{ goodsInfo.showPrice }}</view
+          >市场价: {{ goodsInfo.showPriceStr }}</view
         >
         <view class="goods-header__record">已售{{ goodsInfo.sales }}件</view>
       </view>
@@ -35,7 +35,7 @@
         icon="logistics"
         title="承运快递"
         :label="goodsInfo.expressName"
-        :value="goodsInfo.notSendAddress"
+        :value="goodsInfo.notSendAddress || '无'"
       ></uv-cell>
     </uv-cell-group>
     <!-- 商品详情 -->
@@ -48,11 +48,11 @@
     <!-- 底部按钮 -->
     <view class="goods-fixed">
       <view class="goods-fixed__service">
-        <uv-icon name="phone" />
+        <uv-icon name="service-o"  size="28"/>
         联系客服
       </view>
       <view class="goods-fixed__service">
-        <uv-icon name="phone" />
+        <uv-icon name="share" size="28"/>
         分享好友
       </view>
       <uv-button
@@ -95,11 +95,9 @@ export default class LoginHome extends Vue {
    */
   async getGoodsDetail(goodsId: string) {
     const [err, data] = await goods.getGoodsDetail({ goodsId });
-    console.log(err, data);
     if (err || !data?.goodsId) {
       return;
     }
-    console.log(data);
     data.notSendAddress = `暂不发货区域: ${data.notSendAddress}`;
     this.goodsInfo = data;
   }

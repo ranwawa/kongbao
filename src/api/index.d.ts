@@ -53,7 +53,8 @@ namespace user {
   /**
    * 登录响应参数
    */
-  interface LoginRes extends RegisterRes {}
+  interface LoginRes extends RegisterRes {
+  }
 
   /**
    * 用户信息响应
@@ -67,14 +68,9 @@ namespace user {
 
 namespace store {
   /**
-   * 仓库列表响应体
-   */
-  interface StoreListRes extends TypesUniCloud.DataListRes<StoreItem> {}
-
-  /**
    * 仓库模型
    */
-  interface StoreItem {
+  interface IStoreItem {
     storeName: string;
     storeCode: string;
     goodsList?: any[];
@@ -82,17 +78,23 @@ namespace store {
 }
 
 namespace goods {
-  import DataListRes = TypesUniCloud.DataListRes;
+  interface IGoodsListReq {
+    storeCode: string;
+    pageSize: number;
+    currentPage: number;
+  }
 
-  interface IGoodsListRes extends Array<IGoodsItem> {}
   /**
    * 商品响应体
    */
   interface IGoodsItem {
     goodsId: string;
-    showPrice: string;
+    showPrice: number;
+    showPriceStr: number;
     salePriceVip: number;
+    salePriceVipStr: number;
     salePriceNormal: number;
+    salePriceNormalStr: number;
     goodsName: string;
     imgList: Array<string>;
     sales: number;
@@ -117,13 +119,14 @@ namespace address {
    * 单条地址
    */
   interface IAddressItem {
-    _id: string;
+    addressId: string;
     name: string;
     mobile: string;
     provinceName: string;
     cityName: string;
     areaName: string;
     address: string;
+    formattedAddress: string;
     default: boolean;
   }
 }

@@ -2,6 +2,8 @@ const db = uniCloud.database();
 const dbCmd = db.command;
 const $ = db.command.aggregate;
 const colSpInfos = db.collection("kb-sp-infos");
+const colSpStore = db.collection("kb-sp-stores");
+const colSpGoods = db.collection("kb-sp-goods");
 const colAgGoods = db.collection("kb-ag-goods");
 const colAgFund = db.collection("kb-ag-fund");
 const colAgInfo = db.collection("kb-ag-infos");
@@ -13,10 +15,12 @@ const colCsFundOrder = db.collection("kb-cs-fund-order");
 module.exports = {
   $,
   dbCmd,
+  colSpInfos,
+  colSpGoods,
+  colSpStore,
   colAgGoods,
   colAgInfo,
   colAgFund,
-  colSpInfos,
   colCsAddress,
   colCsOrder,
   colCsFund,

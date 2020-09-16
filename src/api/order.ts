@@ -1,12 +1,12 @@
 import { Request } from "./request";
 
-const requestAddress = new Request("customer");
+const request = new Request("controller-frontend");
 class Order {
   /**
    * 确认订单
    */
   add(data: order.IConfirmReq) {
-    return requestAddress.start<object, { id: string }>({
+    return request.start<{ id: string }>({
       data,
       action: "customer-order/add",
     });
@@ -17,7 +17,7 @@ class Order {
    * @param data
    */
   pay(data: { orderId: string; payType?: number }) {
-    return requestAddress.start<object, { _id: string }>({
+    return request.start<{ _id: string }>({
       data,
       action: "customer-order/pay",
     });
@@ -28,7 +28,7 @@ class Order {
    * @param data
    */
   getSingle<T = { orderId: string }>(data: T) {
-    return requestAddress.start<T, order.IDetailRes>({
+    return request.start<order.IDetailRes>({
       data,
       action: "customer-order/getSingle",
     });

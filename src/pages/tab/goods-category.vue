@@ -57,13 +57,15 @@ import { ROUTE } from "@/assets/constant/common";
   },
 })
 export default class LoginHome extends Vue {
-  storeList: Array<store.StoreItem> = Array();
-  currentStore: store.StoreItem = Object();
+  storeList: Array<store.IStoreItem> = Array();
+  currentStore: store.IStoreItem = Object();
   goodsList: Array<goods.IGoodsItem> = Array();
   pageInfo: BasePage = new BasePage();
+
   onLoad() {
     this.getStoreList();
   }
+
   onReachBottom() {
     if (this.pageInfo.haveMore) {
       this.pageInfo.currentPage += 1;
@@ -79,23 +81,23 @@ export default class LoginHome extends Vue {
     this.getGoodsList(this.currentStore);
     setTimeout(uni.stopPullDownRefresh, 1000);
   }
+
   /**
    * 获取仓库列表
    */
   async getStoreList() {
     const [err, data] = await goods.getStoreList();
-    const storeList = data?.data;
-    if (err || !storeList?.length) {
+    if (err || !data?.length) {
       return;
     }
-    this.storeList = storeList;
-    this.currentStore = storeList[0];
+    this.storeList = data;
+    this.currentStore = data[0];
   }
 
   /**
    * 切换仓库选项卡
    */
-  switchStoreTab(storeItem: store.StoreItem) {
+  switchStoreTab(storeItem: store.IStoreItem) {
     this.pageInfo = new BasePage();
     this.goodsList = Array();
     this.currentStore = storeItem;
@@ -104,7 +106,7 @@ export default class LoginHome extends Vue {
   /**
    * 根据仓库编号查询商品列表
    */
-  async getGoodsList(storeItem: store.StoreItem) {
+  async getGoodsList(storeItem: store.IStoreItem) {
     const [err, data] = await goods.getGoodsList({
       pageSize: this.pageInfo.pageSize,
       currentPage: this.pageInfo.currentPage,
@@ -135,38 +137,48 @@ export default class LoginHome extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
-/* 滚动图 */
-.swiper {
-  height: px2rpx(168);
-  width: 100%;
-
-  &__img {
+<style
+  lang="scss"
+  scoped
+>
+  /* 滚动图 */
+  .swiper {
+    height: px2rpx(168);
     width: 100%;
-    height: 100%;
+
+    &__img {
+      width: 100%;
+      height: 100%;
+    }
   }
-}
-/* 导航条 */
-.uv-tabs {
-  @include flex-row;
-  justify-content: space-between;
-  margin-bottom: $s-sm;
-  background-color: #fff;
-  text-align: center;
-}
-.uv-tab {
-  position: relative;
-  flex-grow: 1;
-  padding: $s-sm $s-md;
-  line-height: $s-xl;
-  &-active::after {
-    content: " ";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: px2rpx(3);
-    background-color: $c-theme;
+
+  /* 导航条 */
+  .uv-tabs {
+    @include flex-row;
+    justify-content: space-between;
+    margin-bottom: $s-sm;
+    background-color: #fff;
+    text-align: center;
   }
-}
+
+  .uv-tab {
+    position: relative;
+    flex-grow: 1;
+    padding: $s-sm $s-md;
+    line-height: $s-xl;
+
+    &-active {
+      color: $c-theme;
+      font-weight: bold;
+      &::after {
+        content: " ";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: px2rpx(3);
+        background-color: $c-theme;
+      }
+    }
+  }
 </style>

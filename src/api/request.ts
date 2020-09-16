@@ -15,8 +15,8 @@ export class Request {
     return uniCloud.init(config.uniCloudSpace);
   }
 
-  async start<TReq, TRes>(
-    param: TypesUniCloud.DataReq<TReq>
+  async start<TRes>(
+    param: TypesUniCloud.DataReq<any>
   ): Promise<[any | null, TRes | null]> {
     await uniWrapper.showLoadingText();
     try {

@@ -1,16 +1,15 @@
 import { Request } from "./request";
 
-const requestAgent = new Request("agent");
-const requestStore = new Request("api-express");
+const request = new Request("controller-frontend");
 class Goods {
   /**
    * 查询仓库列表
    * @param data
    */
   getStoreList(data = {}) {
-    return requestStore.start<object, store.StoreListRes>({
+    return request.start<Array<store.IStoreItem>>({
       data,
-      action: "store/getList",
+      action: "supplier-store/getList",
     });
   }
 
@@ -18,14 +17,10 @@ class Goods {
    * 根据仓库ID查询商品列表
    * @param data
    */
-  getGoodsList(data: {
-    storeCode: string;
-    pageSize: number;
-    currentPage: number;
-  }) {
-    return requestAgent.start<{ storeCode: string }, goods.IGoodsListRes>({
+  getGoodsList(data: goods.IGoodsListReq) {
+    return request.start<Array<goods.IGoodsItem>>({
       data,
-      action: "agent-goods/getList",
+      action: "agent-goods/getListByStoreCode",
     });
   }
 
@@ -34,9 +29,9 @@ class Goods {
    * @param data
    */
   getGoodsDetail(data: { goodsId: string }) {
-    return requestAgent.start<{ goodsId: string }, goods.IGoodsItem>({
+    return request.start<goods.IGoodsItem>({
       data,
-      action: "agent-goods/get",
+      action: "agent-goods/getSingleByGoodsId",
     });
   }
   /**
@@ -44,7 +39,7 @@ class Goods {
    * @param data
    */
   getGoodsRecommend(data = {}) {
-    return requestAgent.start<{}, Array<goods.IGoodsItem>>({
+    return request.start<Array<goods.IGoodsItem>>({
       data,
       action: "agent-goods/getRecommend",
     });

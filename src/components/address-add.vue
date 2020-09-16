@@ -140,7 +140,7 @@ export default class LoginHome extends Vue {
    * 手动添加
    */
   submitLabour() {
-    const { _id, name, mobile, address } = this.formData;
+    const { addressId, name, mobile, address } = this.formData;
     if (!name || !userNameReg.test(name)) {
       uniWrapper.showToastText("请填写正确的姓名");
       return;
@@ -160,7 +160,7 @@ export default class LoginHome extends Vue {
       return;
     }
     this.$emit("submit", {
-      addressId: _id,
+      addressId,
       name,
       mobile,
       address,
@@ -186,6 +186,7 @@ export default class LoginHome extends Vue {
       this.isDisableSubmit = false;
       return;
     }
+    this.isDisableSubmit = true;
     const [err, data] = await address.resolveAddress({
       addressStr: this.addressStr,
     });
@@ -200,7 +201,6 @@ export default class LoginHome extends Vue {
    * 可在
    */
   submit() {
-    this.isDisableSubmit = true;
     this.isAuto ? this.submitAuto() : this.submitLabour();
   }
 }

@@ -1,12 +1,12 @@
 import { Request } from "./request";
 
-const requestAddress = new Request("customer");
+const request = new Request("controller-frontend");
 class Address {
   /**
    * 添加一条地址
    */
   add(data: address.IAddressItem) {
-    return requestAddress.start<object, { _id: string }>({
+    return request.start<{ _id: string }>({
       data,
       action: "customer-address/add",
     });
@@ -15,7 +15,7 @@ class Address {
    * 删除一条地址
    */
   del(data: { addressId: string }) {
-    return requestAddress.start<object, Array<address.IAddressItem>>({
+    return request.start<Array<address.IAddressItem>>({
       data,
       action: "customer-address/del",
     });
@@ -24,7 +24,7 @@ class Address {
    * 设置默认地址
    */
   setDefault(data: { addressId: string }) {
-    return requestAddress.start<object, Array<address.IAddressItem>>({
+    return request.start<Array<address.IAddressItem>>({
       data,
       action: "customer-address/setDefault",
     });
@@ -33,17 +33,17 @@ class Address {
    * 修改一条地址
    */
   update(data: address.IAddressItem) {
-    return requestAddress.start<object, { _id: string }>({
+    return request.start<{ _id: string }>({
       data,
       action: "customer-address/update",
     });
   }
   /**
-   * 查询仓库列表
+   * 查询服务地址列表
    * @param data
    */
   getAddressList(data = {}) {
-    return requestAddress.start<object, Array<address.IAddressItem>>({
+    return request.start<Array<address.IAddressItem>>({
       data,
       action: "customer-address/getList",
     });
@@ -53,17 +53,16 @@ class Address {
    * @param data
    */
   getAddressDefault(data = {}) {
-    return requestAddress.start<object, address.IAddressItem>({
+    return request.start<address.IAddressItem>({
       data,
       action: "customer-address/getDefault",
     });
   }
   /**
-   * 查询默认地址
-   * @param data
+   * 解析地址
    */
   resolveAddress<T = { addressStr: "" }>(data: T) {
-    return requestAddress.start<T, Array<address.IAddressItem>>({
+    return request.start<Array<address.IAddressItem>>({
       data,
       action: "customer-address/resolveAddress",
     });

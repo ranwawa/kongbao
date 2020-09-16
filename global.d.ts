@@ -34,7 +34,7 @@ declare namespace TypesUniCloud {
     /**
      * 该接口函数的请求入参
      */
-    data?: T;
+    data: T;
   }
 
   /**

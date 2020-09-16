@@ -3,6 +3,7 @@ const uniID = require("uni-id");
 const { request } = require("./request");
 const callFunc = require("./call-func");
 const apiALHC = require("./api-alhc");
+const apiKdHelp = require("./api-kdhelp");
 
 class ResponseModal {
   constructor(code, data, msg = "ok") {
@@ -53,6 +54,7 @@ class ControllerAuth extends ControllerBase {
       uniCloud.logger.warn("验证token", "注册时appId与登录时appId有差异");
     }
     this.userId = res.uid;
+    this.userInfo = res.userInfo;
     return res;
   }
 }
@@ -60,6 +62,7 @@ class ControllerAuth extends ControllerBase {
 module.exports = {
   db,
   apiALHC,
+  apiKdHelp,
   request,
   callFunc,
   ResponseModal,
