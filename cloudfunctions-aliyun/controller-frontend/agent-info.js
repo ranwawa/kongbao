@@ -16,24 +16,22 @@ module.exports = class AgentInfo extends ControllerBase {
    */
   async addQrCode(options) {
     uniCloud.logger.info('新增收款二维码-入参', options);
-    const { tabType, money, src } = options;
+    const { payType, money, src } = options;
     if (
-      (tabType !== 'wechat' && tabType !== 'alipay')
-      || typeof money !== 'number'
-      || (typeof src !== 'string' && src.indexOf(OOS_URL) === -1)
+      (payType !== 1 && payType !== 2) ||
+      typeof money !== 'number' ||
+      (typeof src !== 'string' && src.indexOf(OOS_URL) === -1)
     ) {
       return new this.ResponseModal(400, {}, '参数异常');
     }
+    const payTypeStr = payType === 1 ? 'alipay' : 'wechat';
     const res = await colAgInfo.where({
       isDelete: false,
       isEnable: true,
       appId: this.appId,
     })
       .update({
-        [`qr.${options.tabType}.${options.money}`]: {
-          money: options.money,
-          src: options.src,
-        },
+        [`qr.${payTypeStr}.${money}`]: { money, src },
       });
     return this.processResponseData(res, '新增收款二维码');
   }
@@ -56,6 +54,21 @@ module.exports = class AgentInfo extends ControllerBase {
         qr: true,
       })
       .end();
+    console.log(11111, res.data[0]);
+    if (res.data.length > 0) {
+      res.data = res.data.map(ele => {
+        const { alipay, wechat } = ele.qr;
+        for (let key in alipay) {
+          const item = alipay[key];
+          item.moneyStr = (item.money / 100).toFixed(2);
+        }
+        for (let key in wechat) {
+          const item = wechat[key];
+          item.moneyStr = (item.money / 100).toFixed(2);
+        }
+        return ele;
+      })
+    }
     return this.processResponseData(res, '根据appId查询代理分站信息', true);
   }
   /**
@@ -63,13 +76,14 @@ module.exports = class AgentInfo extends ControllerBase {
    */
   async removeQr(options) {
     uniCloud.logger.info('删除某张二维码-入参', options);
+    const payType = options.payType === 1 ? 'alipay' : 'wechat';
     const res = await colAgInfo.where({
       appId: this.appId,
       isDelete: false,
       isEnable: true,
     }).update({
-      [`qr.${options.tabType}.${options.money}`]: dbCmd.remove()
+      [`qr.${payType}.${options.money}`]: dbCmd.remove()
     });
-    return this.processResponseData(res, '根据appId查询代理分站信息');
+    return this.processResponseData(res, '删除某张二维码');
   }
 };

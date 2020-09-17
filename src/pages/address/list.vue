@@ -155,12 +155,12 @@ export default class Address extends Vue {
    */
   async setDefault(item: address.IAddressItem, index: number) {
     if (item.default) return;
-    const addressId = item._id;
+    const addressId = item.addressId;
     const [err] = await address.setDefault({ addressId });
     if (err) return;
     const { addressList } = this;
     for (let key in addressList) {
-      addressList[key].default = addressList[key]._id === addressId;
+      addressList[key].default = addressList[key].addressId === addressId;
     }
   }
 

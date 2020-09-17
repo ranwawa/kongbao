@@ -36,7 +36,7 @@
         />
         <view class="qr__input">
           <uv-field
-            v-model="newQr.money"
+            v-model="newQr.moneyStr"
             :border="false"
             :disabled="isLoadingNewQr"
             placeholder="请输入金额"
@@ -74,7 +74,7 @@
         />
         <view class="qr__input">
           <uv-price
-            :amount="item.money / 100"
+            :amount="item.moneyStr"
             size="10"
           />
         </view>
@@ -86,40 +86,41 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { uniWrapper } from "@/assets/js/uni-wrapper";
-import chooseImage = my.chooseImage;
 import { common } from "@/api/common";
 import { agent } from "@/api/agent";
+import _ from 'lodash';
+import { PAY_TYPE } from "@/assets/constant/common";
 
+type qrMap = { [x: number]: admin.IQrItem };
 @Component({})
 export default class extends Vue {
   tabList: Array<admin.IAgentQrTab> = [
     {
-      type: 'wechat',
+      type: PAY_TYPE.WECHAT,
       name: '微信二维码',
     },
     {
-      type: 'alipay',
+      type: PAY_TYPE.ALIPAY,
       name: '支付宝二维码',
     },
   ];
   currentTab: admin.IAgentQrTab = {
-    type: 'wechat',
+    type: PAY_TYPE.WECHAT,
     name: '微信二维码',
   };
-  wechatMap: { [x: number]: admin.IQrItem } = {};
-  alipayMap: { [x: number]: admin.IQrItem } = {};
+  wechatMap: qrMap = {};
+  alipayMap: qrMap = {};
   newQr: admin.IQrItem = {
-    money: '',
+    money: 0,
+    moneyStr: '',
     src: '',
-    tabType: 'wechat',
-    imgType: 'png',
   }; // 新增的二维码信息
   isLoadingNewQr: boolean = false; // 是否正在添加二维码
 
-  get computedQrMap() {
+  get computedQrMap(): qrMap {
     const { type } = this.currentTab;
     const { wechatMap, alipayMap } = this;
-    return type === 'wechat' ? wechatMap : alipayMap;
+    return type === PAY_TYPE.WECHAT ? wechatMap : alipayMap;
   }
 
   onLoad() {
@@ -134,8 +135,20 @@ export default class extends Vue {
     if (err || !data?.qr) {
       return;
     }
-    this.wechatMap = data.qr.wechat;
-    this.alipayMap = data.qr.alipay;
+    this.wechatMap = this.sortMap(data.qr.wechat);
+    this.alipayMap = this.sortMap(data.qr.alipay);
+  }
+
+  /**
+   * 根据金额(key值)的大小来排序
+   */
+  sortMap(map: qrMap) {
+    const newMap: qrMap = Object();
+    // @ts-ignore
+    _.sortBy(map, ['money']).forEach(ele => {
+      newMap[ele.money as number] = ele;
+    })
+    return newMap;
   }
 
   /**
@@ -155,9 +168,8 @@ export default class extends Vue {
    * 添加新的收款二维码
    */
   async addQr() {
-    const { src, money } = this.newQr;
-    const moneyCent = +money * 100;
-    if (!money) {
+    const { src, moneyStr } = this.newQr;
+    if (!moneyStr) {
       uniWrapper.showToastText('请先输入金额');
       return;
     }
@@ -166,6 +178,7 @@ export default class extends Vue {
       return;
     }
     this.isLoadingNewQr = true;
+    const moneyCent = this.newQr.money = +((+moneyStr * 100).toFixed(2));
     const [err, data] = await common.uploadImage({
       ...this.newQr,
       money: moneyCent,
@@ -177,17 +190,18 @@ export default class extends Vue {
       return;
     }
     const param = {
-      ...this.newQr,
+      payType: this.currentTab.type,
       src: data.fileID,
       money: moneyCent,
+      moneyStr,
     };
-    const [err2, data2] = await agent.addQrCode(param);
+    const [err2] = await agent.addQrCode(param);
     if (err2) {
       return;
     }
     this.isLoadingNewQr = false;
     uniWrapper.showToastText('添加成功');
-    if (this.currentTab.type === "wechat") {
+    if (this.currentTab.type === PAY_TYPE.WECHAT) {
       this.wechatMap[moneyCent] = param;
     } else {
       this.alipayMap[moneyCent] = param;
@@ -200,7 +214,6 @@ export default class extends Vue {
    */
   switchTab(item: admin.IAgentQrTab) {
     this.currentTab = item;
-    this.newQr.tabType = item.type;
   }
 
   /**
@@ -211,8 +224,14 @@ export default class extends Vue {
     if (data.cancel) {
       return;
     }
-    const [err, data2] = await agent.removeQr(item);
-    console.log(err, data);
+    const [err] = await agent.removeQr({
+      payType: this.currentTab.type,
+      money: item.money,
+    });
+    if (err) {
+      return;
+    }
+    await this.getAgentInfo();
   }
 }
 </script>

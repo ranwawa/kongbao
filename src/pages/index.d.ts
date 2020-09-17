@@ -4,10 +4,9 @@
  * @author 冉娃娃 <274544338@qq.com>
  * @since 2020/9/15 10:33
  */
-
 namespace admin {
 
-  type payType = 'wechat' | 'alipay';
+  type payType = 1 | 2;
 
   /**
    * 分站二维码tab
@@ -21,14 +20,10 @@ namespace admin {
    * 二维码信息
    */
   interface IQrItem {
-    money: number | string;
+    money: number;
+    moneyStr: string;
     src: string;
-    imgType: string;
-    tabType: payType;
-    /**
-     * 是否正在编辑该二维码的价格
-     */
-    isEditMoney?: boolean;
+    imgType?: string;
   }
 
   interface IAgentInfo {

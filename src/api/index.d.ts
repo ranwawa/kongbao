@@ -1,6 +1,10 @@
 /* uniCloud类型 */
 import DatabaseAggregateCommand = DB.DatabaseAggregateCommand;
 
+interface IPageBase {
+  pageSize: number;
+  currentPage: number;
+}
 namespace user {
   /**
    * 注册请求参数
@@ -190,5 +194,13 @@ namespace order {
      * 4已收货,待发货(出物流纪录)
      */
     status: number;
+  }
+  interface IListReq extends IPageBase{
+    status: number;
+  }
+  interface IFundOrderItem {
+    orderId: string;
+    realPrice: string;
+    qrCode: string;
   }
 }

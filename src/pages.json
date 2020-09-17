@@ -72,10 +72,17 @@
 					"style": {
 						"navigationBarTitleText": "vip特权"
 					}
-				},{
+				},
+				{
 					"path": "balance",
 					"style": {
 						"navigationBarTitleText": "余额充值"
+					}
+				},
+				{
+					"path": "recharge",
+					"style": {
+						"navigationBarTitleText": "扫码充值"
 					}
 				}
 			]

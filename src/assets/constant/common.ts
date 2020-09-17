@@ -16,3 +16,11 @@ export enum ROUTE {
 export const STORAGE_KEY = {
   UNI_ID_TOKEN: "uni_id_token",
 };
+
+/**
+ * 支付类型
+ */
+export enum PAY_TYPE {
+  "ALIPAY" = 1,
+  "WECHAT",
+}

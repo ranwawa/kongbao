@@ -37,10 +37,30 @@ class Order {
    * 查询订单列表
    * @param data
    */
-  getList(data: { status: number }) {
+  getList(data: order.IListReq) {
     return request.start<Array<order.IDetailRes>>({
       data,
       action: "customer-order/getListByStatus",
+    });
+  }
+
+  /**
+   * 确定充值订单
+   */
+  confirmFundOrder(data: {money: number, payType: number}) {
+    return request.start<{ fundOrderId: string }>({
+      data,
+      action: "order-operate/confirmFundOrder",
+    });
+  }
+
+  /**
+   * 根据订单ID查询充值订单信息
+   */
+  getFundOrderInfoById(data: {fundOrderId: string}) {
+    return request.start<order.IFundOrderItem>({
+      data,
+      action: "customer-fund-order/getSingleById",
     });
   }
 }

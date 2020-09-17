@@ -6,7 +6,7 @@ class Fund {
    * 确认订单
    */
   getUserBalance(data: order.IConfirmReq) {
-    return requestAddress.start<object, { id: string }>({
+    return requestAddress.start<{ id: string }>({
       data,
       action: "customer-order/add",
     });
