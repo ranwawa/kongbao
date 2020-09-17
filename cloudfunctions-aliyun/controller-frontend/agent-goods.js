@@ -4,10 +4,12 @@
  * @author 冉娃娃 <274544338@qq.com>
  * @since 2020/9/16 15:52
  */
-const { db, ControllerBase } = require('api');
+const { db, ControllerBase } = require("api");
 const { $, colAgGoods } = db;
 module.exports = class SupplierStore extends ControllerBase {
-  constructor(appId) {super(appId);}
+  constructor(appId) {
+    super(appId);
+  }
   /**
    * 根据仓库编号获取商品列表
    */
@@ -15,11 +17,13 @@ module.exports = class SupplierStore extends ControllerBase {
     uniCloud.logger.log("根据仓库编号获取商品列表-入参", options);
     const { pageSize = 10, currentPage = 1, storeCode } = options;
     if (
-      (typeof pageSize !== 'number' || (pageSize < 1 || pageSize > 199)) ||
-      typeof currentPage !== 'number' ||
-      typeof storeCode !== 'string'
+      typeof pageSize !== "number" ||
+      pageSize < 1 ||
+      pageSize > 199 ||
+      typeof currentPage !== "number" ||
+      typeof storeCode !== "string"
     ) {
-      return new this.ResponseModal(400, {}, '参数异常');
+      return new this.ResponseModal(400, {}, "参数异常");
     }
     const res = await colAgGoods
       .aggregate()
@@ -55,9 +59,9 @@ module.exports = class SupplierStore extends ControllerBase {
         sales: "$spGoodsInfo.sales",
       })
       .addFields({
-        showPriceStr: $.divide(['$showPrice', 100]),
-        salePriceVipStr: $.divide(['$salePriceVip', 100]),
-        salePriceNormalStr: $.divide(['$salePriceNormal', 100])
+        showPriceStr: $.divide(["$showPrice", 100]),
+        salePriceVipStr: $.divide(["$salePriceVip", 100]),
+        salePriceNormalStr: $.divide(["$salePriceNormal", 100]),
       })
       .project({
         _id: false,
@@ -71,13 +75,61 @@ module.exports = class SupplierStore extends ControllerBase {
     return this.processResponseData(res, "查询推荐商品", false);
   }
   /**
+   * 查询推荐商品
+   * @returns {Promise<void>}
+   */
+  async getListRecommend() {
+    const res = await colAgGoods
+      .aggregate()
+      .match({
+        appId: this.appId,
+        isEnable: true,
+      })
+      .sort({ sort: 1 })
+      .lookup({
+        from: "kb-sp-goods",
+        localField: "spGoodsId",
+        foreignField: "_id",
+        as: "spGoodsInfoList",
+      })
+      .addFields({
+        spGoodsInfo: $.arrayElemAt(["$spGoodsInfoList", 0]),
+      })
+      .project({
+        showPrice: true,
+        salePriceVip: true,
+        salePriceNormal: true,
+        spGoodsInfo: true,
+        showPriceStr: $.divide(["$showPrice", 100]),
+        salePriceVipStr: $.divide(["$salePriceVip", 100]),
+        salePriceNormalStr: $.divide(["$salePriceNormal", 100]),
+        goodsId: "$_id",
+        imgList: "$spGoodsInfo.imgList",
+        expressName: "$spGoodsInfo.expressName",
+        goodsName: "$spGoodsInfo.goodsName",
+        sales: "$spGoodsInfo.sales",
+      })
+      .project({
+        _id: false,
+        spGoodsInfo: false,
+      })
+      .limit(10)
+      .end();
+    res.data = res.data.map((ele) => {
+      ele.sales > 9999 && (ele.sales = `${(ele.sales / 10000).toFixed(1)}w`);
+      return ele;
+    });
+    return this.processResponseData(res, "查询推荐商品", false);
+  }
+
+  /**
    * 根据商品ID查询商品信息
    */
   async getSingleByGoodsId(options = {}) {
     uniCloud.logger.log("根据商品ID查询商品信息-入参", options);
-    const { goodsId = ''} = options;
-    if (typeof goodsId !== 'string' || goodsId.length !== 32) {
-      return new this.ResponseModal(400, {}, '参数异常');
+    const { goodsId = "" } = options;
+    if (typeof goodsId !== "string" || goodsId.length !== 32) {
+      return new this.ResponseModal(400, {}, "参数异常");
     }
     const res = await colAgGoods
       .aggregate()
@@ -110,9 +162,9 @@ module.exports = class SupplierStore extends ControllerBase {
           showPrice: "$showPrice",
           salePriceVip: "$salePriceVip",
           salePriceNormal: "$salePriceNormal",
-          showPriceStr: $.divide(['$showPrice', 100]),
-          salePriceVipStr: $.divide(['$salePriceVip', 100]),
-          salePriceNormalStr: $.divide(['$salePriceNormal', 100]),
+          showPriceStr: $.divide(["$showPrice", 100]),
+          salePriceVipStr: $.divide(["$salePriceVip", 100]),
+          salePriceNormalStr: $.divide(["$salePriceNormal", 100]),
           goodsName: "$spGoodsInfo.goodsName",
           imgList: $.split(["$spGoodsInfo.imgList", "----"]),
           content: "$spGoodsInfo.content",
@@ -175,6 +227,6 @@ module.exports = class SupplierStore extends ControllerBase {
         },
       })
       .end();
-    return this.processResponseData(res, '查询完整商品信息', true)
+    return this.processResponseData(res, "查询完整商品信息", true);
   }
 };

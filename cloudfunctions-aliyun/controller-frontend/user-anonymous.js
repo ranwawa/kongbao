@@ -11,8 +11,9 @@ module.exports = class UserNormal {
   async register(data) {
     const res = await uniID.register({
       appId: this.appId,
-      isVip: false,
+      vipExpireTime: Date.now(),
       balance: 0,
+      username: data.username,
       nickname: data.username,
       password: data.password,
     });

@@ -1,9 +1,10 @@
 const db = require("./db");
-const uniID = require("uni-id");
 const { request } = require("./request");
+const mainFunc = require("./main-func");
 const callFunc = require("./call-func");
 const apiALHC = require("./api-alhc");
 const apiKdHelp = require("./api-kdhelp");
+const apiPaysApi = require("./api-paysapi");
 
 class ResponseModal {
   constructor(code, data, msg = "ok") {
@@ -34,35 +35,28 @@ class ControllerBase {
 }
 
 class ControllerAuth extends ControllerBase {
-  constructor(appId, uniIdToken) {
+  constructor(appId, userInfo) {
     super(appId);
-    this.uniIdToken = uniIdToken;
+    this.userInfo = userInfo;
+    this.token = userInfo.token ? userInfo.token[0] : "木有token";
   }
   /**
    * 验证token
    */
   async checkToken() {
-    if (!this.uniIdToken) {
+    if (!this.userInfo._id) {
       return new this.ResponseModal(401, "请登录后访问");
     }
-    const res = await uniID.checkToken(this.uniIdToken);
-    uniCloud.logger.log("验证token-出参", res);
-    if (res.code !== 0) {
-      return res;
-    }
-    if (res.appId === this.appId) {
-      uniCloud.logger.warn("验证token", "注册时appId与登录时appId有差异");
-    }
-    this.userId = res.uid;
-    this.userInfo = res.userInfo;
-    return res;
+    return new this.ResponseModal(0, "验证通过");
   }
 }
 
 module.exports = {
   db,
+  mainFunc,
   apiALHC,
   apiKdHelp,
+  apiPaysApi,
   request,
   callFunc,
   ResponseModal,

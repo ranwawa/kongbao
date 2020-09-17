@@ -139,50 +139,6 @@ module.exports = class AgentGoods {
       .end();
     return this.processResponseData(res, "根据商品ID查询商品信息", true);
   }
-  /**
-   * 查询推荐商品
-   * @returns {Promise<void>}
-   */
-  async getRecommend() {
-    const res = await colAgGoods
-      .aggregate()
-      .match({
-        appId: this.appId,
-        isEnable: true,
-      })
-      .sort({ sort: 1 })
-      .lookup({
-        from: "kb-sp-goods",
-        localField: "spGoodsId",
-        foreignField: "_id",
-        as: "spGoodsInfoList",
-      })
-      .addFields({
-        spGoodsInfo: $.arrayElemAt(["$spGoodsInfoList", 0]),
-      })
-      .project({
-        showPrice: true,
-        salePriceVip: true,
-        salePriceNormal: true,
-        spGoodsInfo: true,
-        goodsId: "$_id",
-        imgList: "$spGoodsInfo.imgList",
-        expressName: "$spGoodsInfo.expressName",
-        goodsName: "$spGoodsInfo.goodsName",
-        sales: "$spGoodsInfo.sales",
-      })
-      .project({
-        _id: false,
-        spGoodsInfo: false,
-      })
-      .limit(10)
-      .end();
-    res.data = res.data.map((ele) => {
-      ele.sales > 9999 && (ele.sales = `${(ele.sales / 10000).toFixed(1)}w`);
-      return ele;
-    });
-    return this.processResponseData(res, "查询推荐商品", false);
-  }
   async update() {}
   /**
    * 删除所有代理商品

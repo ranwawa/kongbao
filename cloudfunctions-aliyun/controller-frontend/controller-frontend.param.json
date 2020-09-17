@@ -1,55 +1,15 @@
-// 本文件中的json内容将在云函数【运行】时作为参数传给云函数。
-
-// 配置教程参考：https://uniapp.dcloud.net.cn/uniCloud/quickstart?id=runparam
-
 {
 	"data": {
-		"goodsInfo": {
-			"goodsId": "feb58d0a4d96ea010a1416943945893d",
-			"showPrice": 470,
-			"salePriceVip": 470,
-			"salePriceNormal": 470,
-			"showPriceStr": 4.7,
-			"salePriceVipStr": 4.7,
-			"salePriceNormalStr": 4.7,
-			"goodsName": "持久清洁净白去渍专用洗衣粉",
-			"imgList": ["http://www.alihuocang.com/alixiaocangvf/20190103/5f16bbef201445e3bab0a5de4e0e75ba.jpg"],
-			"content": "",
-			"sales": 74789,
-			"storeName": "圆通北京仓",
-			"expressName": "圆通快递",
-			"shipAddress": "北京市市辖区顺义区南法信府前街16号",
-			"notSendAddress": "暂不发货区域: 新疆,西藏,宁夏,甘肃,内蒙古,香港,澳门,台湾"
-		},
-		"serviceInfo": {
-			"name": "要要2苛要要",
-			"mobile": "13333333333",
-			"provinceName": "北京市",
-			"cityName": "市辖区",
-			"areaName": "西城区",
-			"address": "1232132",
-			"formattedAddress": "要要2苛要要 13333333333 北京市市辖区西城区1232132",
-			"default": true,
-			"addressId": "5f5dcd6d502d220001b27513"
-		},
-		"addressInfo": [{
-			"name": "abc",
-			"mobile": "13333333333",
-			"address": "123213123",
-			"provinceName": "北京市",
-			"cityName": "市辖区",
-			"areaName": "西城区",
-			"formattedAddress": "abc,13333333333 北京市市辖区西城区123213123",
-			"isDefault": false
-		}]
+		"payType": 1,
+		"money": 20
 	},
-	"action": "order-operate/confirmOrder",
+	"action": "user-auth/logout",
 	"clientInfo": {
 		"PLATFORM": "h5",
 		"OS": "ios",
 		"APPID": "__UNI__0CA1D11",
 		"CLIENT_SDK_VERSION": "1.0.0"
 	},
-	"uniCloudClientInfo": "%7B%22ak%22%3A%22__UNI__0CA1D11%22%2C%22p%22%3A%22i%22%2C%22ut%22%3A%22h5%22%2C%22uuid%22%3A%22el49u9ca9589afdgg60fio2s5jskdqpm%22%2C%22fn%22%3A%22controller-frontend%22%2C%22sid%22%3A%2266108fd9-83f0-4fda-9219-f9fe3a6a377e%22%2C%22pvd%22%3A%22a%22%7D",
-	"uniIdToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI1ZjUzNDAyOTI4MDVkYTAwMDE4ZTk1MzIiLCJjbGllbnRJZCI6IjE5NWY3N2MxODBjMjNlM2Y1YThhOGYzOGU0MjkwMTg2IiwiaWF0IjoxNjAwMjQ2Nzg4LCJleHAiOjE2MDc0NDY3ODh9.Z6PMSjpd03KPPzti1uVYHTvdR0Suc8wxEwmlMOD_NXM"
+	"uniCloudClientInfo": "%7B%22ak%22%3A%22__UNI__0CA1D11%22%2C%22p%22%3A%22i%22%2C%22ut%22%3A%22h5%22%2C%22uuid%22%3A%22jodcne8r42outvsln3gllg041v1k6dh9%22%2C%22fn%22%3A%22controller-frontend%22%2C%22sid%22%3A%2266108fd9-83f0-4fda-9219-f9fe3a6a377e%22%2C%22pvd%22%3A%22a%22%7D",
+	"uniIdToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI1ZjUzNDAyOTI4MDVkYTAwMDE4ZTk1MzIiLCJjbGllbnRJZCI6IjI1M2RiYWMzYzljNjBiYTJhZDA0OTQ0M2NhZGY4ZjliIiwiaWF0IjoxNjAwMjY4MDkyLCJleHAiOjE2MDc0NjgwOTJ9.cLyrUpfv7nTfLO2dkBcRHmAQc-fGBhTsS09TFd9gdFQ"
 }

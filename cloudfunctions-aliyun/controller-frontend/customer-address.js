@@ -1,8 +1,8 @@
 const { db, ControllerAuth, apiKdHelp } = require("api");
 const { colCsAddress } = db;
-module.exports = class AgentAddress extends ControllerAuth{
-  constructor(appId = "", uniIdToken = "") {
-    super(appId, uniIdToken);
+module.exports = class AgentAddress extends ControllerAuth {
+  constructor(appId, userInfo) {
+    super(appId, userInfo);
   }
   /**
    * 添加地址
@@ -23,7 +23,7 @@ module.exports = class AgentAddress extends ControllerAuth{
     } = param;
     const paramData = {
       appId: this.appId,
-      userId: this.userId,
+      userId: this.userInfo._id,
       name,
       mobile,
       provinceCode,
@@ -51,7 +51,7 @@ module.exports = class AgentAddress extends ControllerAuth{
   async del(option = {}) {
     const param = {
       appId: this.appId,
-      userId: this.userId,
+      userId: this.userInfo._id,
       _id: option.addressId,
       isDelete: false,
     };
@@ -69,7 +69,7 @@ module.exports = class AgentAddress extends ControllerAuth{
   async setDefault(option = { addressId: "" }) {
     const pubParam = {
       appId: this.appId,
-      userId: this.userId,
+      userId: this.userInfo._id,
       isDelete: false,
     };
     const param = {
@@ -125,7 +125,7 @@ module.exports = class AgentAddress extends ControllerAuth{
     const res = await colCsAddress
       .where({
         appId: this.appId,
-        userId: this.userId,
+        userId: this.userInfo._id,
         _id: option.addressId,
       })
       .update(param);
@@ -137,7 +137,7 @@ module.exports = class AgentAddress extends ControllerAuth{
   async getList() {
     const param = {
       appId: this.appId,
-      userId: this.userId,
+      userId: this.userInfo._id,
       isDelete: false,
     };
     uniCloud.logger.log("查询当前用户所有地址-入参", param);
@@ -162,7 +162,7 @@ module.exports = class AgentAddress extends ControllerAuth{
   async getSingle(option = {}) {
     const param = {
       appId: this.appId,
-      userId: this.userId,
+      userId: this.userInfo._id,
       isDelete: false,
       _id: option.addressId,
     };
@@ -176,16 +176,17 @@ module.exports = class AgentAddress extends ControllerAuth{
   async getDefault() {
     const param = {
       appId: this.appId,
-      userId: this.userId,
+      userId: this.userInfo._id,
       isDelete: false,
       default: true,
     };
     uniCloud.logger.log("查询默认地址-入参", param);
     const res = await colCsAddress
       .aggregate()
-      .match(param).limit(1)
+      .match(param)
+      .limit(1)
       .addFields({
-        addressId: '$_id',
+        addressId: "$_id",
       })
       .project({
         _id: false,

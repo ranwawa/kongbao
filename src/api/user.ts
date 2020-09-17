@@ -1,16 +1,15 @@
 import { Request } from "./request";
 
-const request = new Request("user-controller");
-const requestStart = request.start.bind(request);
+const request = new Request("controller-frontend");
 class User {
   /**
    * 注册
    * @param data
    */
   register(data: user.RegisterReq) {
-    return requestStart<user.RegisterReq, user.RegisterRes>({
+    return request.start<user.RegisterRes>({
       data,
-      action: "user-normal/register",
+      action: "user-anonymous/register",
     });
   }
 
@@ -19,9 +18,9 @@ class User {
    * @param data
    */
   login(data: user.LoginReq) {
-    return requestStart<user.LoginReq, user.LoginRes>({
+    return request.start<user.LoginRes>({
       data,
-      action: "user-normal/login",
+      action: "user-anonymous/login",
     });
   }
   /**
@@ -29,7 +28,7 @@ class User {
    * @param data
    */
   logout(data = {}) {
-    return requestStart<{}, {}>({
+    return request.start<any>({
       data,
       action: "user-auth/logout",
     });
@@ -38,8 +37,9 @@ class User {
    * 获取用户信息
    */
   getUserInfo() {
-    return requestStart<any, user.IUserInfoRes>({
+    return request.start<user.IUserInfoRes>({
       action: "user-auth/getUserInfo",
+      data: {},
     });
   }
 }

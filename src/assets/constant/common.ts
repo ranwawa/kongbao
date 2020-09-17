@@ -9,6 +9,8 @@ export enum ROUTE {
   "TAB_CATEGORY" = "/pages/tab/goods-category",
   "TAB_HOME" = "/pages/tab/home",
   "ADDRESS_LIST" = "/pages/address/list",
+  "FUND_BALANCE" = "/pages/fund/balance",
+  "FUND_RECHARGE" = "/pages/fund/recharge",
 }
 
 export const STORAGE_KEY = {

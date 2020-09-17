@@ -8,7 +8,7 @@ class Order {
   add(data: order.IConfirmReq) {
     return request.start<{ id: string }>({
       data,
-      action: "customer-order/add",
+      action: "order-operate/confirmOrder",
     });
   }
 
@@ -37,10 +37,10 @@ class Order {
    * 查询订单列表
    * @param data
    */
-  getList<T = { status: number }>(data: T) {
-    return requestAddress.start<T, Array<order.IDetailRes>>({
+  getList(data: { status: number }) {
+    return request.start<Array<order.IDetailRes>>({
       data,
-      action: "customer-order/getList",
+      action: "customer-order/getListByStatus",
     });
   }
 }

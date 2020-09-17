@@ -21,7 +21,7 @@
       <view class="layout__body">
         <view
           v-for="item in statusList"
-          :key="item"
+          :key="item.name"
           :class="{ 'layout__item-active': currentStatusName === item.name }"
           class="status__item layout__item"
           @click="currentStatusName = item.name"
@@ -49,6 +49,8 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
+import { uniWrapper } from "@/assets/js/uni-wrapper";
+import { ROUTE } from "@/assets/constant/common";
 
 @Component({})
 export default class LoginHome extends Vue {
@@ -72,6 +74,8 @@ export default class LoginHome extends Vue {
    */
   async submit() {
     this.isDisableBtn = true;
+    uniWrapper.navigateToPage(ROUTE.FUND_RECHARGE);
+    this.isDisableBtn = false;
   }
 }
 </script>

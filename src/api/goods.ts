@@ -38,10 +38,10 @@ class Goods {
    * 查询推荐商品
    * @param data
    */
-  getGoodsRecommend(data = {}) {
+  getGoodsRecommend() {
     return request.start<Array<goods.IGoodsItem>>({
-      data,
-      action: "agent-goods/getRecommend",
+      data: {},
+      action: "agent-goods/getListRecommend",
     });
   }
 }

@@ -5,23 +5,16 @@
  * @since 2020/9/14 11:08
  */
 const { request, ControllerAuth, db } = require("api");
-const {
-  colCsOrder,
-  colCsFund,
-  colAgFund,
-  colSpInfos,
-  $,
-} = db;
+const { colCsOrder, $ } = db;
 const uniID = require("uni-id");
 const md5 = require("md5");
 function isId(id) {
   return typeof id === "string" && id.length === 32;
 }
-module.exports = class CustomerOrder extends ControllerAuth{
-  constructor(appId, uniIdToken) {
-    super(appId, uniIdToken);
+module.exports = class CustomerOrder extends ControllerAuth {
+  constructor(appId, userInfo) {
+    super(appId, userInfo);
   }
-
   /**
    * 支付订单
    * @param option
@@ -73,7 +66,7 @@ module.exports = class CustomerOrder extends ControllerAuth{
     const res = await colCsFund
       .where({
         appId: this.appId,
-        userId: this.userId,
+        userId: this.userInfo._id,
       })
       .orderBy("createTime", "desc")
       .field({
@@ -109,26 +102,26 @@ module.exports = class CustomerOrder extends ControllerAuth{
    * 添加订单
    */
   async add(csAmount, agAmount, orderInfo) {
-    uniCloud.logger.log("添加订单-入参", csAmount, agAmount, orderInfo);
     const now = Date.now();
-    const orderId = md5(`${this.appId}${this.userId}${csAmount}${now}`);
+    const orderId = md5(`${this.appId}${this.userInfo._id}${csAmount}${now}`);
     orderInfo.addressInfo = orderInfo.addressInfo.map((ele, index) => ({
       ...ele,
       addressId: md5(`${orderId}${index}`),
     }));
-    const res = await colCsOrder.add({
+    const param = {
       csAmount,
       agAmount,
       ...orderInfo,
       _id: orderId,
       appId: this.appId,
-      userId: this.userId,
+      userId: this.userInfo._id,
       isDelete: false,
       createTime: now,
       status: 1, // 1已创建,待支付 2,已支付,待提交到供应商 3,已提交到供应,待供应商响应(待收货) 5,
       // 已收货,待发货(出物流纪录)
-    });
-    uniCloud.logger.log("添加订单-出参", res);
+    };
+    const res = await colCsOrder.add(param);
+    uniCloud.logger.log("添加订单-入参", param);
     return new this.ResponseModal(0, res);
   }
   /**
@@ -153,7 +146,7 @@ module.exports = class CustomerOrder extends ControllerAuth{
       isDelete: false,
       createTime: now,
       appId: this.appId,
-      userId: this.userId,
+      userId: this.userInfo._id,
     };
     const allPromise = [
       colCsFund.add({
@@ -182,19 +175,20 @@ module.exports = class CustomerOrder extends ControllerAuth{
   /**
    * 查询单条订单
    */
-  async getSingle(option) {
-    uniCloud.logger.log("查询单条订单-入参", option);
-    if (!option.orderId) {
-      return new ResponseModal(400, {}, "订单信息有误");
+  async getSingle(options) {
+    const param = {
+      appId: this.appId,
+      userId: this.userInfo._id,
+      _id: options.orderId,
+      isDelete: false,
+    };
+    uniCloud.logger.log("查询单条订单-入参", param);
+    if (!isId(options.orderId)) {
+      return new this.ResponseModal(400, {}, "订单信息有误");
     }
     const res = await colCsOrder
       .aggregate()
-      .match({
-        appId: this.appId,
-        userId: this.userId,
-        _id: option.orderId,
-        isDelete: false,
-      })
+      .match(param)
       .limit(1)
       .project({
         orderId: "$_id",
@@ -229,7 +223,7 @@ module.exports = class CustomerOrder extends ControllerAuth{
     const orderRes = await colCsOrder
       .where({
         appId: this.appId,
-        userId: this.userId,
+        userId: this.userInfo._id,
         _id: orderId,
         status: 1,
         isDelete: false,
@@ -249,24 +243,19 @@ module.exports = class CustomerOrder extends ControllerAuth{
   }
   /**
    * 根据分类查询订单
-   * @param option
    */
-  async getList(option) {
-    const { currentPage = 1, pageSize = 10, status = -1 } = option;
-    uniCloud.logger.log("根据分类查询订单-入参", {
+  async getListByStatus(options) {
+    const { currentPage = 1, pageSize = 10, status = -1 } = options;
+    const param = {
       appId: this.appId,
-      userId: this.userId,
+      userId: this.userInfo._id,
       status: status === -1 ? undefined : status,
       isDelete: false,
-    });
+    };
+    uniCloud.logger.log("根据分类查询订单-入参", param);
     const res = await colCsOrder
       .aggregate()
-      .match({
-        appId: this.appId,
-        userId: this.userId,
-        status: status === -1 ? undefined : status,
-        isDelete: false,
-      })
+      .match(param)
       .sort({
         createTime: -1,
       })
@@ -280,7 +269,7 @@ module.exports = class CustomerOrder extends ControllerAuth{
         num: $.size("$addressInfo"),
         amount: "$csAmount",
         goodsInfo: {
-          goodsId: "$csGoodsInfo._id",
+          goodsId: "$csGoodsInfo.goodsId",
           expressName: "$spGoodsInfo.expressName",
           goodsName: "$spGoodsInfo.goodsName",
           salePriceNormal: $.divide(["$csAmount", $.size("$addressInfo")]),
@@ -375,33 +364,32 @@ module.exports = class CustomerOrder extends ControllerAuth{
     return res2.updated;
   }
 
-
-  /**
-   * 验证token
-   * @returns {Promise<ResponseModal|{msg: string, code: number}|{msg: string,
-   *   code: number}|{msg: string, code: number}|*|{msg: string, code: number,
-   *   err: *}|{msg: string, code: number, err: *}>}
-   */
-  async checkToken() {
-    if (!this.uniIdToken) {
-      return new this.ResponseModal(401, "请登录后访问");
-    }
-    const res = await uniID.checkToken(this.uniIdToken);
-    uniCloud.logger.log("验证token-出参", res);
-    if (res.code !== 0) {
-      return res;
-    }
-    if (res.appId !== this.appId) {
-      uniCloud.logger.warn("验证token", "注册时appId与登录时appId有差异");
-    }
-    const spRes = await this.getAccessToken();
-    if (!spRes) {
-      return new ResponseModal(30011, "系统异常,请联系管理员");
-    }
-    this.userId = res.uid;
-    this.isVip = res.userInfo.isVip;
-    return res;
-  }
+  // /**
+  //  * 验证token
+  //  * @returns {Promise<ResponseModal|{msg: string, code: number}|{msg: string,
+  //  *   code: number}|{msg: string, code: number}|*|{msg: string, code: number,
+  //  *   err: *}|{msg: string, code: number, err: *}>}
+  //  */
+  // async checkToken() {
+  //   if (!this.uniIdToken) {
+  //     return new this.ResponseModal(401, "请登录后访问");
+  //   }
+  //   const res = await uniID.checkToken(this.uniIdToken);
+  //   uniCloud.logger.log("验证token-出参", res);
+  //   if (res.code !== 0) {
+  //     return res;
+  //   }
+  //   if (res.appId !== this.appId) {
+  //     uniCloud.logger.warn("验证token", "注册时appId与登录时appId有差异");
+  //   }
+  //   // const spRes = await this.getAccessToken();
+  //   // if (!spRes) {
+  //   //   return new ResponseModal(30011, "系统异常,请联系管理员");
+  //   // }
+  //   this.userId = res.uid;
+  //   this.isVip = res.userInfo.isVip;
+  //   return res;
+  // }
   /**
    * 获取供应商的accessToken
    */
@@ -422,4 +410,3 @@ module.exports = class CustomerOrder extends ControllerAuth{
     return (this.accessToken = accessToken);
   }
 };
-

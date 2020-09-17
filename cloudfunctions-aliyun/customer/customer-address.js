@@ -46,7 +46,7 @@ module.exports = class AgentAddress {
     } = param;
     const paramData = {
       appId: this.appId,
-      userId: this.userId,
+      userId: this.userInfo.userId,
       name,
       mobile,
       provinceCode,
@@ -74,7 +74,7 @@ module.exports = class AgentAddress {
   async del(option = {}) {
     const param = {
       appId: this.appId,
-      userId: this.userId,
+      userId: this.userInfo.userId,
       _id: option.addressId,
       isDelete: false,
     };

@@ -26,7 +26,12 @@
       >
         立即支付
       </uv-button>
-      <uv-button v-else custom-class="theme-style__button" size="large">
+      <uv-button
+        v-else
+        custom-class="theme-style__button"
+        size="large"
+        @click="goRecharge"
+      >
         余额告急, 请充值
       </uv-button>
     </view>
@@ -104,6 +109,13 @@ export default class LoginHome extends Vue {
       return;
     }
     uniWrapper.switchTabPage(ROUTE.ORDER_LIST);
+  }
+
+  /**
+   * 前往充值页面
+   */
+  goRecharge() {
+    uniWrapper.navigateToPage(ROUTE.FUND_BALANCE);
   }
 }
 </script>
