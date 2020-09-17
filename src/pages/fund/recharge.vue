@@ -8,6 +8,7 @@
   <view class="rww-container">
     <!-- 金额倒计时 -->
     <!-- 二维码 -->
+    <image :src="fundOrderInfo.qrSrc"></image>
     <!-- 提示信息 -->
     <!-- 联系客服 -->
   </view>
@@ -20,12 +21,13 @@ import { uniWrapper } from "@/assets/js/uni-wrapper";
 
 @Component({})
 export default class extends Vue {
-  onLoad(e: { fundOrderId: string}) {
+  fundOrderInfo: any = {};
+  onLoad(e: { fundOrderId: string }) {
     if (!e.fundOrderId) {
-      uniWrapper.showToastText('充值订单信息有误');
+      uniWrapper.showToastText("充值订单信息有误");
       return;
     }
-    this.getFundOrderInfo(e.fundOrderId)
+    this.getFundOrderInfo(e.fundOrderId);
   }
 
   /**
@@ -34,13 +36,9 @@ export default class extends Vue {
   async getFundOrderInfo(fundOrderId: string) {
     const [err, data] = await order.getFundOrderInfoById({ fundOrderId });
     console.log(err, data);
+    this.fundOrderInfo = data;
   }
 }
 </script>
 
-<style
-  lang="scss"
-  scoped
->
-
-</style>
+<style lang="scss" scoped></style>

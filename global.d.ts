@@ -19,7 +19,7 @@ declare namespace TypesUniCloud {
      */
     database: () => ucDatabase.IDatabase;
     logger: ucLogger.ILogger;
-    uploadFile: ucUploadFile.IUploadFile,
+    uploadFile: ucUploadFile.IUploadFile;
   }
 
   /**
@@ -400,7 +400,9 @@ declare namespace ucAggregate {
      * 对该阶段的每一个输入记录，lookup 会在该记录中增加一个数组字段，该数组是被联表中满足匹配条件的记录列表。
      * lookup 会将连接后的结果输出给下个阶段。
      */
-    lookup: (options: IAggregateLookUpBaseEqual) => IAggregate;
+    lookup: (
+      options: IAggregateLookUpBaseEqual | IAggregateLookUpPipeline
+    ) => IAggregate;
     /**
      * 聚合阶段。
      * 根据条件过滤文档，并且把符合条件的文档传递给下一个流水线阶段。
@@ -486,6 +488,25 @@ declare namespace ucAggregate {
     foreignField: string;
   }
 
+  interface IAggregateLookUpPipeline extends IAggregateLookUpBase {
+    /**
+     * 可选。
+     * 指定在 pipeline 中可以使用的变量，变量的值可以引用输入记录的字段，
+     * 比如 let: { userName: '$name' } 就代表将输入记录的 name 字段
+     * 作为变量 userName 的值。在 pipeline 中无法直接访问输入记录的字段，
+     * 必须通过 let 定义之后才能访问，访问的方式是在 expr 操作符中用 $$变量名的方式访问，
+     * 比如 $$userName。
+     */
+    let?: object;
+    /**
+     * 指定要在被连接集合中运行的聚合操作。
+     * 如果要返回整个集合，则该字段取值空数组 []。
+     * 在 pipeline 中无法直接访问输入记录的字段，必须通过 let 定义之后才能访问，
+     * 访问的方式是在 expr 操作符中用 $$变量名 的方式访问，比如 $$userName。
+     */
+    pipeline: any;
+  }
+
   interface IAggregateUnwindObject {
     /**
      * 想要拆分的数组的字段名，需要以 $ 开头。
@@ -551,7 +572,7 @@ declare namespace ucUploadFile {
     /**
      * 文件类型，支付宝小程序、钉钉小程序必填，可选image、video、audio
      */
-    fileType?: 'image' | 'video' | 'audio';
+    fileType?: "image" | "video" | "audio";
     /**
      * 上传进度回调
      * @param options

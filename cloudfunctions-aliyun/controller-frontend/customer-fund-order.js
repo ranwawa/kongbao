@@ -4,8 +4,8 @@
  * @author 冉娃娃 <274544338@qq.com>
  * @since 2020/9/15 15:20
  */
-const { ControllerAuth, db } = require('api');
-const { colCsFundOrder, dbCmd } = db;
+const { ControllerAuth, db } = require("api");
+const { colCsFundOrder, $ } = db;
 module.exports = class CustomerFund extends ControllerAuth {
   constructor(appId, uniIdToken) {
     super(appId, uniIdToken);
@@ -29,9 +29,9 @@ module.exports = class CustomerFund extends ControllerAuth {
       expireTime: now + 300000,
       status: 1, // 1待响应 2待支付 3已支付 5已超时 6已取消
     };
-    uniCloud.logger.info('创建充值订单-入参', param);
+    uniCloud.logger.info("创建充值订单-入参", param);
     const res = await colCsFundOrder.add(param);
-    uniCloud.logger.info('创建充值订单-出参', res);
+    uniCloud.logger.info("创建充值订单-出参", res);
     return new this.ResponseModal(0, res);
   }
   /**
@@ -39,18 +39,20 @@ module.exports = class CustomerFund extends ControllerAuth {
    */
   async update(options) {
     const { fundOrderId, realPrice } = options;
-    uniCloud.logger.info('更新实际支付金额-入参', options);
-    const res = await colCsFundOrder.where({
-      _id: fundOrderId,
-      userId: this.userInfo._id,
-      appId: this.appId,
-      status: 1,
-      isDelete: false,
-    }).update({
-      realPrice,
-      status: 2,
-    });
-    return this.processResponseData(res, '更新实际支付金额');
+    uniCloud.logger.info("更新实际支付金额-入参", options);
+    const res = await colCsFundOrder
+      .where({
+        _id: fundOrderId,
+        userId: this.userInfo._id,
+        appId: this.appId,
+        status: 1,
+        isDelete: false,
+      })
+      .update({
+        realPrice,
+        status: 2,
+      });
+    return this.processResponseData(res, "更新实际支付金额");
   }
   /**
    * 根据ID查询支付订单信息
@@ -58,7 +60,7 @@ module.exports = class CustomerFund extends ControllerAuth {
    * @returns {Promise<void>}
    */
   async getSingleById(options) {
-    uniCloud.logger.info('根据ID查询支付订单信息-入参', options);
+    uniCloud.logger.info("根据ID查询支付订单信息-入参", options);
     const res = await colCsFundOrder
       .aggregate()
       .match({
@@ -69,22 +71,49 @@ module.exports = class CustomerFund extends ControllerAuth {
         _id: options.fundOrderId,
       })
       .lookup({
-        from: 'kb-ag-infos',
-        localField: 'realPrice',
-        foreignField: 'qr.wechat.2001.money',
-        as: 'qrInfoList',
+        from: "kb-ag-infos",
+        localField: "appId",
+        foreignField: "appId",
+        as: "agentInfoList",
       })
       .addFields({
-        fundOrderId: '$_id',
+        agentInfo: $.arrayElemAt(["$agentInfoList", 0]),
+      })
+      .addFields({
+        fundOrderId: "$_id",
+        qrInfoList: $.let({
+          vars: {
+            qrMap: $.cond({
+              if: $.eq(["$payType", 1]),
+              then: "$agentInfo.qr.alipay",
+              else: "$agentInfo.qr.wechat",
+            }),
+            realPrice: "$realPrice",
+          },
+          in: $.filter({
+            input: $.objectToArray("$$qrMap"),
+            as: "this",
+            cond: $.eq(["$$this.v.money", "$$realPrice"]),
+          }),
+        }),
+      })
+      .addFields({
+        qrSrc: $.let({
+          vars: {
+            qrInfo: $.arrayElemAt(["$qrInfoList", 0]),
+          },
+          in: "$$qrInfo.v.src",
+        }),
       })
       .project({
-        '_id': false,
+        _id: false,
         realPrice: true,
+        realPriceStr: $.divide(["$realPrice", 100]),
         createTime: true,
         expireTime: true,
-        qrInfoList: true,
+        qrSrc: true,
       })
       .end();
-    return this.processResponseData(res, '根据ID查询支付订单信息');
+    return this.processResponseData(res, "根据ID查询支付订单信息", true);
   }
 };
