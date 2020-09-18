@@ -8,5 +8,11 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "api": "file:../common/api",
+    "md5": "^2.3.0",
+    "qs": "^6.9.4",
+    "uni-id": "file:../common/uni-id"
+  }
 }

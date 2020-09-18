@@ -4,13 +4,18 @@
  * @author 冉娃娃 <274544338@qq.com>
  * @since 2020/9/14 10:15
  */
-const callBackMap = require('./callback-map');
+const { mainFunc } = require('api');
+const AliHuoCang = require('./callback-map');
+const PaysApi = require('./cb-pays-api');
+
+const fileMap = {
+  'pays-api': PaysApi,
+  'alihuocang': AliHuoCang,
+}
 exports.main = async (event, context) => {
   // path 云函数url化,请求的路径
   // body 传递过来的参数
-  const { path = '', body = '' } = event;
-  if (!path) {
-    return { success: false };
-  }
-  return callBackMap[path] ? callBackMap[path](body) : { success: false };
+  event.action = event.path;
+  event.data = event.body;
+  return await mainFunc(event, context, fileMap);
 };

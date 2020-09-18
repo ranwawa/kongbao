@@ -11,6 +11,7 @@ const AgentGoods = require("./agent-goods");
 // const CustomerFund = require("./customer-fund");
 const CustomerAddress = require("./customer-address");
 const CustomerOrder = require("./customer-order");
+const CustomerFund = require("./customer-fund");
 const CustomerFundOrder = require("./customer-fund-order");
 const UserAuth = require("./user-auth");
 const UserAnonymous = require("./user-anonymous");
@@ -20,7 +21,7 @@ const fileMap = {
   "supplier-store": SupplierStore,
   "agent-info": AgentInfo,
   "agent-goods": AgentGoods,
-  // "customer-fund": CustomerFund,
+  "customer-fund": CustomerFund,
   "customer-address": CustomerAddress,
   "customer-order": CustomerOrder,
   "user-auth": UserAuth,

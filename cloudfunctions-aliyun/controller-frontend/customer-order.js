@@ -149,11 +149,7 @@ module.exports = class CustomerOrder extends ControllerAuth {
       userId: this.userInfo._id,
     };
     const allPromise = [
-      colCsFund.add({
-        ...param,
-        price: orderInfo.csAmount,
-        balance: balanceCustomer,
-      }),
+
       colAgFund.add({
         ...param,
         price: orderInfo.agAmount,

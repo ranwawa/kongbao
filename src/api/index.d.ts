@@ -218,5 +218,9 @@ namespace order {
      * 支付二维码
      */
     qrSrc: string;
+    /**
+     * 订单状态
+     */
+    status: number;
   }
 }

@@ -67,7 +67,6 @@ module.exports = class CustomerFund extends ControllerAuth {
         appId: this.appId,
         userId: this.userInfo._id,
         isDelete: false,
-        status: 2,
         _id: options.fundOrderId,
       })
       .lookup({
@@ -111,6 +110,7 @@ module.exports = class CustomerFund extends ControllerAuth {
         realPriceStr: $.divide(["$realPrice", 100]),
         createTime: true,
         expireTime: true,
+        status: true,
         qrSrc: true,
       })
       .end();

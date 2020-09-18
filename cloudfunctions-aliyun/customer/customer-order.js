@@ -471,33 +471,7 @@ module.exports = class Order {
     isPickFirst && (data = data[0] || {});
     return new ResponseModal(0, data);
   }
-  /**
-   * 验证token
-   * @returns {Promise<ResponseModal|{msg: string, code: number}|{msg: string,
-   *   code: number}|{msg: string, code: number}|*|{msg: string, code: number,
-   *   err: *}|{msg: string, code: number, err: *}>}
-   */
-  async checkToken() {
-    if (!this.uniIdToken) {
-      return new ResponseModal(401, "请登录后访问");
-    }
-    const res = await uniID.checkToken(this.uniIdToken);
-    uniCloud.logger.log("验证token-出参", res);
-    if (res.code !== 0) {
-      return res;
-    }
-    if (res.appId !== this.appId) {
-      uniCloud.logger.warn("验证token", "注册时appId与登录时appId有差异");
-    }
-    const spRes = await this.getAccessToken();
-    if (!spRes) {
-      return new ResponseModal(30011, "系统异常,请联系管理员");
-    }
-    this.userId = res.uid;
-    this.isVip = res.userInfo.isVip;
-    return res;
-  }
-  /**
+ /**
    * 获取供应商的accessToken
    */
   async getAccessToken() {

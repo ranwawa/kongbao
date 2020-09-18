@@ -11,7 +11,7 @@ module.exports = async function (event, context, fileMap) {
   const { action = "", data = {}, uniIdToken = "" } = event;
   const userInfo = await checkToken(uniIdToken);
   const { APPID } = context;
-  const [fileName, funcName] = action.split("/");
+  const [fileName, funcName] = action.replace(/^\//, '').split("/");
   const fileClass = fileMap[fileName];
   if (!fileName || !fileClass || !funcName) {
     return { code: 404001, msg: "未找到访问的接口" };
