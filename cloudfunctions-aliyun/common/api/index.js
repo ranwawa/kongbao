@@ -28,9 +28,28 @@ class ControllerBase {
    */
   async processResponseData(res, title = "--", isPickFirst = false) {
     uniCloud.logger.log(title + "-出参", res);
-    let data = res.affectedDocs ? res.data || [] : [];
-    isPickFirst && (data = data[0] || {});
-    return new ResponseModal(0, data);
+    // 新增成功的返回结构 {id: xxx}
+    let code = 0;
+    let data = {};
+    let msg = "ok";
+    if (res.id !== undefined) {
+      code = 0;
+      data = res;
+    } else if (res.affectedDocs !== undefined && res.data !== undefined) {
+      // 查询成功的返回结构 {affectedDocs: 1, data: []}
+      code = 0;
+      data = isPickFirst ? res.data[0] || {} : res.data;
+    } else if (res.affectedDocs !== undefined && res.updated !== undefined) {
+      // 更新成功的返回结构 {affectedDocs: 1, updated: 1}
+      code = res.affectedDocs > 0 ? 0 : 500;
+      data = res;
+      msg = "更新失败";
+    } else {
+      code = 500;
+      data = res;
+      msg = "未知异常";
+    }
+    return new ResponseModal(code, data, msg);
   }
 }
 

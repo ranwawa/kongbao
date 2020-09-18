@@ -155,7 +155,7 @@ declare namespace ucCommand {
   /**
    * 数据库操作符，通过 db.command 获取
    */
-  interface ICommand {
+  interface ICommand extends ICommandUpdate {
     /**
      * 判断字段是否存在
      * @param value
@@ -165,12 +165,23 @@ declare namespace ucCommand {
      * 数据库聚合操作符，通过 db.command.aggregate 获取
      */
     aggregate: IAggregateCommand;
+  }
+
+  /**
+   * 数据库操作符-更新字段操作符
+   */
+  interface ICommandUpdate {
+    /**
+     * 更新操作符，原子操作，用于指示字段自增
+     * 自增量，可正可负
+     * 多个用户同时写，对数据库来说都是将字段自增，不会有后来者覆写前者的情况
+     */
+    inc(value: number): ICommand;
     /**
      * 更新操作符，用于表示删除某个字段。
      */
     remove: () => void;
   }
-
   interface IAggregateCommand
     extends IAggregateCommandObject,
       IAggregateCommandCondition,
@@ -307,7 +318,7 @@ declare namespace ucCollection {
     /**
      * 更新多条记录
      */
-    update: (options) => Promise<object>;
+    update: (options) => Promise<{ affectedDocs: number; updated: number }>;
     /**
      * 指定查询条件，返回带新查询条件的新的集合引用
      * @param condition

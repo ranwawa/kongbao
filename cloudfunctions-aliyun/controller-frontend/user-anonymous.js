@@ -1,8 +1,8 @@
 const uniID = require("uni-id");
-const { ResponseModal } = require("api");
-module.exports = class UserNormal {
+const { ControllerBase } = require("api");
+module.exports = class UserAnonymous extends ControllerBase {
   constructor(appId) {
-    this.appId = appId;
+    super(appId);
   }
   /**
    * 注册
@@ -18,7 +18,7 @@ module.exports = class UserNormal {
       password: data.password,
     });
     uniCloud.logger.info("注册-出参", res);
-    return new ResponseModal(res.code, res, res.msg);
+    return new this.ResponseModal(res.code, res, res.msg);
   }
   /**
    * 登录
@@ -36,6 +36,6 @@ module.exports = class UserNormal {
       token: [res.token],
     });
     uniCloud.logger.info("单点登录,清空其他token-出参", res2);
-    return new ResponseModal(res.code, res, res.msg);
+    return new this.ResponseModal(res.code, res, res.msg);
   }
 };

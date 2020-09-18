@@ -35,26 +35,6 @@ module.exports = class CustomerFund extends ControllerAuth {
     return new this.ResponseModal(0, res);
   }
   /**
-   * 更新实际支付金额
-   */
-  async update(options) {
-    const { fundOrderId, realPrice } = options;
-    uniCloud.logger.info("更新实际支付金额-入参", options);
-    const res = await colCsFundOrder
-      .where({
-        _id: fundOrderId,
-        userId: this.userInfo._id,
-        appId: this.appId,
-        status: 1,
-        isDelete: false,
-      })
-      .update({
-        realPrice,
-        status: 2,
-      });
-    return this.processResponseData(res, "更新实际支付金额");
-  }
-  /**
    * 根据ID查询支付订单信息
    * @param options
    * @returns {Promise<void>}

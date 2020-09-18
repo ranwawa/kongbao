@@ -12,6 +12,7 @@
   "dependencies": {
     "api": "file:../common/api",
     "lodash": "^4.17.20",
+    "md5": "^2.3.0",
     "uni-id": "file:../common/uni-id"
   }
 }
