@@ -5,21 +5,23 @@
  * @since 2020/9/15 11:30
  */
 import { Request } from "./request";
+import { uniWrapper } from "@/assets/js/uni-wrapper";
 
-const request = new Request('common');
+const request = new Request("common");
 
 class Common {
   /**
    * 上传文件
    */
-  async uploadImage(data: admin.IQrItem) {
+  async uploadImage(data: { filePath: string; cloudPath: string }) {
     try {
+      await uniWrapper.showLoadingText();
       const res = await request.uniCloud.uploadFile({
-        filePath: data.src,
-        cloudPath: `${data.tabType}${data.money}.${data.imgType}`,
-        fileType: 'image',
+        ...data,
+        fileType: "image",
       });
-      return [null, res]
+      uniWrapper.hideLoading();
+      return [null, res];
     } catch (e) {
       return [e, null];
     }

@@ -57,8 +57,7 @@ namespace user {
   /**
    * 登录响应参数
    */
-  interface LoginRes extends RegisterRes {
-  }
+  interface LoginRes extends RegisterRes {}
 
   /**
    * 用户信息响应
@@ -195,12 +194,29 @@ namespace order {
      */
     status: number;
   }
-  interface IListReq extends IPageBase{
+  interface IListReq extends IPageBase {
     status: number;
   }
   interface IFundOrderItem {
+    /**
+     * 订单创建时间
+     */
+    createTime: number;
+    /**
+     * 订单支付超时时间
+     */
+    expireTime: number;
+    /**
+     * 订单编号
+     */
     orderId: string;
+    /**
+     * 真实支付价格
+     */
     realPrice: string;
-    qrCode: string;
+    /**
+     * 支付二维码
+     */
+    qrSrc: string;
   }
 }

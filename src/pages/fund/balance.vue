@@ -55,8 +55,8 @@ import { order } from "@/api/order";
 
 interface IStatusItem {
   name: string;
-  icon: string,
-  id: number
+  icon: string;
+  id: number;
 }
 
 @Component({})
@@ -90,81 +90,80 @@ export default class LoginHome extends Vue {
     this.isDisableBtn = true;
     const [err, data] = await order.confirmFundOrder({
       payType: currentStatus.id,
-      money: this.currentMoney * 100
+      money: this.currentMoney * 100,
     });
     this.isDisableBtn = false;
     const fundOrderId = data?.fundOrderId;
-    if(err || !fundOrderId) {
+    if (err || !fundOrderId) {
       return;
     }
-    uniWrapper.navigateToPage(`${ROUTE.FUND_RECHARGE}?fundOrderId=${fundOrderId}`);
+    uniWrapper.redirectToPage(
+      `${ROUTE.FUND_RECHARGE}?fundOrderId=${fundOrderId}`
+    );
   }
 }
 </script>
 
-<style
-  lang="scss"
-  scoped
->
-  /* 公共样式 */
-  .layout {
+<style lang="scss" scoped>
+/* 公共样式 */
+.layout {
+  margin-bottom: $s-sm;
+  background-color: #fff;
+
+  &__title {
+    @include bd-hairline-bottom;
+    padding: $s-sm;
+    font-size: $fz-lg;
+  }
+
+  &__body {
+    @include flex-row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: $s-sm;
+    text-align: center;
+  }
+
+  &__item {
+    @include bd-hairline-base;
+    width: 30%;
+    height: 3em;
     margin-bottom: $s-sm;
-    background-color: #fff;
+    line-height: 3em;
 
-    &__title {
-      @include bd-hairline-bottom;
-      padding: $s-sm;
-      font-size: $fz-lg;
+    &::after {
+      border: 1px solid $bdc-base;
     }
 
-    &__body {
-      @include flex-row;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      padding: $s-sm;
-      text-align: center;
-    }
-
-    &__item {
-      @include bd-hairline-base;
-      width: 30%;
-      height: 3em;
-      margin-bottom: $s-sm;
-      line-height: 3em;
+    &-active {
+      background-color: $c-theme;
+      color: #fff;
 
       &::after {
-        border: 1px solid $bdc-base;
-      }
-
-      &-active {
-        background-color: $c-theme;
-        color: #fff;
-
-        &::after {
-          border-width: 0;
-        }
+        border-width: 0;
       }
     }
   }
+}
 
-  .status {
-    .layout__body {
-      justify-content: flex-start;
-    }
-
-    &__item {
-      @include flex-row;
-      justify-content: center;
-      flex-grow: 1;
-    }
-
-    /deep/ .uv-icon {
-      margin-right: $s-xxs;
-    }
+.status {
+  .layout__body {
+    justify-content: flex-start;
   }
 
-  .button-wrapper {
-    padding: $s-sm;
-    margin-top: $s-xxl;
+  &__item {
+    @include flex-row;
+    justify-content: center;
+    flex-grow: 1;
   }
+
+  /deep/ .uv-icon {
+    margin-right: $s-xxs;
+  }
+}
+
+.button-wrapper {
+  padding: $s-sm;
+  margin-top: $s-xxl;
+}
 </style>
