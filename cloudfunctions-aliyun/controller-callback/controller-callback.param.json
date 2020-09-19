@@ -1,6 +1,19 @@
-// 本文件中的json内容将在云函数【运行】时作为参数传给云函数。
-// 配置教程参考：https://uniapp.dcloud.net.cn/uniCloud/quickstart?id=runparam
-{  "path": "aliHuoCang",
-  "uniIdToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI1ZjVlMjU4MGY3MmE0YjAwMDFkOWUwZGYiLCJjbGllbnRJZCI6IjI1M2RiYWMzYzljNjBiYTJhZDA0OTQ0M2NhZGY4ZjliIiwiaWF0IjoxNjAwMDExNjcwLCJleHAiOjE2MDcyMTE2NzB9.TMNYEBTncZZ_jGhRZ9G-KUcUgo0lcKjG4099iL5e8-o",
-  "body":"data=%5B%7B%22recordId%22%3A%22774878%22%2C%22batchNo%22%3A%222020091321303277240674%22%2C%22amount%22%3A3.70%2C%22thirdOrderNo%22%3A%22781db96c58c847c19675940402fd3773%22%2C%22success%22%3A%22true%22%7D%2C%7B%22recordId%22%3A%22774879%22%2C%22batchNo%22%3A%222020091321303277240674%22%2C%22amount%22%3A3.70%2C%22thirdOrderNo%22%3A%224a200b86f37d39db137b214194cb0946%22%2C%22success%22%3A%22true%22%7D%5D"
-}
+ {
+    "path": "/pays-api/payed",
+    "httpMethod": "POST",
+    "headers": {
+      "content-length": "181",
+      "referer": "https://a.bearsoftware.net.cn/myHasGetMoney",
+      "x-forwarded-for": "119.28.137.219, 39.96.130.20",
+      "accept": "*/*",
+      "x-real-ip": "119.28.137.219",
+      "uid": "5f6292667330b2000165c8b0and__UNI__0CA1D11",
+      "host": "66108fd9-83f0-4fda-9219-f9fe3a6a377e.bspapp.com",
+      "content-type": "application/x-www-form-urlencoded",
+      "x-forwarded-by": "172.20.13.180:80",
+      "user-agent": "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)"
+    },
+    "queryStringParameters": {},
+    "isBase64Encoded": false,
+    "body": "paysapi_id=7faba5f4fee304ddf09feaed&orderid=5f64ceb71832a10001b2c2a8&price=20&realprice=20.01&orderuid=5f6292667330b2000165c8b0and__UNI__0CA1D11&key=472ace3da132f89e224a8afccebaf4d2"
+  }
