@@ -128,7 +128,7 @@ export default class extends Vue {
       this.isExpired = true;
     } else {
       this.getCountdown(now, expireTime);
-      this.getFundOrderStatusLoop(e.fundOrderId);
+      this.getFundOrderStatusLoop(fundOrderId);
     }
     this.fundOrderInfo = data;
   }

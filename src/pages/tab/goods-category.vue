@@ -181,4 +181,5 @@ export default class LoginHome extends Vue {
       }
     }
   }
+
 </style>

@@ -606,3 +606,5 @@ declare namespace ucUploadFile {
   }
 }
 declare const uniCloud: TypesUniCloud.UniCloud;
+
+declare module 'countdown';
