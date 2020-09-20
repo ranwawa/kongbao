@@ -4,12 +4,13 @@
  * @author 冉娃娃 <274544338@qq.com>
  * @since 2020/9/14 11:08
  */
-const { ControllerAuth, db } = require("api");
+const { ControllerAuth, db, utils } = require("api");
 const { colCsOrder, $ } = db;
-const md5 = require("md5");
+const { moment, md5 } = utils;
 function isId(id) {
   return typeof id === "string" && id.length === 32;
 }
+const FORMATTER = "YYYY-MM-DD HH:mm:ss";
 module.exports = class CustomerOrder extends ControllerAuth {
   constructor(appId, userInfo) {
     super(appId, userInfo);
@@ -86,14 +87,25 @@ module.exports = class CustomerOrder extends ControllerAuth {
           in: { formattedAddress: "$$this.formattedAddress" },
         }),
         goodsInfo: {
-          goodsId: "$csGoodsInfo._id",
+          goodsId: "$csGoodsInfo.goodsId",
           expressName: "$spGoodsInfo.expressName",
           goodsName: "$spGoodsInfo.goodsName",
           salePriceNormal: $.divide(["$csAmount", $.size("$addressInfo")]),
+          salePriceNormalStr: $.divide([
+            $.divide(["$csAmount", $.size("$addressInfo")]),
+            100,
+          ]),
           imgList: $.split(["$spGoodsInfo.imgList", "---"]),
         },
       })
       .end();
+    res.data = res.data.map((ele) => {
+      ele.createTimeStr = moment(ele.createTime).format(FORMATTER);
+      ele.storeTime &&
+        (ele.storeTimeStr = moment(ele.storeTime).format(FORMATTER));
+      ele.payTime && (ele.payTimeStr = moment(ele.payTime).format(FORMATTER));
+      return ele;
+    });
     return this.processResponseData(res, "查询单条订单", true);
   }
   /**
@@ -152,15 +164,24 @@ module.exports = class CustomerOrder extends ControllerAuth {
         orderId: "$_id",
         num: $.size("$addressInfo"),
         amount: "$csAmount",
+        amountStr: $.divide(["$csAmount", 100]),
         goodsInfo: {
           goodsId: "$csGoodsInfo.goodsId",
           expressName: "$spGoodsInfo.expressName",
           goodsName: "$spGoodsInfo.goodsName",
           salePriceNormal: $.divide(["$csAmount", $.size("$addressInfo")]),
+          salePriceNormalStr: $.divide([
+            $.divide(["$csAmount", $.size("$addressInfo")]),
+            100,
+          ]),
           imgList: $.split(["$spGoodsInfo.imgList", "---"]),
         },
       })
       .end();
+    res.data = res.data.map((ele) => {
+      ele.createTimeStr = moment(ele.createTime).format(FORMATTER);
+      return ele;
+    });
     return this.processResponseData(res, "根据分类查询订单");
   }
 };

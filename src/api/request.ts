@@ -18,7 +18,8 @@ export class Request {
   async start<TRes>(
     param: TypesUniCloud.DataReq<any>
   ): Promise<[any | null, TRes | null]> {
-    await uniWrapper.showLoadingText();
+    const isShowLoading = !param.isHideLoad;
+    isShowLoading && (await uniWrapper.showLoadingText());
     try {
       const res = await this.uniCloud.callFunction({
         name: this.name,
@@ -26,10 +27,10 @@ export class Request {
           ...param,
         },
       });
-      uniWrapper.hideLoading();
+      isShowLoading && uniWrapper.hideLoading();
       return this.handleCallFunctionRes<TRes>(res);
     } catch (e) {
-      uniWrapper.hideLoading();
+      isShowLoading && uniWrapper.hideLoading();
       uniWrapper.showToastText("网络异常,请稍后再试");
       return [e, null];
     }

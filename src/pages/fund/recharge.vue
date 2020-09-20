@@ -9,7 +9,7 @@
     <!-- 金额倒计时 -->
     <view class="recharge-head">
       <uv-price :amount="fundOrderInfo.realPriceStr" />
-      <view class="recharge-countdown" >
+      <view class="recharge-countdown">
         <template v-if="!isExpired && countdown">
           请在
           <text class="recharge-countdown__time">{{ countdown }}</text>
@@ -18,25 +18,16 @@
       </view>
     </view>
     <!-- 二维码 -->
-    <view
-      v-if="fundOrderInfo.qrSrc"
-      class="recharge-qr"
-      @click="clickImg"
-    >
+    <view v-if="fundOrderInfo.qrSrc" class="recharge-qr" @click="clickImg">
       <image
         :class="{
-        'recharge-qr__img-payed': isPayed,
-        'recharge-qr__img-expired': isExpired,
-      }"
-        class="recharge-qr__img"
+          'recharge-qr__img-payed': isPayed,
+          'recharge-qr__img-expired': isExpired,
+        }"
         :src="fundOrderInfo.qrSrc"
+        class="recharge-qr__img"
+        mode="aspectFill"
       />
-      <view
-        v-if="!isExpired"
-        class="recharge-qr__desc"
-      >
-        请用{{ fundOrderInfo.payType === 1 ? '支付宝' : '微信' }}扫码支付
-      </view>
     </view>
     <view
       v-else
@@ -50,14 +41,14 @@
         color="red"
       />
       网络异常,请联系客服人员
-      <br>
+      <br />
       或点击这里更换充值金额
     </view>
     <!-- 提示信息 -->
     <view
-      :class="{'recharge-tip-fixed': isAlert}"
+      :class="{ 'recharge-tip-fixed': isAlert }"
       class="recharge-tip"
-      @click="isAlert =false"
+      @click="isAlert = false"
     >
       <view class="recharge-tip__wrapper" />
       <view class="recharge-tip__body">
@@ -71,7 +62,7 @@
           v-if="isAlert"
           type="primary"
           custom-style="margin-top: 24rpx; float: right"
-        >我知道了
+          >我知道了
         </uv-button>
       </view>
     </view>
@@ -173,7 +164,7 @@ export default class extends Vue {
    */
   clickImg() {
     if (this.isExpired) {
-      this.goPage('/pages/fund/balance')
+      this.goPage("/pages/fund/balance");
     }
   }
 
@@ -183,133 +174,123 @@ export default class extends Vue {
 }
 </script>
 
-<style
-  lang="scss"
-  scoped
->
-  .rww-container {
-    padding-bottom: $s-xxl;
+<style lang="scss" scoped>
+.rww-container {
+  padding-bottom: $s-xxl;
+}
+
+.recharge {
+  /* 倒计时金额 */
+  &-head {
+    @include flex-column;
+    padding: $s-sm;
+    margin-bottom: $s-sm;
+    background-color: #fff;
   }
 
-  .recharge {
-    /* 倒计时金额 */
-    &-head {
-      @include flex-column;
-      padding: $s-sm;
-      margin-bottom: $s-sm;
-      background-color: #fff;
-    }
+  &-countdown {
+    @include flex-row;
+    margin-top: $s-sm;
 
-    &-countdown {
+    &__time {
+      color: red;
+    }
+  }
+
+  /* 二维码 */
+  &-qr {
+    padding: $s-sm;
+    margin: $s-sm auto;
+    background-color: #fff;
+
+    &-invalid {
       @include flex-row;
-      margin-top: $s-sm;
-
-      &__time {
-        color: red;
-      }
+      font-size: $fz-xl;
     }
 
-    /* 二维码 */
-    &-qr {
-      padding: $s-sm;
-      margin: $s-sm auto;
-      background-color: #fff;
-
-      &-invalid {
-        @include flex-row;
-        font-size: $fz-xl;
-      }
-
-      &__img {
-        position: relative;
-        display: block;
-        width: px2rpx(268);
-        height: px2rpx(268);
-        margin: auto;
-
-        &-payed::after,
-        &-expired::after {
-          @include flex-row;
-          justify-content: center;
-          position: absolute;
-          top: 0;
-          right: 0;
-          bottom: 0;
-          left: 0;
-          margin: auto;
-          background-color: rgba(0, 0, 0, .6);
-          color: #fff;
-          font-size: $fz-xl;
-        }
-
-        &-payed::after {
-          content: '支付成功，即将返回';
-        }
-
-        &-expired::after {
-          content: '二维码已失效，点击刷新';
-        }
-      }
-
-      &__desc {
-        padding: $s-sm;
-        font-size: $fz-xl;
-        font-weight: bold;
-        text-align: center;
-      }
-    }
-
-    /* 提示信息 */
-    &-tip {
+    &__img {
       position: relative;
-      padding: $s-sm;
-      margin: $s-sm 0;
-      background-color: #fff;
-      color: $c-light;
+      display: block;
+      width: px2rpx(268);
+      height: px2rpx(368);
+      margin: auto;
 
-      &__body {
-        position: relative;
-        z-index: 2;
-        width: 100%;
-        padding: $s-sm;
-      }
-
-      &__title {
-        margin-bottom: $s-sm;
-        font-size: $fz-lg;
-      }
-
-      /* 提示状态 */
-      &-fixed {
-        @include flex-column;
+      &-payed::after,
+      &-expired::after {
+        @include flex-row;
+        justify-content: center;
         position: absolute;
         top: 0;
         right: 0;
         bottom: 0;
         left: 0;
-        justify-content: center;
-        background-color: transparent;
-        color: $c-base;
+        margin: auto;
+        background-color: rgba(0, 0, 0, 0.9);
+        color: #fff;
+        font-size: $fz-xl;
       }
 
-      &-fixed &__wrapper {
-        display: block;
+      &-payed::after {
+        content: "支付成功，即将返回";
       }
 
-      &-fixed &__body {
-        background-color: #fff;
-      }
-
-      &__wrapper {
-        position: fixed;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        z-index: 1;
-        display: none;
-        background-color: rgba(0, 0, 0, .8);
+      &-expired::after {
+        content: "二维码已失效，点击刷新";
       }
     }
   }
+
+  /* 提示信息 */
+  &-tip {
+    position: relative;
+    padding: $s-sm;
+    margin: $s-sm 0;
+    background-color: #fff;
+    color: $c-light;
+
+    &__body {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      padding: $s-sm;
+    }
+
+    &__title {
+      margin-bottom: $s-sm;
+      font-size: $fz-lg;
+    }
+
+    /* 提示状态 */
+    &-fixed {
+      @include flex-column;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      justify-content: center;
+      background-color: transparent;
+      color: $c-base;
+    }
+
+    &-fixed &__wrapper {
+      display: block;
+    }
+
+    &-fixed &__body {
+      background-color: #fff;
+    }
+
+    &__wrapper {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 1;
+      display: none;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+  }
+}
 </style>

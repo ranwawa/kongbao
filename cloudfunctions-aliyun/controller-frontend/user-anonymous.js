@@ -6,16 +6,16 @@ module.exports = class UserAnonymous extends ControllerBase {
   }
   /**
    * 注册
-   * @param data
    */
-  async register(data) {
+  async register(options) {
+    uniCloud.logger.info("(user-anonymous)注册-入参", options);
     const res = await uniID.register({
       appId: this.appId,
       vipExpireTime: Date.now(),
       balance: 0,
-      username: data.username,
-      nickname: data.username,
-      password: data.password,
+      username: options.username,
+      nickname: options.username,
+      password: options.password,
     });
     uniCloud.logger.info("注册-出参", res);
     return new this.ResponseModal(res.code, res, res.msg);

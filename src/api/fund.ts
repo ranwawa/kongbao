@@ -5,10 +5,10 @@ class Fund {
   /**
    * 根据类型获取资金明细列表
    */
-  getListByType(data: order.IConfirmReq) {
-    return requestAddress.start<{ id: string }>({
+  getListByType(data: fund.IGetListReq) {
+    return requestAddress.start<Array<fund.IFundItem>>({
       data,
-      action: "customer-fund-order/getListByType",
+      action: "customer-fund/getListByIsIncome",
     });
   }
 }

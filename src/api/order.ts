@@ -60,6 +60,7 @@ class Order {
   getFundOrderInfoById(data: { fundOrderId: string }) {
     return request.start<order.IFundOrderItem>({
       data,
+      isHideLoad: true,
       action: "customer-fund-order/getSingleById",
     });
   }

@@ -1,16 +1,16 @@
 {
-    "path": "/ali-huocang/confirm",
-    "httpMethod": "POST",
-    "headers": {
-      "content-length": "206",
-      "x-forwarded-for": "103.216.154.186, 39.96.130.24",
-      "x-real-ip": "103.216.154.186",
-      "host": "66108fd9-83f0-4fda-9219-f9fe3a6a377e.bspapp.com",
-      "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-      "x-forwarded-by": "172.20.16.191:80",
-      "user-agent": "Mozilla/5.0 (Windows NT 6.1; rv:14.0) Gecko/20100101 Firefox/14.0.1"
-    },
-    "queryStringParameters": {},
-    "isBase64Encoded": false,
-    "body": "data=%5B%7B%22recordId%22%3A%22774883%22%2C%22batchNo%22%3A%222020092017455616459389%22%2C%22amount%22%3A3.95%2C%22thirdOrderNo%22%3A%2231851a49460ca128d7b5a6af39b8e223%22%2C%22success%22%3A%22true%22%7D%5D"
-  }
+	"data": {
+		"pageSize": 10,
+		"currentPage": 1,
+		"isIncome": true
+	},
+	"action": "customer-fund/getListByIsIncome",
+	"clientInfo": {
+		"PLATFORM": "h5",
+		"OS": "ios",
+		"APPID": "__UNI__0CA1D11",
+		"CLIENT_SDK_VERSION": "1.0.0"
+	},
+	"uniCloudClientInfo": "%7B%22ak%22%3A%22__UNI__0CA1D11%22%2C%22p%22%3A%22i%22%2C%22ut%22%3A%22h5%22%2C%22uuid%22%3A%22mn1kbr7ad8g6177qq1cie8qupdl93v87%22%2C%22fn%22%3A%22controller-frontend%22%2C%22sid%22%3A%2266108fd9-83f0-4fda-9219-f9fe3a6a377e%22%2C%22pvd%22%3A%22a%22%7D",
+	"uniIdToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI1ZjY1Y2UyNmQ3OWIwZjAwMDFjYmE1N2EiLCJjbGllbnRJZCI6IjI1M2RiYWMzYzljNjBiYTJhZDA0OTQ0M2NhZGY4ZjliIiwiaWF0IjoxNjAwNjA3Mjg2LCJleHAiOjE2MDc4MDcyODZ9.AhdW3vQHqbg7Zm-9xgDs-22a3Z0FKDmrQISvdrU6RqQ"
+}

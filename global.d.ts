@@ -32,6 +32,10 @@ declare namespace TypesUniCloud {
      */
     action: string;
     /**
+     * 是否隐藏加载动画
+     */
+    isHideLoad?: boolean;
+    /**
      * 该接口函数的请求入参
      */
     data: T;
@@ -607,4 +611,4 @@ declare namespace ucUploadFile {
 }
 declare const uniCloud: TypesUniCloud.UniCloud;
 
-declare module 'countdown';
+declare module "countdown";

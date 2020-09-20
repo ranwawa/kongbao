@@ -226,3 +226,17 @@ namespace order {
     status: number;
   }
 }
+
+namespace fund {
+  interface IGetListReq extends IPageBase {
+    isIncome: boolean;
+  }
+  interface IFundItem {
+    fundId: string;
+    price: number;
+    priceStr: string;
+    createTimeStr: string;
+    type: number;
+    typeStr?: string;
+  }
+}
