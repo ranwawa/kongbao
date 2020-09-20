@@ -6,7 +6,7 @@ export class Request {
   name: string = "";
   uniCloud: TypesUniCloud.UniCloud;
 
-  constructor(name: string) {
+  constructor(name: string = "") {
     this.name = name;
     this.uniCloud = this.init();
   }

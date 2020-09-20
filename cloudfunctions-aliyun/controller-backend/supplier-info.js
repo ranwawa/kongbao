@@ -14,9 +14,13 @@ module.exports = class SupplierInfo extends ControllerBase {
   /**
    * 根据ID查询供应商信息
    */
-  async getSupplierInfoById(id) {
-    uniCloud.logger.info("根据ID查询供应商信息-入参", id);
-    const res = await colSpInfos.doc(id).get();
-    return this.processResponseData(res, "根据ID查询供应商信息", true);
+  async getSupplierInfoById(options) {
+    uniCloud.logger.info("(supplier-info)根据ID查询供应商信息-入参", options);
+    const res = await colSpInfos.doc(options.supplierId).get();
+    return this.processResponseData(
+      res,
+      "(supplier-info)根据ID查询供应商信息",
+      true
+    );
   }
 };

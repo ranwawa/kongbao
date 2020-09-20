@@ -17,7 +17,7 @@
     />
     <view class="pay__btn">
       <uv-button
-        v-if="userInfo.balance"
+        v-if="userInfo.balance < orderInfo.amount"
         :disabled="isDisableSubmit"
         :load="isDisableSubmit"
         custom-class="theme-style__button"

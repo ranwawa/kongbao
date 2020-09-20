@@ -8,7 +8,6 @@ const { mainFunc } = require("api");
 const SupplierStore = require("./supplier-store");
 const AgentInfo = require("./agent-info");
 const AgentGoods = require("./agent-goods");
-const AgentFund = require("./agent-fund");
 const CustomerAddress = require("./customer-address");
 const CustomerOrder = require("./customer-order");
 const CustomerFund = require("./customer-fund");
@@ -19,7 +18,6 @@ const OrderOperate = require("./order-operate");
 
 const fileMap = {
   "supplier-store": SupplierStore,
-  "agent-fund": AgentFund,
   "agent-info": AgentInfo,
   "agent-goods": AgentGoods,
   "customer-fund": CustomerFund,

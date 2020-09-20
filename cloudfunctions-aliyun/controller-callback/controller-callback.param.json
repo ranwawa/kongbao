@@ -1,19 +1,16 @@
- {
-    "path": "/pays-api/payed",
+{
+    "path": "/ali-huocang/confirm",
     "httpMethod": "POST",
     "headers": {
-      "content-length": "181",
-      "referer": "https://a.bearsoftware.net.cn/myHasGetMoney",
-      "x-forwarded-for": "119.28.137.219, 39.96.130.20",
-      "accept": "*/*",
-      "x-real-ip": "119.28.137.219",
-      "uid": "5f6292667330b2000165c8b0and__UNI__0CA1D11",
+      "content-length": "206",
+      "x-forwarded-for": "103.216.154.186, 39.96.130.24",
+      "x-real-ip": "103.216.154.186",
       "host": "66108fd9-83f0-4fda-9219-f9fe3a6a377e.bspapp.com",
-      "content-type": "application/x-www-form-urlencoded",
-      "x-forwarded-by": "172.20.13.180:80",
-      "user-agent": "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)"
+      "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+      "x-forwarded-by": "172.20.16.191:80",
+      "user-agent": "Mozilla/5.0 (Windows NT 6.1; rv:14.0) Gecko/20100101 Firefox/14.0.1"
     },
     "queryStringParameters": {},
     "isBase64Encoded": false,
-    "body": "paysapi_id=7faba5f4fee304ddf09feaed&orderid=5f64ceb71832a10001b2c2a8&price=20&realprice=20.01&orderuid=5f6292667330b2000165c8b0and__UNI__0CA1D11&key=472ace3da132f89e224a8afccebaf4d2"
+    "body": "data=%5B%7B%22recordId%22%3A%22774883%22%2C%22batchNo%22%3A%222020092017455616459389%22%2C%22amount%22%3A3.95%2C%22thirdOrderNo%22%3A%2231851a49460ca128d7b5a6af39b8e223%22%2C%22success%22%3A%22true%22%7D%5D"
   }

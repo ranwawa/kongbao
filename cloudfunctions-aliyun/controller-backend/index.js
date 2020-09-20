@@ -5,12 +5,17 @@
  * @since 2020/9/14 11:55
  */
 const { mainFunc } = require("api");
+const SpInfo = require("./supplier-info");
+const AgentInfo = require("./agent-info");
+const AgentFund = require("./agent-fund");
 const CustomerOrder = require("./customer-order");
 const CustomerFund = require("./customer-fund");
 const CustomerFundOrder = require("./customer-fund-order");
 const UserAnonymous = require("./user-anonymous");
-
 const fileMap = {
+  "supplier-info": SpInfo,
+  "agent-info": AgentInfo,
+  "agent-fund": AgentFund,
   "customer-order": CustomerOrder,
   "customer-fund": CustomerFund,
   "customer-fund-order": CustomerFundOrder,
@@ -20,6 +25,5 @@ exports.main = async (event, context) => {
   // todo 上线时删掉这个
   context.CLIENTUA =
     "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1";
-
   return await mainFunc(event, context, fileMap);
 };

@@ -7,7 +7,7 @@
 import { Request } from "./request";
 import { uniWrapper } from "@/assets/js/uni-wrapper";
 
-const request = new Request("common");
+const request = new Request();
 
 class Common {
   /**

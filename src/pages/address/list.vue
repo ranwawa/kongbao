@@ -194,8 +194,7 @@ export default class Address extends Vue {
    */
   chooseAddress(item: address.IAddressItem) {
     if (this.openType === TYPE.CHOOSE) {
-      console.log("触发");
-      vm.$emit("updateService", item);
+      vm.$emit("update-service", item);
       uni.navigateBack({ delta: 1 });
     }
   }
