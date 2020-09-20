@@ -77,6 +77,7 @@ module.exports = class CustomerOrder extends ControllerAuth {
         payTime: true,
         storeTime: "$spBuyTime",
         amount: "$csAmount",
+        amountStr: $.divide(["$csAmount", 100]),
         num: $.size("$addressInfo"),
         serviceInfo: "$serviceInfo.formattedAddress",
         addressInfo: $.map({

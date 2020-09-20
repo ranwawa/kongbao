@@ -144,14 +144,17 @@ module.exports = class OrderOperate extends ControllerAuth {
     if (!res4 || res4.length < 1) {
       return new this.ResponseModal(500, {}, "快递公司下单失败");
     }
-    const res5 = await this.updateOrderInfo({
+    const [, res5] = await this.updateOrderInfo({
       orderId,
       preStatus: 2,
       nextStatus: 3,
       batchNo: res4[0].batchNo,
       spBuyTime: Date.now(),
     });
-    console.log(res5);
+    if (!res5 || res5.affectedDocs < 1) {
+      return new this.ResponseModal(500, {}, "更新订单失败");
+    }
+    return this.processResponseData(res5, "(order-operate)支付");
   }
   /**
    * 获取金额信息

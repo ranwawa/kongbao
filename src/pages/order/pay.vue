@@ -17,7 +17,7 @@
     />
     <view class="pay__btn">
       <uv-button
-        v-if="userInfo.balance < orderInfo.amount"
+        v-if="userInfo.balance >= orderInfo.amount"
         :disabled="isDisableSubmit"
         :load="isDisableSubmit"
         custom-class="theme-style__button"
@@ -69,6 +69,9 @@ export default class LoginHome extends Vue {
     }
     this.orderId = e.orderId;
     this.getOrderInfo(e.orderId);
+  }
+  onShow() {
+    // 每次显示的时候获取一下,可以拿到最新的金额
     this.getUserInfo();
   }
 
@@ -108,7 +111,7 @@ export default class LoginHome extends Vue {
     if (err || !data) {
       return;
     }
-    uniWrapper.switchTabPage(ROUTE.ORDER_LIST);
+    uniWrapper.redirectToPage(ROUTE.ORDER_LIST);
   }
 
   /**

@@ -27,7 +27,7 @@
             class="home-head__balance"
             @click.stop="goAuthPage('/pages/fund/balance')"
           >
-            帐户余额: {{ userInfo.balance }}元
+            帐户余额: {{ userInfo.balanceStr }}元
           </view>
         </template>
         <uv-button

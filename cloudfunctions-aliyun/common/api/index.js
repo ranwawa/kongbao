@@ -41,9 +41,11 @@ class ControllerBase {
       data = isPickFirst ? res.data[0] || {} : res.data;
     } else if (res.affectedDocs !== undefined && res.updated !== undefined) {
       // 更新成功的返回结构 {affectedDocs: 1, updated: 1}
-      code = res.affectedDocs > 0 ? 0 : 500;
+      if (res.affectedDocs < 1) {
+        code = 500;
+        msg = "更新失败";
+      }
       data = res;
-      msg = "更新失败";
     } else {
       code = 500;
       data = res;

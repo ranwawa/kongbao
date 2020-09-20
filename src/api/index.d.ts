@@ -65,6 +65,7 @@ namespace user {
   interface IUserInfoRes {
     nickname: string;
     balance: number;
+    balanceStr: string;
     isVip: boolean;
   }
 }
