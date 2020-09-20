@@ -174,6 +174,7 @@ namespace order {
      * 订单总金额
      */
     amount: number;
+    amountStr: string;
     orderId: string;
     createTime: string;
     payTime: string;

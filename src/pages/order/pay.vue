@@ -3,7 +3,7 @@
     <!-- 支付金额 -->
     <view class="pay__amount">
       <uv-price
-        :amount="orderInfo.amount"
+        :amount="orderInfo.amountStr"
         :size="18"
         custom-style="margin: 60rpx auto;"
       />
@@ -11,7 +11,7 @@
     <!-- 可用余额 -->
     <uv-cell
       :border="false"
-      :value="computedBalance"
+      :value="'可用' + userInfo.balanceStr + '元'"
       icon="balance-o"
       title="余额支付"
     />
@@ -58,10 +58,6 @@ export default class LoginHome extends Vue {
   isDisableSubmit: boolean = false; // 是否禁用提交按钮
   orderId: string = "";
 
-  get computedBalance() {
-    const { balance } = this.userInfo;
-    return "可用" + (balance ? (balance / 100).toFixed(2) : 0) + "元";
-  }
   onLoad(e: { orderId?: string }) {
     if (!e.orderId) {
       uniWrapper.showToastText("订单信息有误");
@@ -83,7 +79,6 @@ export default class LoginHome extends Vue {
     if (err || !data?.amount) {
       return;
     }
-    data.amount = data.amount / 100;
     this.orderInfo = data;
     console.log(err, data);
   }
