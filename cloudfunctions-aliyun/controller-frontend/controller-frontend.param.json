@@ -2,7 +2,7 @@
 	"data": {
 		"orderId": "0172b005566fe618f4603fe1a334d9d9"
 	},
-	"action": "customer-order/getSingle",
+	"action": "customer-vip/getList",
 	"clientInfo": {
 		"PLATFORM": "h5",
 		"OS": "ios",

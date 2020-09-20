@@ -12,6 +12,7 @@ const CustomerAddress = require("./customer-address");
 const CustomerOrder = require("./customer-order");
 const CustomerFund = require("./customer-fund");
 const CustomerFundOrder = require("./customer-fund-order");
+const CustomerVip = require("./customer-vip");
 const UserAuth = require("./user-auth");
 const UserAnonymous = require("./user-anonymous");
 const OrderOperate = require("./order-operate");
@@ -27,6 +28,7 @@ const fileMap = {
   "user-anonymous": UserAnonymous,
   "order-operate": OrderOperate,
   "customer-fund-order": CustomerFundOrder,
+  "customer-vip": CustomerVip,
 };
 exports.main = async (event, context) => {
   // todo 上线时删掉这个
