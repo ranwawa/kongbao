@@ -63,8 +63,8 @@ export default class LoginHome extends Vue {}
   }
 
   &-card {
-    width: px2rpx(180);
-    margin-bottom: $s-sm;
+    width: px2rpx(185);
+    margin-bottom: $s-xxs;
     background-color: #fff;
 
     &:nth-child(2n) {

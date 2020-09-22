@@ -125,12 +125,17 @@
 			]
 		},
 		{
-			"root": "pages/address",
+			"root": "pages/service",
 			"pages": [
 				{
-					"path": "list",
+					"path": "address",
 					"style": {
 						"navigationBarTitleText": "售后信息"
+					}
+				},{
+					"path": "contact",
+					"style": {
+						"navigationBarTitleText": "联系客服"
 					}
 				}
 			]

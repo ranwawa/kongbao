@@ -104,6 +104,8 @@
 import { Component, Vue } from "vue-property-decorator";
 import { vipApi } from "@/api/vip";
 import { user } from "@/api/user";
+import { uniWrapper } from "@/assets/js/uni-wrapper";
+import { STORAGE_KEY } from "@/assets/constant/common";
 
 @Component({
   components: {},
@@ -164,11 +166,17 @@ export default class vip extends Vue {
       return;
     }
     this.userInfo = data;
+    uni.setStorageSync(STORAGE_KEY.USER_INFO, data);
   }
 
+  // 开通VIP
   async submit(item: vip.IItem) {
     const [err, data] = await vipApi.buyVip({ vipId: item.vipId });
-    console.log(data);
+    if (err || !data?.id) {
+      return;
+    }
+    uniWrapper.showToastText("恭喜您,开通成功");
+    await this.getUserInfo();
   }
 }
 </script>

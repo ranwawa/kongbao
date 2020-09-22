@@ -58,7 +58,7 @@
     <view class="home-quick">
       <view class="home-order__title"> 快捷功能</view>
       <view class="home-quick__body">
-        <view class="tab__item" @click="goAuthPage('/pages/address/list')">
+        <view class="tab__item" @click="goAuthPage('/pages/service/address')">
           <uv-icon name="smile-o" size="32" />
           售后信息
         </view>
@@ -66,7 +66,7 @@
           <uv-icon name="balance-list-o" size="32" />
           资金明细
         </view>
-        <view class="tab__item" @click="goAuthPage('/pages/address/list')">
+        <view class="tab__item" @click="goAuthPage('/pages/service/contact')">
           <uv-icon name="service-o" size="32" />
           联系客服
         </view>

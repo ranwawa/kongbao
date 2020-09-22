@@ -5,7 +5,6 @@
  * @since 2020/9/15 10:33
  */
 namespace admin {
-
   type payType = 1 | 2;
 
   /**
@@ -31,11 +30,19 @@ namespace admin {
       /**
        * 微信二维码信息
        */
-      'wechat': Array<IQrItem>,
+      wechat: Array<IQrItem>;
       /**
        * 支付宝二维码信息
        */
-      'alipay': Array<IQrItem>,
-    }
+      alipay: Array<IQrItem>;
+    };
+    /**
+     * 客服信息
+     */
+    serviceInfo: {
+      qq: string;
+      wechat: string;
+      phone: string;
+    };
   }
 }

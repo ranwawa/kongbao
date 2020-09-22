@@ -16,7 +16,7 @@
       </view>
       <!-- 操作按钮 -->
       <view class="order-item__foot">
-        <uv-button size="mini" round>联系客服 </uv-button>
+        <uv-button size="mini" round @click="goContact">联系客服 </uv-button>
         <uv-button
           v-if="isShowDetailBtn"
           size="mini"
@@ -83,6 +83,9 @@ export default class OrderList extends Vue {
    */
   goOrderDetail(item: order.IDetailRes) {
     uniWrapper.navigateToPage(`${ROUTE.ORDER_DETAIL}?orderId=${item.orderId}`);
+  }
+  goContact() {
+    uniWrapper.navigateToPage(ROUTE.SERVICE_CONTACT);
   }
 }
 </script>

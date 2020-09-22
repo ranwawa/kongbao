@@ -27,5 +27,6 @@ module.exports = async function (event, context, fileMap) {
       ? res
       : await instance[funcName](data, event, context);
   }
+  // todo 验证appId,以防止请求时篡改appId会查出所有数据来
   return await instance[funcName](data, event, context);
 };

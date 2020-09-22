@@ -16,7 +16,7 @@ module.exports = class AgentInfo extends ControllerBase {
    * 新增收款二维码
    */
   async addQrCode(options) {
-    uniCloud.logger.info("新增收款二维码-入参", options);
+    uniCloud.logger.info("(agent-info)新增收款二维码-入参", options);
     const { payType, money, src } = options;
     if (
       (payType !== 1 && payType !== 2) ||
@@ -35,13 +35,13 @@ module.exports = class AgentInfo extends ControllerBase {
       .update({
         [`qr.${payTypeStr}.${money}`]: { money, src },
       });
-    return this.processResponseData(res, "新增收款二维码");
+    return this.processResponseData(res, "(agent-info)新增收款二维码");
   }
   /**
    * 根据appId查询代理分站信息
    */
   async getSingleByAppId(options) {
-    uniCloud.logger.info("根据appId查询代理分站信息-入参", options);
+    uniCloud.logger.info("(agent-info)根据appId查询代理分站信息-入参", options);
     const res = await colAgInfo
       .aggregate()
       .match({
@@ -52,11 +52,9 @@ module.exports = class AgentInfo extends ControllerBase {
       .project({
         _id: false,
         agentId: "$_id",
-        siteInfo: true,
         qr: true,
       })
       .end();
-    console.log(11111, res.data[0]);
     if (res.data.length > 0) {
       res.data = res.data.map((ele) => {
         const { alipay, wechat } = ele.qr;
@@ -71,13 +69,40 @@ module.exports = class AgentInfo extends ControllerBase {
         return ele;
       });
     }
-    return this.processResponseData(res, "根据appId查询代理分站信息", true);
+    return this.processResponseData(
+      res,
+      "(agent-info)根据appId查询代理分站信息",
+      true
+    );
+  }
+  /**
+   * 根据appId查询站点信息
+   */
+  async getSiteInfoByAppId(options) {
+    uniCloud.logger.info("(agent-info)根据appId查询站点信息-入参", options);
+    const res = await colAgInfo
+      .where({
+        appId: this.appId,
+        isDelete: false,
+        isEnable: true,
+      })
+      .field({
+        _id: false,
+        siteInfo: true,
+        serviceInfo: true,
+      })
+      .get();
+    return this.processResponseData(
+      res,
+      "(agent-info)根据appId查询站点信息",
+      true
+    );
   }
   /**
    * 删除某张二维码
    */
   async removeQr(options) {
-    uniCloud.logger.info("删除某张二维码-入参", options);
+    uniCloud.logger.info("(agent-info)删除某张二维码-入参", options);
     const payType = options.payType === 1 ? "alipay" : "wechat";
     const res = await colAgInfo
       .where({
@@ -88,6 +113,6 @@ module.exports = class AgentInfo extends ControllerBase {
       .update({
         [`qr.${payType}.${options.money}`]: dbCmd.remove(),
       });
-    return this.processResponseData(res, "删除某张二维码");
+    return this.processResponseData(res, "(agent-info)删除某张二维码");
   }
 };

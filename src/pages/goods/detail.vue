@@ -50,7 +50,10 @@
     </view>
     <!-- 底部按钮 -->
     <view class="goods-fixed">
-      <view class="goods-fixed__service">
+      <view
+        class="goods-fixed__service"
+        @click="goPage('/pages/service/contact')"
+      >
         <uv-icon name="service-o" size="28" />
         联系客服
       </view>
@@ -107,6 +110,12 @@ export default class LoginHome extends Vue {
     this.goodsInfo = data;
   }
 
+  /**
+   * 页面跳转
+   */
+  goPage(page: string) {
+    uniWrapper.navigateToPage(page);
+  }
   submit() {
     uniWrapper.navigateToPage(
       `${ROUTE.ORDER_INDEX}?goodsId=${this.goodsInfo.goodsId}`
@@ -140,11 +149,13 @@ export default class LoginHome extends Vue {
     color: $c-light;
     font-size: $fz-sm;
   }
+
   &__vip {
     margin-left: $s-xs;
     color: $c-base;
     font-size: $fz-md;
   }
+
   &__origin {
     flex-grow: 1;
     margin-left: $s-xs;

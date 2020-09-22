@@ -178,7 +178,7 @@ export default class LoginHome extends Vue {
    * 前往售后服务地址
    */
   goToAddressList() {
-    uniWrapper.navigateToPage(`${ROUTE.ADDRESS_LIST}?type=1`);
+    uniWrapper.navigateToPage(`${ROUTE.SERVICE_ADDRESS}?type=1`);
   }
   /**
    * 单条添加收货地址

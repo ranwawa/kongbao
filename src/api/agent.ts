@@ -12,7 +12,7 @@ class Agent {
   /**
    * 添加支付二维码
    */
-  async addQrCode(data: { payType: number, money: number, src: string }) {
+  async addQrCode(data: { payType: number; money: number; src: string }) {
     return requestAddress.start<{ id: string }>({
       data,
       action: "agent-info/addQrCode",
@@ -30,10 +30,16 @@ class Agent {
   /**
    * 删除一张二维码
    */
-  async removeQr(data: { payType: number, money: number}) {
+  async removeQr(data: { payType: number; money: number }) {
     return requestAddress.start<any>({
       data,
       action: "agent-info/removeQr",
+    });
+  }
+  async getSiteInfoByAppId(data = {}) {
+    return requestAddress.start<admin.IAgentInfo>({
+      data,
+      action: "agent-info/getSiteInfoByAppId",
     });
   }
 }

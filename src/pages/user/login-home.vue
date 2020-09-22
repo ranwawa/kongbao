@@ -30,6 +30,9 @@ import LoginPopup from "./components/login-popup.vue";
 import LoginAgreement from "./components/login-agreement.vue";
 import LoginFormUsername from "./components/login-form-username.vue";
 import { ROUTE, STORAGE_KEY } from "@/assets/constant/common";
+import { doc } from "prettier";
+import addAlignmentToDoc = doc.builders.addAlignmentToDoc;
+import { agent } from "@/api/agent";
 
 @Component({
   components: {
@@ -64,6 +67,7 @@ export default class LoginHome extends Super {
     }
     uni.setStorageSync(STORAGE_KEY.USER_INFO, data);
   }
+
   goPage(url: ROUTE) {
     uniWrapper.navigateToPage(url);
   }

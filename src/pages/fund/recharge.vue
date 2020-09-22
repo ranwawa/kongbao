@@ -74,6 +74,7 @@
       value="点击这里联系客服"
       size="large"
       is-link
+      @click="goPage('/pages/service/contact')"
     />
   </view>
 </template>
