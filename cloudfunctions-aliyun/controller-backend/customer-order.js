@@ -61,4 +61,14 @@ module.exports = class CustomerOrder extends ControllerBase {
       .get();
     return this.processResponseData(res, "根据status查询订单地址");
   }
+  /**
+   * 删除所有订单
+   * @returns {Promise<void>}
+   */
+  async removeAll() {
+    // const res = await colCsOrder.where({
+    //   _id: dbCmd.exists(true)
+    // }).remove();
+    // uniCloud.logger.log("删除所有订单-出参", res);
+  }
 };

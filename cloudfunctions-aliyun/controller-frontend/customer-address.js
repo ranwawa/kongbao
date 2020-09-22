@@ -127,6 +127,7 @@ module.exports = class AgentAddress extends ControllerAuth {
         appId: this.appId,
         userId: this.userInfo._id,
         _id: option.addressId,
+        isDelete: false,
       })
       .update(param);
     return this.processResponseData(res, "修改一条地址", false);
