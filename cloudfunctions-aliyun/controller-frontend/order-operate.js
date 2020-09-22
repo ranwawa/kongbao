@@ -8,6 +8,7 @@ const { ControllerAuth, apiPaysApi, callFunc, apiALHC } = require("api");
 const CustomerOrder = require("./customer-order");
 const CustomerFundOrder = require("./customer-fund-order");
 const AgentGoods = require("./agent-goods");
+const CustomerVip = require("./customer-vip");
 function isId(id) {
   return typeof id === "string" && id.length === 32;
 }
@@ -18,6 +19,7 @@ module.exports = class OrderOperate extends ControllerAuth {
     this.agentGoods = new AgentGoods(appId, userInfo);
     this.customerOrder = new CustomerOrder(appId, userInfo);
     this.customerFundOrder = new CustomerFundOrder(appId, userInfo);
+    this.customerVip = new CustomerVip(appId, userInfo);
   }
   /**
    * 确认订单
@@ -326,5 +328,44 @@ module.exports = class OrderOperate extends ControllerAuth {
         userId: this.userInfo._id,
       },
     });
+  }
+  /**
+   * 购买vip
+   */
+  async buyVip(options) {
+    if (typeof options.vipId !== "string") {
+      return new this.ResponseModal(400, {}, "参数有误");
+    }
+    // 查询vip价格和时长
+    // 查询余额
+    const res = await this.customerVip.getSingleById(options);
+    if (res.code !== 0) {
+      return res;
+    }
+    if (res.data.activityPrice > this.userInfo.balance) {
+      return new this.ResponseModal(400, {}, "余额不足，请先充值");
+    }
+    const res2 = await this.updateVip(res.date.days);
+    if (!res2) {
+      return new this.ResponseModal(500, {}, "开通vip失败，请稍后再试");
+    }
+    // 新增支出明细
+  }
+  async updateVip(days) {
+    const now = Date.now();
+    let { vipExpireTime } = this.userInfo;
+    vipExpireTime < now && (vipExpireTime = now);
+    vipExpireTime += days * 1000 * 60 * 60 * 24;
+    // 扣减余额并延长vip时间
+    const [err, data] = await callFunc({
+      name: BACK_END,
+      action: "user-anonymous/updateVip",
+      data: {
+        vipExpireTime,
+        appId: this.appId,
+        price: -res.data.activityPrice,
+      },
+    });
+    return err ? null : data;
   }
 };

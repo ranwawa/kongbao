@@ -240,3 +240,13 @@ namespace fund {
     typeStr?: string;
   }
 }
+
+namespace vip {
+  interface IItem {
+    vipId: string;
+    describe: string;
+    activityPriceStr: string;
+    priceStr: string;
+    title: string;
+  }
+}

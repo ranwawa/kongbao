@@ -7,7 +7,6 @@
 const { db, utils, ControllerAuth } = require("api");
 const { $, colCsFund } = db;
 const { moment } = utils;
-console.log(111111111111, utils);
 module.exports = class CustomerFund extends ControllerAuth {
   constructor(appId, userInfo) {
     super(appId, userInfo);

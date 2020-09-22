@@ -10,7 +10,7 @@ module.exports = class UserNormal extends ControllerBase {
    */
   async updateBalance(options) {
     uniCloud.logger.info("(user-anonymous)更新余额-入参", options);
-    const { userId, appId, price } = options;
+    const { userId, appId, price, vipExpireTime } = options;
     const res = await colCsUser
       .where({
         appId,
@@ -21,6 +21,26 @@ module.exports = class UserNormal extends ControllerBase {
       });
     return this.processResponseData(res, "(user-anonymous)更新余额");
   }
+  /**
+   * 更新VIP到期时间
+   */
+  async updateVip(options) {
+    uniCloud.logger.info("(user-anonymous)更新VIP到期时间-入参", options);
+    const { userId, appId, price, vipExpireTime } = options;
+    const param = {};
+    price && (param.balance = _.inc(price));
+    vipExpireTime && (param.vipExpireTime = vipExpireTime);
+    const res = await colCsUser
+      .where({
+        appId,
+        _id: userId,
+      })
+      .update({
+        balance: _.inc(price),
+      });
+    return this.processResponseData(res, "(user-anonymous)更新余额");
+  }
+
   /**
    * 根据userId查询用户余额
    */
