@@ -65,6 +65,7 @@ namespace user {
   interface IUserInfoRes {
     nickname: string;
     balance: number;
+    balanceStr: string;
     isVip: boolean;
   }
 }
@@ -173,6 +174,7 @@ namespace order {
      * 订单总金额
      */
     amount: number;
+    amountStr: string;
     orderId: string;
     createTime: string;
     payTime: string;
@@ -222,5 +224,19 @@ namespace order {
      * 订单状态
      */
     status: number;
+  }
+}
+
+namespace fund {
+  interface IGetListReq extends IPageBase {
+    isIncome: boolean;
+  }
+  interface IFundItem {
+    fundId: string;
+    price: number;
+    priceStr: string;
+    createTimeStr: string;
+    type: number;
+    typeStr?: string;
   }
 }

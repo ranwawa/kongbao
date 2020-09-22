@@ -3,8 +3,8 @@
     <view v-for="item in orderList" :key="item.orderId" class="order-item">
       <!-- 订单信息 -->
       <view class="order-item__head">
-        <view> 创建时间: {{ item.createTime }} </view>
-        <view> 实付: {{ item.amount }} </view>
+        <view> 创建时间: {{ item.createTimeStr }} </view>
+        <view> 实付: {{ item.amountStr }} </view>
       </view>
       <!-- 商品信息 -->
       <view class="order-item__body">

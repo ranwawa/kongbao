@@ -57,48 +57,6 @@ module.exports = class Order {
     return new ResponseModal(0, addRes);
   }
   /**
-   * 支付订单
-   * @param option
-   */
-  async pay(option) {
-    // 查询订单信息
-    // 判断用户金额是否足够
-    // 判断分站金额是否足够
-    // 更新用户和分站资金明细表
-    // 更新订单表
-    // 根据收货地址数量跳第3方下单
-    // 更新订单表
-    const { orderId } = option;
-    uniCloud.logger.log("支付订单-入参", option);
-    if (!isId(orderId)) {
-      return new ResponseModal(400, "订单信息有误");
-    }
-    const orderInfo = await this.getSingleComplete(orderId);
-    if (!orderInfo || !orderInfo._id) {
-      return new ResponseModal(400, "订单信息有误");
-    }
-    const balanceCustomer = await this.getCustomerBalance(orderInfo.csAmount);
-    if (balanceCustomer < 0) {
-      return new ResponseModal(400, {}, "帐户余额告急,请充值");
-    }
-    const balanceAgent = await this.getAgentBalance(orderInfo.agAmount);
-    if (balanceAgent < 0) {
-      return new ResponseModal(400, {}, "库存告急,请联系管理员");
-    }
-    const updateRes = await this.updateBalance(
-      orderInfo,
-      balanceCustomer,
-      balanceAgent
-    );
-    if (!updateRes) {
-      return new ResponseModal(400, {}, "支付失败,请稍后再试");
-    }
-    orderInfo.addressInfo.length > 1
-      ? this.buyMore(orderInfo)
-      : this.buyOne(orderInfo);
-    return new ResponseModal(0, {});
-  }
-  /**
    * 查询用户余额
    */
   async getCustomerBalance(goodsAmount) {
@@ -345,69 +303,6 @@ module.exports = class Order {
     };
   }
   /**
-   * 多条地址异步下单
-   */
-  async buyMore(orderInfo) {
-    const { csGoodsInfo, serviceInfo, addressInfo } = orderInfo;
-    const orderId = orderInfo._id;
-    const param = {
-      accessToken: this.accessToken,
-      datas: JSON.stringify(
-        addressInfo.map((ele) =>
-          this.getPostData(csGoodsInfo, ele, serviceInfo)
-        )
-      ),
-    };
-    uniCloud.logger.log("多条地址异步下单-入参", param);
-    const [err, res] = await request({
-      url: "http://www.alihuocang.com/api/createOrder/merchantCreateOrderList",
-      method: "POST",
-      data: param,
-    });
-    uniCloud.logger.log("多条地址异步下单-出参", [err, res]);
-    if (err || res.length < 1) {
-      return;
-    }
-    const res2 = await colCsOrder.doc(orderId).update({
-      batchNo: res[0].batchNo,
-      spAmount: +res.amount * 100,
-      status: 3,
-      spBuyTime: Date.now(),
-    });
-    uniCloud.logger.log("多条地址异步下单成功,更新订单状态-出参", res2);
-    return res2.updated;
-  }
-  /**
-   * 单条同步下单
-   */
-  async buyOne(orderInfo) {
-    const { csGoodsInfo, serviceInfo, addressInfo } = orderInfo;
-    const [addressInfoOne] = addressInfo;
-    const orderId = orderInfo._id;
-    const param = this.getPostData(csGoodsInfo, addressInfoOne, serviceInfo);
-    uniCloud.logger.log("单条同步下单-入参", param);
-    const [err, res] = await request({
-      url: "http://www.alihuocang.com/api/createOrder/merchantCreateOrder",
-      method: "POST",
-      data: {
-        accessToken: this.accessToken,
-        ...param,
-      },
-    });
-    uniCloud.logger.log("单条同步下单-出参", [err, res]);
-    if (err) {
-      return;
-    }
-    const res2 = await colCsOrder.doc(orderId).update({
-      addressInfo: [addressInfoOne],
-      spAmount: +res.amount * 100,
-      status: 3,
-      spBuyTime: Date.now(),
-    });
-    uniCloud.logger.log("下单成功,更新订单状态-出参", res2);
-    return res2.updated;
-  }
-  /**
    * 获取商品的完整信息,用来做快照
    */
   async getGoodsInfo(options) {
@@ -471,7 +366,7 @@ module.exports = class Order {
     isPickFirst && (data = data[0] || {});
     return new ResponseModal(0, data);
   }
- /**
+  /**
    * 获取供应商的accessToken
    */
   async getAccessToken() {

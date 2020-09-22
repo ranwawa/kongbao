@@ -22,6 +22,7 @@ module.exports = class UserAuth extends ControllerAuth {
     const res = {
       userId: userInfo._id,
       balance: userInfo.balance,
+      balanceStr: (userInfo.balance / 100).toFixed(2),
       nickname: userInfo.nickname,
       isVip: this.checkVip(),
     };

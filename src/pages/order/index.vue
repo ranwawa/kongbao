@@ -13,7 +13,7 @@
         :class="{ 'order-service__content-empty': !serviceInfo.name }"
         @click="goToAddressList"
       >
-        {{ serviceInfo.formattedAddress || '请点击选择售后信息' }}
+        {{ serviceInfo.formattedAddress || "请点击选择售后信息" }}
       </view>
     </view>
     <!-- 收件地址 -->
@@ -142,7 +142,7 @@ export default class LoginHome extends Vue {
     }
     this.getGoodsDetail(e.goodsId);
     this.getDefaultAddress();
-    vm.$on("updateService", (item: address.IAddressItem) => {
+    vm.$on("update-service", (item: address.IAddressItem) => {
       this.serviceInfo = item;
     });
   }

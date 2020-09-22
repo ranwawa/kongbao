@@ -74,7 +74,11 @@ module.exports = class PaysApi {
     const res = await callFunc({
       name: "controller-backend",
       action: "customer-fund-order/update",
-      data: options,
+      data: {
+        ...options,
+        preStatus: 2,
+        nextStatus: 3,
+      },
     });
     uniCloud.logger.info("支付回调,更新充值订单状态-出参", res);
     return res;

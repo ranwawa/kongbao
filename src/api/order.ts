@@ -19,7 +19,7 @@ class Order {
   pay(data: { orderId: string; payType?: number }) {
     return request.start<{ _id: string }>({
       data,
-      action: "customer-order/pay",
+      action: "order-operate/pay",
     });
   }
 
@@ -47,7 +47,7 @@ class Order {
   /**
    * 确定充值订单
    */
-  confirmFundOrder(data: {money: number, payType: number}) {
+  confirmFundOrder(data: { money: number; payType: number }) {
     return request.start<{ fundOrderId: string }>({
       data,
       action: "order-operate/confirmFundOrder",
@@ -57,9 +57,10 @@ class Order {
   /**
    * 根据订单ID查询充值订单信息
    */
-  getFundOrderInfoById(data: {fundOrderId: string}) {
+  getFundOrderInfoById(data: { fundOrderId: string }) {
     return request.start<order.IFundOrderItem>({
       data,
+      isHideLoad: true,
       action: "customer-fund-order/getSingleById",
     });
   }

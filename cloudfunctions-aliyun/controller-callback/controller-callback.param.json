@@ -1,19 +1,16 @@
- {
-    "path": "/pays-api/payed",
-    "httpMethod": "POST",
-    "headers": {
-      "content-length": "181",
-      "referer": "https://a.bearsoftware.net.cn/myHasGetMoney",
-      "x-forwarded-for": "119.28.137.219, 39.96.130.20",
-      "accept": "*/*",
-      "x-real-ip": "119.28.137.219",
-      "uid": "5f6292667330b2000165c8b0and__UNI__0CA1D11",
-      "host": "66108fd9-83f0-4fda-9219-f9fe3a6a377e.bspapp.com",
-      "content-type": "application/x-www-form-urlencoded",
-      "x-forwarded-by": "172.20.13.180:80",
-      "user-agent": "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)"
-    },
-    "queryStringParameters": {},
-    "isBase64Encoded": false,
-    "body": "paysapi_id=7faba5f4fee304ddf09feaed&orderid=5f64ceb71832a10001b2c2a8&price=20&realprice=20.01&orderuid=5f6292667330b2000165c8b0and__UNI__0CA1D11&key=472ace3da132f89e224a8afccebaf4d2"
-  }
+{
+	"data": {
+		"pageSize": 10,
+		"currentPage": 1,
+		"isIncome": true
+	},
+	"action": "customer-fund/getListByIsIncome",
+	"clientInfo": {
+		"PLATFORM": "h5",
+		"OS": "ios",
+		"APPID": "__UNI__0CA1D11",
+		"CLIENT_SDK_VERSION": "1.0.0"
+	},
+	"uniCloudClientInfo": "%7B%22ak%22%3A%22__UNI__0CA1D11%22%2C%22p%22%3A%22i%22%2C%22ut%22%3A%22h5%22%2C%22uuid%22%3A%22mn1kbr7ad8g6177qq1cie8qupdl93v87%22%2C%22fn%22%3A%22controller-frontend%22%2C%22sid%22%3A%2266108fd9-83f0-4fda-9219-f9fe3a6a377e%22%2C%22pvd%22%3A%22a%22%7D",
+	"uniIdToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI1ZjY1Y2UyNmQ3OWIwZjAwMDFjYmE1N2EiLCJjbGllbnRJZCI6IjI1M2RiYWMzYzljNjBiYTJhZDA0OTQ0M2NhZGY4ZjliIiwiaWF0IjoxNjAwNjA3Mjg2LCJleHAiOjE2MDc4MDcyODZ9.AhdW3vQHqbg7Zm-9xgDs-22a3Z0FKDmrQISvdrU6RqQ"
+}

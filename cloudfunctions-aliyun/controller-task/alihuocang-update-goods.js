@@ -5,7 +5,7 @@ module.exports = async function () {
   const [, spInfo] = await callFunc({
     name: "controller-backend",
     action: "supplier-info/getSupplierInfoById",
-    data: SUPPLIER_ID,
+    data: { supplierId: SUPPLIER_ID },
   });
   if (!spInfo || !spInfo.accessToken) {
     uniCloud.logger.error("阿里货仓更新快递单号-未找到accessToken");

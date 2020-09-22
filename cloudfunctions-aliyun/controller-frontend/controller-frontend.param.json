@@ -1,15 +1,14 @@
 {
 	"data": {
-		"payType": 1,
-		"money": 2000
+		"orderId": "0172b005566fe618f4603fe1a334d9d9"
 	},
-	"action": "order-operate/confirmFundOrder",
+	"action": "customer-vip/getList",
 	"clientInfo": {
 		"PLATFORM": "h5",
 		"OS": "ios",
 		"APPID": "__UNI__0CA1D11",
 		"CLIENT_SDK_VERSION": "1.0.0"
 	},
-	"uniCloudClientInfo": "%7B%22ak%22%3A%22__UNI__0CA1D11%22%2C%22p%22%3A%22i%22%2C%22ut%22%3A%22h5%22%2C%22uuid%22%3A%22jo5b9960d58i32s4f7ssto7jdngp182d%22%2C%22fn%22%3A%22controller-frontend%22%2C%22sid%22%3A%2266108fd9-83f0-4fda-9219-f9fe3a6a377e%22%2C%22pvd%22%3A%22a%22%7D",
-	"uniIdToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI1ZjYyOTI2NjczMzBiMjAwMDE2NWM4YjAiLCJjbGllbnRJZCI6IjI1M2RiYWMzYzljNjBiYTJhZDA0OTQ0M2NhZGY4ZjliIiwiaWF0IjoxNjAwNDM1ODAxLCJleHAiOjE2MDc2MzU4MDF9.sB5Hewm1cBCT8FN-VUaArfjJ__SQpF9MXhZZ8zD8Q88"
+	"uniCloudClientInfo": "%7B%22ak%22%3A%22__UNI__0CA1D11%22%2C%22p%22%3A%22i%22%2C%22ut%22%3A%22h5%22%2C%22uuid%22%3A%22dhhnfj5a9f81mc2bieb6sg19gidlpkh1%22%2C%22fn%22%3A%22controller-frontend%22%2C%22sid%22%3A%2266108fd9-83f0-4fda-9219-f9fe3a6a377e%22%2C%22pvd%22%3A%22a%22%7D",
+	"uniIdToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI1ZjY1Y2UyNmQ3OWIwZjAwMDFjYmE1N2EiLCJjbGllbnRJZCI6IjI1M2RiYWMzYzljNjBiYTJhZDA0OTQ0M2NhZGY4ZjliIiwiaWF0IjoxNjAwNjA3Mjg2LCJleHAiOjE2MDc4MDcyODZ9.AhdW3vQHqbg7Zm-9xgDs-22a3Z0FKDmrQISvdrU6RqQ"
 }

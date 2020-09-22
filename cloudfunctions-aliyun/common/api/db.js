@@ -15,6 +15,7 @@ const colCsAddress = db.collection("kb-cs-address");
 const colCsOrder = db.collection("kb-cs-order");
 const colCsFund = db.collection("kb-cs-fund");
 const colCsFundOrder = db.collection("kb-cs-fund-order");
+const colCsVip = db.collection("kb-cs-vip");
 
 module.exports = {
   $,
@@ -32,4 +33,5 @@ module.exports = {
   colCsOrder,
   colCsFund,
   colCsFundOrder,
+  colCsVip,
 };

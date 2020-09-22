@@ -4,13 +4,13 @@
  * @author 冉娃娃 <274544338@qq.com>
  * @since 2020/9/14 11:08
  */
-const { request, ControllerAuth, db } = require("api");
+const { ControllerAuth, db, utils } = require("api");
 const { colCsOrder, $ } = db;
-const uniID = require("uni-id");
-const md5 = require("md5");
+const { moment, md5 } = utils;
 function isId(id) {
   return typeof id === "string" && id.length === 32;
 }
+const FORMATTER = "YYYY-MM-DD HH:mm:ss";
 module.exports = class CustomerOrder extends ControllerAuth {
   constructor(appId, userInfo) {
     super(appId, userInfo);
@@ -67,6 +67,7 @@ module.exports = class CustomerOrder extends ControllerAuth {
         payTime: true,
         storeTime: "$spBuyTime",
         amount: "$csAmount",
+        amountStr: $.divide(["$csAmount", 100]),
         num: $.size("$addressInfo"),
         serviceInfo: "$serviceInfo.formattedAddress",
         addressInfo: $.map({
@@ -75,21 +76,33 @@ module.exports = class CustomerOrder extends ControllerAuth {
           in: { formattedAddress: "$$this.formattedAddress" },
         }),
         goodsInfo: {
-          goodsId: "$csGoodsInfo._id",
+          goodsId: "$csGoodsInfo.goodsId",
           expressName: "$spGoodsInfo.expressName",
           goodsName: "$spGoodsInfo.goodsName",
           salePriceNormal: $.divide(["$csAmount", $.size("$addressInfo")]),
+          salePriceNormalStr: $.divide([
+            $.divide(["$csAmount", $.size("$addressInfo")]),
+            100,
+          ]),
           imgList: $.split(["$spGoodsInfo.imgList", "---"]),
         },
       })
       .end();
+    res.data = res.data.map((ele) => {
+      ele.createTimeStr = moment(ele.createTime).format(FORMATTER);
+      ele.storeTime &&
+        (ele.storeTimeStr = moment(ele.storeTime).format(FORMATTER));
+      ele.payTime && (ele.payTimeStr = moment(ele.payTime).format(FORMATTER));
+      return ele;
+    });
     return this.processResponseData(res, "查询单条订单", true);
   }
   /**
    * 查询完整的订单信息
    */
   async getSingleComplete(orderId) {
-    const orderRes = await colCsOrder
+    uniCloud.logger.log("(customer-order)查询完整的订单信息-入参", orderId);
+    const res = await colCsOrder
       .where({
         appId: this.appId,
         userId: this.userInfo._id,
@@ -107,8 +120,11 @@ module.exports = class CustomerOrder extends ControllerAuth {
       })
       .limit(1)
       .get();
-    uniCloud.logger.log("支付订单,查询订单信息-出参", orderRes);
-    return orderRes.data[0];
+    return this.processResponseData(
+      res,
+      "(customer-order)支付订单,查询订单信息",
+      true
+    );
   }
   /**
    * 根据分类查询订单
@@ -137,15 +153,24 @@ module.exports = class CustomerOrder extends ControllerAuth {
         orderId: "$_id",
         num: $.size("$addressInfo"),
         amount: "$csAmount",
+        amountStr: $.divide(["$csAmount", 100]),
         goodsInfo: {
           goodsId: "$csGoodsInfo.goodsId",
           expressName: "$spGoodsInfo.expressName",
           goodsName: "$spGoodsInfo.goodsName",
           salePriceNormal: $.divide(["$csAmount", $.size("$addressInfo")]),
+          salePriceNormalStr: $.divide([
+            $.divide(["$csAmount", $.size("$addressInfo")]),
+            100,
+          ]),
           imgList: $.split(["$spGoodsInfo.imgList", "---"]),
         },
       })
       .end();
+    res.data = res.data.map((ele) => {
+      ele.createTimeStr = moment(ele.createTime).format(FORMATTER);
+      return ele;
+    });
     return this.processResponseData(res, "根据分类查询订单");
   }
 };

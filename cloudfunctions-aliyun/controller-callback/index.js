@@ -4,14 +4,14 @@
  * @author 冉娃娃 <274544338@qq.com>
  * @since 2020/9/14 10:15
  */
-const { mainFunc } = require('api');
-const AliHuoCang = require('./callback-map');
-const PaysApi = require('./cb-pays-api');
+const { mainFunc } = require("api");
+const AliHuoCang = require("./cb-ali-huocang");
+const PaysApi = require("./cb-pays-api");
 
 const fileMap = {
-  'pays-api': PaysApi,
-  'alihuocang': AliHuoCang,
-}
+  "pays-api": PaysApi,
+  "ali-huocang": AliHuoCang,
+};
 exports.main = async (event, context) => {
   // path 云函数url化,请求的路径
   // body 传递过来的参数

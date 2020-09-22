@@ -3,7 +3,7 @@
     <!-- 支付金额 -->
     <view class="pay__amount">
       <uv-price
-        :amount="orderInfo.amount"
+        :amount="orderInfo.amountStr"
         :size="18"
         custom-style="margin: 60rpx auto;"
       />
@@ -11,13 +11,13 @@
     <!-- 可用余额 -->
     <uv-cell
       :border="false"
-      :value="computedBalance"
+      :value="'可用' + userInfo.balanceStr + '元'"
       icon="balance-o"
       title="余额支付"
     />
     <view class="pay__btn">
       <uv-button
-        v-if="userInfo.balance"
+        v-if="userInfo.balance >= orderInfo.amount"
         :disabled="isDisableSubmit"
         :load="isDisableSubmit"
         custom-class="theme-style__button"
@@ -58,10 +58,6 @@ export default class LoginHome extends Vue {
   isDisableSubmit: boolean = false; // 是否禁用提交按钮
   orderId: string = "";
 
-  get computedBalance() {
-    const { balance } = this.userInfo;
-    return "可用" + (balance ? (balance / 100).toFixed(2) : 0) + "元";
-  }
   onLoad(e: { orderId?: string }) {
     if (!e.orderId) {
       uniWrapper.showToastText("订单信息有误");
@@ -69,6 +65,9 @@ export default class LoginHome extends Vue {
     }
     this.orderId = e.orderId;
     this.getOrderInfo(e.orderId);
+  }
+  onShow() {
+    // 每次显示的时候获取一下,可以拿到最新的金额
     this.getUserInfo();
   }
 
@@ -80,7 +79,6 @@ export default class LoginHome extends Vue {
     if (err || !data?.amount) {
       return;
     }
-    data.amount = data.amount / 100;
     this.orderInfo = data;
     console.log(err, data);
   }
@@ -108,7 +106,7 @@ export default class LoginHome extends Vue {
     if (err || !data) {
       return;
     }
-    uniWrapper.switchTabPage(ROUTE.ORDER_LIST);
+    uniWrapper.redirectToPage(ROUTE.ORDER_LIST);
   }
 
   /**

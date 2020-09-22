@@ -31,4 +31,14 @@ module.exports = {
     uniCloud.logger.info("按仓库获取库存数据(api)-出参", res);
     return res;
   },
+  // 批量下单
+  merchantCreateOrderList: async (data) => {
+    uniCloud.logger.info("(api-alihc)批量下单-入参", data);
+    const res = await request({
+      data,
+      url: `${baseUrl}api/createOrder/merchantCreateOrderList`,
+    });
+    uniCloud.logger.info("(api-alihc)批量下单-出参", res);
+    return res;
+  },
 };

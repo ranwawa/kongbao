@@ -21,12 +21,12 @@ module.exports = class CustomerFund extends ControllerBase {
         userId,
         appId,
         _id: fundOrderId,
-        status: 2,
+        status: options.preStatus,
         isDelete: false,
       })
       .update({
         realPrice,
-        status: 2,
+        status: options.nextStatus,
       });
     return this.processResponseData(res, "更新实际支付金额");
   }

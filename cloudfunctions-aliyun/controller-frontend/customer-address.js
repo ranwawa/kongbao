@@ -153,6 +153,7 @@ module.exports = class AgentAddress extends ControllerAuth {
         areaName: true,
         address: true,
         default: true,
+        formattedAddress: true,
       })
       .get();
     return this.processResponseData(res, "查询当前用户所有地址", false);

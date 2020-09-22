@@ -1,14 +1,14 @@
 import { Request } from "./request";
 
-const requestAddress = new Request("customer");
+const requestAddress = new Request("controller-frontend");
 class Fund {
   /**
-   * 确认订单
+   * 根据类型获取资金明细列表
    */
-  getUserBalance(data: order.IConfirmReq) {
-    return requestAddress.start<{ id: string }>({
+  getListByType(data: fund.IGetListReq) {
+    return requestAddress.start<Array<fund.IFundItem>>({
       data,
-      action: "customer-order/add",
+      action: "customer-fund/getListByIsIncome",
     });
   }
 }

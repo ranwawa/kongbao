@@ -83,6 +83,7 @@ export default class LoginHome extends Vue {
   switchTab(item: order.ITabItem) {
     this.currentTab = item;
     this.orderList = [];
+    this.pageInfo = new BasePage();
     this.getOrderList(item);
   }
   /**

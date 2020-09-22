@@ -11,4 +11,7 @@ export class BasePage {
    * 是否还有更多数据
    */
   haveMore: boolean = true;
+  constructor(pageSize = 10) {
+    this.pageSize = pageSize;
+  }
 }
