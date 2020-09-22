@@ -46,8 +46,9 @@
           clearable
         />
         <uv-cell
+          :value="cityInfo || '点击这里选择省市区'"
           title="地区"
-          :value="cityInfo"
+          title-width="3em"
           size="large"
           input-align="right"
           is-link

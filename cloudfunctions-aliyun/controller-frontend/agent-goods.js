@@ -7,9 +7,10 @@
 const { db, ControllerBase } = require("api");
 const { $, colAgGoods } = db;
 module.exports = class SupplierStore extends ControllerBase {
-  constructor(appId) {
-    super(appId);
+  constructor(appId, userInfo) {
+    super(appId, userInfo);
   }
+
   /**
    * 根据仓库编号获取商品列表
    */

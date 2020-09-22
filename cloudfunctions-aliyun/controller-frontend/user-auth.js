@@ -1,9 +1,6 @@
 const uniID = require("uni-id");
-const { ControllerAuth } = require("api");
-const db = uniCloud.database();
-const colCsFund = db.collection("kb-cs-fund");
-const $ = db.command.aggregate;
-
+const { ControllerAuth, utils } = require("api");
+const { moment } = utils;
 module.exports = class UserAuth extends ControllerAuth {
   constructor(appId, userInfo) {
     super(appId, userInfo);
@@ -25,6 +22,7 @@ module.exports = class UserAuth extends ControllerAuth {
       balanceStr: (userInfo.balance / 100).toFixed(2),
       nickname: userInfo.nickname,
       isVip: this.checkVip(),
+      vipExpireTimeStr: moment(userInfo.vipExpireTime).format("YYYY年MM月DD日"),
     };
     uniCloud.logger.info("获取用户信息-出参", res);
     return new this.ResponseModal(0, res);

@@ -9,8 +9,8 @@ const { ControllerBase, db } = require("api");
 const { colCsOrder } = db;
 const _ = require("lodash");
 module.exports = class CustomerOrder extends ControllerBase {
-  constructor(appId) {
-    super(appId);
+  constructor(appId, userInfo) {
+    super(appId, userInfo);
   }
   /**
    * 通过第3方batchCode查询订单地址

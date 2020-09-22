@@ -19,6 +19,11 @@
       </view>
       <view class="goods-card__desc" @click.stop="$emit('click-btn', item)">
         <uv-price :amount="item.salePriceNormalStr" size="10" />
+        <view class="goods-card__record">
+          vip仅需 {{ item.salePriceVipStr }}元
+        </view>
+      </view>
+      <view class="goods-card__desc goods-card__desc-center">
         <view class="goods-card__record">已售{{ item.sales }}件</view>
         <uv-button size="mini" custom-class="theme-style__button">
           购买
@@ -78,20 +83,35 @@ export default class LoginHome extends Vue {}
     &__desc {
       @include flex-row;
       align-items: flex-end;
-      justify-content: space-between;
+      justify-content: flex-start;
       margin: $s-xxs $s-xxs $s-xs;
+
+      &-center {
+        justify-content: space-between;
+        align-items: center;
+
+        .goods-card__record {
+          margin-left: 0;
+          color: $c-muted;
+        }
+      }
     }
 
     &__record {
-      flex-grow: 1;
-      margin-left: $s-xs;
-      color: $c-muted;
+      margin-left: 1em;
+      color: $c-gray;
       font-size: $fz-sm;
     }
   }
 }
 
-/deep/ .uv-btn-text {
-  margin-left: 0;
+/deep/ {
+  .uv-btn {
+    margin: 0;
+  }
+
+  .uv-btn-text {
+    margin-left: 0;
+  }
 }
 </style>

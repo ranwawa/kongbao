@@ -7,6 +7,9 @@
 const { db, ControllerBase } = require("api");
 const { colCsFund } = db;
 module.exports = class CustomerFund extends ControllerBase {
+  constructor(appId, userInfo) {
+    super(appId, userInfo);
+  }
   /**
    * 添加一条资金明细
    */
@@ -20,7 +23,7 @@ module.exports = class CustomerFund extends ControllerBase {
       userId,
       type, // 11自己充值 12管理员充值 21购物 22管理员扣减 23开通vip
       price,
-      remark: `订单id-${remarkId}`,
+      remark: `来源id-${remarkId}`,
       isDelete: false,
       createTime: Date.now(),
     });

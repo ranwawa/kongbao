@@ -1,9 +1,10 @@
 const uniID = require("uni-id");
 const { ControllerBase } = require("api");
 module.exports = class UserAnonymous extends ControllerBase {
-  constructor(appId) {
-    super(appId);
+  constructor(appId, userInfo) {
+    super(appId, userInfo);
   }
+
   /**
    * 注册
    */

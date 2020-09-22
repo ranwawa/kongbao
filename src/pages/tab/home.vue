@@ -145,7 +145,6 @@ export default class LoginHome extends Vue {
   }
 
   onShow() {
-    console.log(uni.getStorageSync("uni_id_token"));
     if (uni.getStorageSync("uni_id_token")) {
       this.getUserInfo();
     }

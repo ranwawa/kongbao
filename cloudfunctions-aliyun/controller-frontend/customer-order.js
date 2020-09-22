@@ -18,7 +18,7 @@ module.exports = class CustomerOrder extends ControllerAuth {
   /**
    * 添加订单
    */
-  async add(csAmount, agAmount, orderInfo) {
+  async add(csAmount, agAmount, dealPrice, orderInfo) {
     const now = Date.now();
     const orderId = md5(`${this.appId}${this.userInfo._id}${csAmount}${now}`);
     orderInfo.addressInfo = orderInfo.addressInfo.map((ele, index) => ({
@@ -28,6 +28,7 @@ module.exports = class CustomerOrder extends ControllerAuth {
     const param = {
       csAmount,
       agAmount,
+      dealPrice,
       ...orderInfo,
       _id: orderId,
       appId: this.appId,
@@ -78,6 +79,7 @@ module.exports = class CustomerOrder extends ControllerAuth {
         goodsInfo: {
           goodsId: "$csGoodsInfo.goodsId",
           expressName: "$spGoodsInfo.expressName",
+          dealPriceStr: $.divide(["$dealPrice", 100]),
           goodsName: "$spGoodsInfo.goodsName",
           salePriceNormal: $.divide(["$csAmount", $.size("$addressInfo")]),
           salePriceNormalStr: $.divide([
@@ -114,6 +116,7 @@ module.exports = class CustomerOrder extends ControllerAuth {
         _id: true,
         csAmount: true,
         agAmount: true,
+        dealPrice: true,
         csGoodsInfo: true,
         serviceInfo: true,
         addressInfo: true,
@@ -158,6 +161,7 @@ module.exports = class CustomerOrder extends ControllerAuth {
           goodsId: "$csGoodsInfo.goodsId",
           expressName: "$spGoodsInfo.expressName",
           goodsName: "$spGoodsInfo.goodsName",
+          dealPriceStr: $.divide(["$dealPrice", 100]),
           salePriceNormal: $.divide(["$csAmount", $.size("$addressInfo")]),
           salePriceNormalStr: $.divide([
             $.divide(["$csAmount", $.size("$addressInfo")]),

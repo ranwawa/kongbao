@@ -11,6 +11,12 @@ class Vip {
       action: "customer-vip/getList",
     });
   }
+  buyVip(data: { vipId: string }) {
+    return requestAddress.start<any>({
+      data,
+      action: "order-operate/buyVip",
+    });
+  }
 }
 
 export const vipApi = new Vip();

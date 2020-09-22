@@ -51,7 +51,18 @@ export default class LoginHome extends Super {
     const [err, data] = await user.login(e);
     if (err || !data) return;
     uni.setStorageSync(STORAGE_KEY.UNI_ID_TOKEN, data.token);
+    this.getUserInfo();
     uniWrapper.switchTabPage(ROUTE.TAB_HOME);
+  }
+  /**
+   * 查询用户信息
+   */
+  async getUserInfo() {
+    const [err, data] = await user.getUserInfo();
+    if (err || !data) {
+      return;
+    }
+    uni.setStorageSync(STORAGE_KEY.USER_INFO, data);
   }
   goPage(url: ROUTE) {
     uniWrapper.navigateToPage(url);

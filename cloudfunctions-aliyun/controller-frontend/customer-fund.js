@@ -11,6 +11,7 @@ module.exports = class CustomerFund extends ControllerAuth {
   constructor(appId, userInfo) {
     super(appId, userInfo);
   }
+
   /**
    * 根据类型获取列表
    */

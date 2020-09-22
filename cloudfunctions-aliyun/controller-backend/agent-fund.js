@@ -7,8 +7,8 @@
 const { db, ControllerBase } = require("api");
 const { colAgFund } = db;
 module.exports = class AgentFund extends ControllerBase {
-  constructor(appId) {
-    super(appId);
+  constructor(appId, userInfo) {
+    super(appId, userInfo);
   }
   /**
    * 添加一条分站资金明细

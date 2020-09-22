@@ -44,19 +44,23 @@ module.exports = class OrderOperate extends ControllerAuth {
     const { csGoodsInfo, spGoodsInfo, spStoreInfo } = goodsResult.data;
     const { length = 0 } = addressInfo;
     // 根据用户身份取成交价
-    const dealPrice =
-      this.userInfo.vipExpireTime > Date.now()
-        ? csGoodsInfo.salePriceVip
-        : csGoodsInfo.salePriceNormal;
+    const dealPrice = this.isVip
+      ? csGoodsInfo.salePriceVip
+      : csGoodsInfo.salePriceNormal;
     const customerAmount = dealPrice * length; // 用户成交价
     const agentAmount = csGoodsInfo.costPrice * length; // 分站成交价
-    const addRes = await this.customerOrder.add(customerAmount, agentAmount, {
-      serviceInfo,
-      addressInfo,
-      csGoodsInfo,
-      spGoodsInfo,
-      spStoreInfo,
-    });
+    const addRes = await this.customerOrder.add(
+      customerAmount,
+      agentAmount,
+      dealPrice,
+      {
+        serviceInfo,
+        addressInfo,
+        csGoodsInfo,
+        spGoodsInfo,
+        spStoreInfo,
+      }
+    );
     if (addRes.code !== 0) {
       return new this.ResponseModal(400, {}, "创建订单失败,请稍后再试");
     }
@@ -252,14 +256,7 @@ module.exports = class OrderOperate extends ControllerAuth {
       },
     });
     // 新增用户资金表
-    const addCustomerFund = callFunc({
-      name: BACK_END,
-      action: "customer-fund/add",
-      data: {
-        ...pubParam,
-        price: csAmount,
-      },
-    });
+    const addCustomerFund = this.addCustomerFund(orderId, 21, csAmount);
     const res = await Promise.all([
       updateAgent,
       updateCustomer,
@@ -333,6 +330,7 @@ module.exports = class OrderOperate extends ControllerAuth {
    * 购买vip
    */
   async buyVip(options) {
+    uniCloud.logger.info("(order-operate)购买vip-入参", options);
     if (typeof options.vipId !== "string") {
       return new this.ResponseModal(400, {}, "参数有误");
     }
@@ -342,30 +340,60 @@ module.exports = class OrderOperate extends ControllerAuth {
     if (res.code !== 0) {
       return res;
     }
-    if (res.data.activityPrice > this.userInfo.balance) {
+    const { activityPrice } = res.data;
+    if (activityPrice > this.userInfo.balance) {
       return new this.ResponseModal(400, {}, "余额不足，请先充值");
     }
-    const res2 = await this.updateVip(res.date.days);
+    const [, res2] = await this.updateVip(res.data.days, activityPrice);
     if (!res2) {
       return new this.ResponseModal(500, {}, "开通vip失败，请稍后再试");
     }
     // 新增支出明细
+    const [, res3] = await this.addCustomerFund(
+      res.data._id,
+      23,
+      activityPrice
+    );
+    if (!res3) {
+      return new this.ResponseModal(500, {}, "更新支出明细失败");
+    }
+    return this.processResponseData(res3, "购买vip");
   }
-  async updateVip(days) {
+  /**
+   * 更新vip日期
+   */
+  async updateVip(days, activityPrice) {
     const now = Date.now();
     let { vipExpireTime } = this.userInfo;
     vipExpireTime < now && (vipExpireTime = now);
     vipExpireTime += days * 1000 * 60 * 60 * 24;
     // 扣减余额并延长vip时间
-    const [err, data] = await callFunc({
+    return callFunc({
       name: BACK_END,
       action: "user-anonymous/updateVip",
       data: {
+        days,
         vipExpireTime,
+        price: -activityPrice,
         appId: this.appId,
-        price: -res.data.activityPrice,
+        userId: this.userInfo._id,
       },
     });
-    return err ? null : data;
+  }
+  /**
+   * 新增用户资金明细
+   */
+  addCustomerFund(remarkId, type, price) {
+    return callFunc({
+      name: BACK_END,
+      action: "customer-fund/add",
+      data: {
+        remarkId,
+        price,
+        type,
+        userId: this.userInfo._id,
+        appId: this.appId,
+      },
+    });
   }
 };

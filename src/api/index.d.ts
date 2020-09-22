@@ -67,6 +67,7 @@ namespace user {
     balance: number;
     balanceStr: string;
     isVip: boolean;
+    vipExpireTimeStr: string;
   }
 }
 
@@ -96,9 +97,11 @@ namespace goods {
     showPrice: number;
     showPriceStr: number;
     salePriceVip: number;
-    salePriceVipStr: number;
+    salePriceVipStr: string;
     salePriceNormal: number;
-    salePriceNormalStr: number;
+    salePriceNormalStr: string;
+    dealPrice: number;
+    dealPriceStr: string;
     goodsName: string;
     imgList: Array<string>;
     sales: number;

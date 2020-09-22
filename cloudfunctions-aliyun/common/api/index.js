@@ -16,8 +16,14 @@ class ResponseModal {
 }
 
 class ControllerBase {
-  constructor(appId) {
+  constructor(appId = "", userInfo = {}) {
     this.appId = appId;
+    this.userInfo = userInfo;
+    this.token = userInfo.token ? userInfo.token[0] : "木有token";
+    this.isVip = userInfo.vipExpireTime
+      ? userInfo.vipExpireTime > Date.now()
+      : false;
+    console.log("是否为vip会员", this.isVip);
     this.ResponseModal = ResponseModal;
   }
   /**
@@ -58,9 +64,7 @@ class ControllerBase {
 
 class ControllerAuth extends ControllerBase {
   constructor(appId, userInfo) {
-    super(appId);
-    this.userInfo = userInfo;
-    this.token = userInfo.token ? userInfo.token[0] : "木有token";
+    super(appId, userInfo);
   }
   /**
    * 验证token

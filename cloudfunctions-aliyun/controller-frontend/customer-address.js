@@ -4,6 +4,7 @@ module.exports = class AgentAddress extends ControllerAuth {
   constructor(appId, userInfo) {
     super(appId, userInfo);
   }
+
   /**
    * 添加地址
    * @param param

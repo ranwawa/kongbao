@@ -8,9 +8,10 @@
 const { ControllerBase, db } = require("api");
 const { colSpInfos } = db;
 module.exports = class SupplierInfo extends ControllerBase {
-  constructor(appId) {
-    super(appId);
+  constructor(appId, userInfo) {
+    super(appId, userInfo);
   }
+
   /**
    * 根据ID查询供应商信息
    */

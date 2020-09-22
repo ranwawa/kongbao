@@ -7,9 +7,10 @@
 const { db, ControllerBase } = require("api");
 const { colCsFundOrder, $ } = db;
 module.exports = class CustomerFund extends ControllerBase {
-  constructor(appId) {
-    super(appId);
+  constructor(appId, userInfo) {
+    super(appId, userInfo);
   }
+
   /**
    * 更新实际支付金额
    */

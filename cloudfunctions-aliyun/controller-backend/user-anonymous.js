@@ -2,9 +2,10 @@ const uniID = require("uni-id");
 const { ControllerBase, db } = require("api");
 const { colCsUser, _ } = db;
 module.exports = class UserNormal extends ControllerBase {
-  constructor(appId) {
-    super(appId);
+  constructor(appId, userInfo) {
+    super(appId, userInfo);
   }
+
   /**
    * 更新余额
    */
@@ -35,9 +36,7 @@ module.exports = class UserNormal extends ControllerBase {
         appId,
         _id: userId,
       })
-      .update({
-        balance: _.inc(price),
-      });
+      .update(param);
     return this.processResponseData(res, "(user-anonymous)更新余额");
   }
 

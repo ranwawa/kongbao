@@ -8,8 +8,8 @@
 const { ControllerBase, db } = require("api");
 const { colAgInfo, _ } = db;
 module.exports = class AgentInfo extends ControllerBase {
-  constructor(appId) {
-    super(appId);
+  constructor(appId, userInfo) {
+    super(appId, userInfo);
   }
   /**
    * 根据appId修改余额

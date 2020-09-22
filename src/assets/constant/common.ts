@@ -15,6 +15,7 @@ export enum ROUTE {
 
 export const STORAGE_KEY = {
   UNI_ID_TOKEN: "uni_id_token",
+  USER_INFO: "user_info",
 };
 
 /**

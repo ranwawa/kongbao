@@ -56,7 +56,6 @@
         <uv-cell :border="false" title="运费" value="包邮" />
       </view>
     </view>
-
     <!-- 底部按钮 -->
     <view class="order-footer">
       <view class="order-footer__amount">
@@ -101,13 +100,13 @@ import { goods } from "@/api/goods";
 import { uniWrapper } from "@/assets/js/uni-wrapper";
 import GoodsCell from "@/components/goods-cell.vue";
 import UvPrice from "uni-vant/lib/price.vue";
-import { ROUTE } from "@/assets/constant/common";
+import { ROUTE, STORAGE_KEY } from "@/assets/constant/common";
 import { vm } from "@/assets/js/event-bus";
 import SimpleAddress from "simple-address";
 import AddressAdd from "@/components/address-add.vue";
 import { address } from "@/api/address";
 import { order } from "@/api/order";
-import IAddressItem = address.IAddressItem;
+import { user } from "@/api/user";
 
 @Component({
   components: {
@@ -124,13 +123,14 @@ export default class LoginHome extends Vue {
   isShowAddressAdd: boolean = false; // 是否显示添加地址弹框
   cityInfo = ""; // 选中的省市区信息
   isDisablePayBtn: boolean = false;
+  userInfo: user.IUserInfoRes = Object(); // 用户信息
 
   /**
    * 订单总金额
    */
   get computedGoodsAmount() {
-    const price = this.goodsInfo.salePriceNormalStr || 0;
-    return price * this.addressList.length;
+    const price = this.goodsInfo.dealPrice || 0;
+    return +((price * this.addressList.length) / 100).toFixed(2);
   }
 
   onLoad(e: { goodsId: string }) {
@@ -140,6 +140,7 @@ export default class LoginHome extends Vue {
         uniWrapper.redirectToPage(ROUTE.TAB_CATEGORY);
       }, 1688);
     }
+    this.userInfo = uni.getStorageSync(STORAGE_KEY.USER_INFO);
     this.getGoodsDetail(e.goodsId);
     this.getDefaultAddress();
     vm.$on("update-service", (item: address.IAddressItem) => {
@@ -156,6 +157,13 @@ export default class LoginHome extends Vue {
       return;
     }
     data.notSendAddress = `暂不发货区域: ${data.notSendAddress}`;
+    if (this.userInfo.isVip) {
+      data.dealPrice = data.salePriceVip;
+      data.dealPriceStr = data.salePriceVipStr;
+    } else {
+      data.dealPrice = data.salePriceNormal;
+      data.dealPriceStr = data.salePriceNormalStr;
+    }
     this.goodsInfo = data;
   }
   /**

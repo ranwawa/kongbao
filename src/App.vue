@@ -55,6 +55,9 @@ page {
   }
 }
 /* 省市区选择 */
+.text-truncate {
+  @include text-truncate;
+}
 .simple-address-content,
 .simple-address-mask {
   z-index: $z-popover !important;

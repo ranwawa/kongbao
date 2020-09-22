@@ -8,11 +8,21 @@
   <view class="jxg-container">
     <!-- 主体内容 -->
     <div class="jxg-container__wrapper">
-      <!-- 金额 -->
-      <view class="vip-section vip-cash">
+      <!-- 已开通模块 -->
+      <view v-if="userInfo.isVip" class="vip-section">
         <view class="vip-section__title">
           <view class="vip-section__flag"></view>
-          <view class="vip-section__text"> 直播创业礼包套餐推荐</view>
+          <view class="vip-section__text"> 欢迎回来</view>
+          <view class="vip-section__flag vip-section__flag_reverse"></view>
+        </view>
+        <view> 您已开通vip会员 </view>
+        <view> 会员到期时间：{{ userInfo.vipExpireTimeStr }} </view>
+      </view>
+      <!-- 金额 -->
+      <view v-else class="vip-section vip-cash">
+        <view class="vip-section__title">
+          <view class="vip-section__flag"></view>
+          <view class="vip-section__text"> VIP套餐</view>
           <view class="vip-section__flag vip-section__flag_reverse"></view>
         </view>
         <view
@@ -69,11 +79,21 @@
     <!-- 底部按钮 -->
     <view class="vip-footer">
       <!-- 分享按钮 -->
-      <uv-button custom-style="border-color: #ccc;" round @click="test">
+      <uv-button
+        custom-style="border-color: #ccc;"
+        :size="userInfo.isVip ? 'large' : 'normal'"
+        round
+        @click="test"
+      >
         邀请好友开通
       </uv-button>
       <!-- 开通按钮 -->
-      <uv-button custom-class="theme-style__button" round @click="test">
+      <uv-button
+        v-if="!userInfo.isVip"
+        custom-class="theme-style__button"
+        round
+        @click="test"
+      >
         我要开通
       </uv-button>
     </view>
@@ -83,6 +103,7 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { vipApi } from "@/api/vip";
+import { user } from "@/api/user";
 
 @Component({
   components: {},
@@ -110,14 +131,21 @@ export default class vip extends Vue {
       title: "更多权益，即将开放",
       content: `我们会针对VIP开发更多专属权益，欢迎您的加入`,
     },
-  ];
-  vipList: Array<vip.IItem> = [];
-  currentVip: vip.IItem = Object();
+  ]; // vip权益
+  vipList: Array<vip.IItem> = []; // vip套餐信息
+  currentVip: vip.IItem = Object(); // 当前选中的套餐
+  userInfo: user.IUserInfoRes = Object(); // 用户信息
 
   onLoad() {
     this.getList();
+    if (uni.getStorageSync("uni_id_token")) {
+      this.getUserInfo();
+    }
   }
 
+  /**
+   * 查询VIP套餐列表
+   */
   async getList() {
     const [err, data] = await vipApi.getList();
     if (err || !data?.length) {
@@ -127,8 +155,20 @@ export default class vip extends Vue {
     this.currentVip = data[0];
   }
 
-  submit(e: vip.IItem) {
-    console.log(e);
+  /**
+   * 查询用户信息
+   */
+  async getUserInfo() {
+    const [err, data] = await user.getUserInfo();
+    if (err || !data) {
+      return;
+    }
+    this.userInfo = data;
+  }
+
+  async submit(item: vip.IItem) {
+    const [err, data] = await vipApi.buyVip({ vipId: item.vipId });
+    console.log(data);
   }
 }
 </script>
@@ -367,6 +407,7 @@ $linear-dark: $c-theme;
       content: "¥";
       font-size: $fz-md;
     }
+
     &::after {
       content: "/" attr(data-price);
       font-size: $fz-md;
@@ -568,6 +609,7 @@ $linear-dark: $c-theme;
   @include flex-row;
   justify-content: space-between;
   padding: px2rpx(10);
+  border-top: 1px solid #ccc;
   background-color: #fff;
 
   /deep/ .uv-btn-text {
