@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "npm run dev:h5",
     "build": "npm run build:h5",
-    "build:app-plus": "cross-env NODE_ENV=production UNI_PLATFORM=app-plus vue-cli-service uni-build",
+    "build:app-plus": "cross-env NOwE_ENV=production UNI_PLATFORM=app-plus vue-cli-service uni-build",
     "build:custom": "cross-env NODE_ENV=production uniapp-cli custom",
     "build:h5": "cross-env NODE_ENV=production UNI_PLATFORM=h5 vue-cli-service uni-build",
     "build:mp-360": "cross-env NODE_ENV=production UNI_PLATFORM=mp-360 vue-cli-service uni-build",
@@ -62,7 +62,7 @@
     "hello-common": "file:cloudfunctions-aliyun/common/hello-common",
     "lodash": "^4.17.20",
     "regenerator-runtime": "^0.12.1",
-    "rww-sass": "^1.0.18",
+    "rww-sass": "^1.0.19",
     "sass-loader": "^9.0.3",
     "simple-address": "^1.0.0",
     "uni-vant": "^1.1.10",
