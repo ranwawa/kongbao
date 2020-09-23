@@ -48,9 +48,10 @@ export default class LoginHome extends Vue {
   tabList: Array<order.ITabItem> = [
     { name: "全部", status: -1 },
     { name: "待支付", status: 1 },
-    { name: "待出库", status: 2 },
-    { name: "待揽件", status: 3 },
-    { name: "待完成", status: 5 },
+    { name: "待打单", status: 2 },
+    { name: "待出库", status: 3 },
+    { name: "待发货", status: 5 },
+    { name: "已完成", status: 6 },
   ]; // 订单分类列表
   currentTab: order.ITabItem = { name: "全部", status: -1 }; // 当前选中的分类
   orderList: Array<any> = []; // 订单列表

@@ -91,10 +91,13 @@ module.exports = class CustomerOrder extends ControllerAuth {
       })
       .end();
     res.data = res.data.map((ele) => {
-      ele.createTimeStr = moment(ele.createTime).format(FORMATTER);
+      ele.createTimeStr = moment(ele.createTime).utcOffset(8).format(FORMATTER);
       ele.storeTime &&
-        (ele.storeTimeStr = moment(ele.storeTime).format(FORMATTER));
-      ele.payTime && (ele.payTimeStr = moment(ele.payTime).format(FORMATTER));
+        (ele.storeTimeStr = moment(ele.storeTime)
+          .utcOffset(8)
+          .format(FORMATTER));
+      ele.payTime &&
+        (ele.payTimeStr = moment(ele.payTime).utcOffset(8).format(FORMATTER));
       return ele;
     });
     return this.processResponseData(res, "查询单条订单", true);
@@ -172,7 +175,7 @@ module.exports = class CustomerOrder extends ControllerAuth {
       })
       .end();
     res.data = res.data.map((ele) => {
-      ele.createTimeStr = moment(ele.createTime).format(FORMATTER);
+      ele.createTimeStr = moment(ele.createTime).utcOffset(8).format(FORMATTER);
       return ele;
     });
     return this.processResponseData(res, "根据分类查询订单");

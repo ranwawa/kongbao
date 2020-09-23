@@ -6,8 +6,8 @@
  */
 
 const { ControllerBase, db } = require("api");
-const { colCsOrder } = db;
-const _ = require("lodash");
+const { colCsOrder, _ } = db;
+const lodash = require("lodash");
 module.exports = class CustomerOrder extends ControllerBase {
   constructor(appId, userInfo) {
     super(appId, userInfo);
@@ -22,7 +22,11 @@ module.exports = class CustomerOrder extends ControllerBase {
     );
     const res = await colCsOrder
       .where({ batchNo })
-      .field({ addressInfo: true })
+      .field({
+        appId: true,
+        userId: true,
+        addressInfo: true,
+      })
       .limit(1)
       .get();
     return this.processResponseData(
@@ -46,7 +50,7 @@ module.exports = class CustomerOrder extends ControllerBase {
       })
       .update({
         status: options.nextStatus,
-        ..._.omit(options, [
+        ...lodash.omit(options, [
           "orderId",
           "appId",
           "userId",
@@ -62,7 +66,7 @@ module.exports = class CustomerOrder extends ControllerBase {
   async updateOrderList(options) {
     uniCloud.logger.info("(customer-order)批量更新订单-入参", options);
     const promiseAll = options.map((ele) => {
-      return colCsOrder.doc(ele._id).update(_.omit(ele, ["_id"]));
+      return colCsOrder.doc(ele._id).update(lodash.omit(ele, ["_id"]));
     });
     const res = await Promise.all(promiseAll);
     return this.processResponseData(res, "(customer-order)批量更新订单", true);
@@ -91,5 +95,17 @@ module.exports = class CustomerOrder extends ControllerBase {
     //   _id: dbCmd.exists(true)
     // }).remove();
     // uniCloud.logger.log("删除所有订单-出参", res);
+  }
+  /**
+   * 更新所有订单
+   */
+  async updateAll() {
+    // const res = await colCsOrder.where({
+    //   _id: _.exists(true),
+    //   status: 5,
+    // }).update({
+    //   status: 3
+    // });
+    // uniCloud.logger.log("更新所有订单-出参", res);
   }
 };

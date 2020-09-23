@@ -23,7 +23,7 @@ module.exports = class AliHuoCang extends ControllerBase {
       return Error;
     }
     // 将更新后的参数同步到数据库
-    const [, data2] = await callFunc({
+    const [err2, data2] = await callFunc({
       name: "controller-backend",
       action: "customer-order/updateOrderInfo",
       data: {
@@ -32,7 +32,8 @@ module.exports = class AliHuoCang extends ControllerBase {
         nextStatus: 5,
       },
     });
-    if (!data2 || !data.affectedDocs < 1) {
+    if (!data2 || !data2.affectedDocs < 1) {
+      uniCloud.logger.log("(cb-ali-huocang)批量下单接口回调-出参", err2, data2);
       return Error;
     }
     return { success: true };
@@ -87,7 +88,7 @@ module.exports = class AliHuoCang extends ControllerBase {
       orderId: _id,
       addressInfo: addressInfoNew,
     };
-    uniCloud.logger.log("(cb-ali-huocang)加工传进来的参数-出参", res);
+    uniCloud.logger.log("(cb-ali-huocang)合并地址信息-出参", res);
     return res;
   }
 };

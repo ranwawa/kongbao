@@ -182,6 +182,9 @@ namespace order {
     createTime: string;
     payTime: string;
     storeTime: string;
+    createTimeStr: string;
+    payTimeStr: string;
+    storeTimeStr: string;
   }
 
   /**

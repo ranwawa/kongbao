@@ -5,16 +5,16 @@
     <!-- 服务信息 -->
     <view class="o-detail">
       <uv-cell :value="orderInfo.serviceInfo" title="售后信息" />
-      <uv-cell :value="orderInfo.createTime" title="下单时间" />
+      <uv-cell :value="orderInfo.createTimeStr" title="下单时间" />
       <uv-cell
         v-if="orderInfo.payTime"
-        :value="orderInfo.payTime"
+        :value="orderInfo.payTimeStr"
         :border="!!orderInfo.storeTime"
         title="付款时间"
       />
       <uv-cell
         v-if="orderInfo.storeTime"
-        :value="orderInfo.storeTime"
+        :value="orderInfo.storeTimeStr"
         :border="false"
         title="出库时间"
       />
