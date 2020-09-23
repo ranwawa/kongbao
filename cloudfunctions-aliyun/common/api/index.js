@@ -19,11 +19,11 @@ class ControllerBase {
   constructor(appId = "", userInfo = {}) {
     this.appId = appId;
     this.userInfo = userInfo;
+    this.userId = userInfo._id;
     this.token = userInfo.token ? userInfo.token[0] : "木有token";
     this.isVip = userInfo.vipExpireTime
       ? userInfo.vipExpireTime > Date.now()
       : false;
-    console.log("是否为vip会员", this.isVip);
     this.ResponseModal = ResponseModal;
   }
   /**

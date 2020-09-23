@@ -1,161 +1,162 @@
 {
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
-		{
-			"path": "pages/tab/home",
-			"style": {
-				"navigationBarTitleText": "我的",
-				"enablePullDownRefresh": true,
-				"navigationStyle": "custom"
-			}
-		},
-		{
-			"path": "pages/tab/goods-category",
-			"style": {
-				"navigationBarTitleText": "首页",
-				"enablePullDownRefresh": true,
-				"navigationStyle": "custom"
-			}
-		}
-	],
-	"tabBar": {
+  "pages": [
+    //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+    {
+      "path": "pages/tab/goods-category",
+      "style": {
+        "navigationBarTitleText": "首页",
+        "enablePullDownRefresh": true,
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/tab/home",
+      "style": {
+        "navigationBarTitleText": "我的",
+        "enablePullDownRefresh": true,
+        "navigationStyle": "custom"
+      }
+    }
+  ],
+  "tabBar": {
     "color": "#ccc",
-		"selectedColor": "#ff5000",
-		"list": [
-			{
-				"pagePath": "pages/tab/goods-category",
-				"text": "首页",
-				"iconPath": "/static/home.png",
-				"selectedIconPath": "/static/home_active.png"
-			},
-			{
-				"pagePath": "pages/tab/home",
-				"text": "我的",
-				"iconPath": "/static/mine.png",
-				"selectedIconPath": "/static/mine_active.png"
-			}
-		]
-	},
-	"subPackages": [
-		{
-			"root": "pages/user",
-			"pages": [
-				{
-					"path": "login-home",
-					"style": {
-						"navigationBarTitleText": "帐号密码登录"
-					}
-				},
-				{
-					"path": "register",
-					"style": {
-						"navigationBarTitleText": "注册"
-					}
-				},{
-					"path": "setting",
-					"style": {
-						"navigationBarTitleText": "设置"
-					}
-				}
-			]
-		},
-		{
-			"root": "pages/fund",
-			"pages": [
-				{
-					"path": "list",
-					"style": {
-						"navigationBarTitleText": "资金明细"
-					}
-				},
-				{
-					"path": "vip",
-					"style": {
-						"navigationBarTitleText": "vip特权"
-					}
-				},
-				{
-					"path": "balance",
-					"style": {
-						"navigationBarTitleText": "余额充值"
-					}
-				},
-				{
-					"path": "recharge",
-					"style": {
-						"navigationBarTitleText": "扫码充值"
-					}
-				}
-			]
-		},
-		{
-			"root": "pages/goods",
-			"pages": [
-				{
-					"path": "detail",
-					"style": {
-						"navigationBarTitleText": "小礼品详情"
-					}
-				}
-			]
-		},
-		{
-			"root": "pages/order",
-			"pages": [
-				{
-					"path": "index",
-					"style": {
-						"navigationBarTitleText": "确认订单"
-					}
-				},{
-					"path": "pay",
-					"style": {
-						"navigationBarTitleText": "订单支付"
-					}
-				},{
-					"path": "detail",
-					"style": {
-						"navigationBarTitleText": "订单详情"
-					}
-				},{
-					"path": "list",
-					"style": {
-						"navigationBarTitleText": "我的订单"
-					}
-				}
-			]
-		},
-		{
-			"root": "pages/service",
-			"pages": [
-				{
-					"path": "address",
-					"style": {
-						"navigationBarTitleText": "售后信息"
-					}
-				},{
-					"path": "contact",
-					"style": {
-						"navigationBarTitleText": "联系客服"
-					}
-				}
-			]
-		},
-		{
-			"root": "pages/admin",
-			"pages": [
-				{
-					"path": "pay-qr-code",
-					"style": {
-						"navigationBarTitleText": "收款二维码"
-					}
-				}
-			]
-		}
-	],
-	"globalStyle": {
-		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
-	}
+    "selectedColor": "#ff5000",
+    "list": [
+      {
+        "pagePath": "pages/tab/goods-category",
+        "text": "首页",
+        "iconPath": "/static/home.png",
+        "selectedIconPath": "/static/home_active.png"
+      },
+      {
+        "pagePath": "pages/tab/home",
+        "text": "我的",
+        "iconPath": "/static/mine.png",
+        "selectedIconPath": "/static/mine_active.png"
+      }
+    ]
+  },
+  "subPackages": [
+    {
+      "root": "pages/user",
+      "pages": [
+        {
+          "path": "login-home",
+          "style": {
+            "navigationBarTitleText": "帐号密码登录"
+          }
+        },
+        {
+          "path": "register",
+          "style": {
+            "navigationBarTitleText": "注册"
+          }
+        }, {
+          "path": "setting",
+          "style": {
+            "navigationBarTitleText": "设置"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pages/fund",
+      "pages": [
+        {
+          "path": "list",
+          "style": {
+            "navigationBarTitleText": "资金明细"
+          }
+        },
+        {
+          "path": "vip",
+          "style": {
+            "navigationBarTitleText": "vip特权"
+          }
+        },
+        {
+          "path": "balance",
+          "style": {
+            "navigationBarTitleText": "余额充值"
+          }
+        },
+        {
+          "path": "recharge",
+          "style": {
+            "navigationBarTitleText": "扫码充值"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pages/goods",
+      "pages": [
+        {
+          "path": "detail",
+          "style": {
+            "navigationBarTitleText": "小礼品详情"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pages/order",
+      "pages": [
+        {
+          "path": "index",
+          "style": {
+            "navigationBarTitleText": "确认订单"
+          }
+        }, {
+          "path": "pay",
+          "style": {
+            "navigationBarTitleText": "订单支付"
+          }
+        }, {
+          "path": "detail",
+          "style": {
+            "navigationBarTitleText": "订单详情"
+          }
+        }, {
+          "path": "list",
+          "style": {
+            "navigationBarTitleText": "我的订单"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pages/service",
+      "pages": [
+        {
+          "path": "address",
+          "style": {
+            "navigationBarTitleText": "售后信息"
+          }
+        }, {
+          "path": "contact",
+          "style": {
+            "navigationBarTitleText": "联系客服"
+          }
+        }
+      ]
+    },
+    {
+      "root": "pages/admin",
+      "pages": [
+        {
+          "path": "pay-qr-code",
+          "style": {
+            "navigationBarTitleText": "收款二维码"
+          }
+        }
+      ]
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "uni-app",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  }
 }
