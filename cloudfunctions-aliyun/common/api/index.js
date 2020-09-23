@@ -1,6 +1,7 @@
 const db = require("./db");
 const utils = require("./utils");
 const { request } = require("./request");
+const config = require("./config");
 const mainFunc = require("./main-func");
 const callFunc = require("./call-func");
 const apiALHC = require("./api-alhc");
@@ -80,6 +81,7 @@ class ControllerAuth extends ControllerBase {
 module.exports = {
   db,
   utils,
+  config,
   mainFunc,
   apiALHC,
   apiKdHelp,
