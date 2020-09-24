@@ -45,14 +45,6 @@ module.exports = class Goods {
     Object.entries(modelMap).forEach(([standardKey, thirdKey]) => {
       entity[standardKey] = thirdGoodsItem[thirdKey];
     });
-    entity.storeCode = storeItem.storeCode;
-    entity.storeName = storeItem.storeName;
-    entity.storeId = storeItem._id;
-    entity.thirdObj = thirdGoodsItem;
-    entity._id = md5(`${this.spId}-${entity.storeCode}-${entity.goodsCode}`);
-    entity.spId = this.spId;
-    entity.sort = 0;
-    entity.updateTime = Date.now();
     if (typeof entity.goodsCostPrice === "string") {
       entity.goodsCostPrice = +entity.goodsCostPrice * 100;
     }

@@ -75,31 +75,7 @@ module.exports = class Store {
     uniCloud.logger.log("合并仓库实体数据-出参", entity);
     return entity;
   }
-  /**
-   * 新增一条仓库
-   * @param entity
-   * @returns {Promise<Object>}
-   */
-  async add(entity) {
-    entity.createTime = Date.now();
-    entity.isDeleted = false;
-    entity.isEnable = true;
-    const res = await colStore.add(entity);
-    uniCloud.logger.log("添加仓库-结果", res);
-    return res;
-  }
-  /**
-   * 查询一条仓库
-   * @param entity
-   */
-  async get(entity) {
-    const res = await colStore
-      .where(this.getWhereParam(entity))
-      .field({ _id: true })
-      .get();
-    uniCloud.logger.log("查询仓库-出参", res);
-    return res;
-  }
+
   /**
    * 查询所有仓库
    */

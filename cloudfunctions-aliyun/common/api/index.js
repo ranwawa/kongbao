@@ -1,5 +1,6 @@
 const db = require("./db");
 const utils = require("./utils");
+const config = require("./config");
 const { request } = require("./request");
 const mainFunc = require("./main-func");
 const callFunc = require("./call-func");
@@ -25,6 +26,18 @@ class ControllerBase {
       ? userInfo.vipExpireTime > Date.now()
       : false;
     this.ResponseModal = ResponseModal;
+  }
+  /**
+   * 检查是否为md5Id
+   */
+  checkIsId(id) {
+    return typeof id === "string" && id.length === 32;
+  }
+  /**
+   * 获取400响应参数
+   */
+  get400Error(str) {
+    return new this.ResponseModal(400, {}, str);
   }
   /**
    * 加工查询数据
@@ -80,6 +93,7 @@ class ControllerAuth extends ControllerBase {
 module.exports = {
   db,
   utils,
+  config,
   mainFunc,
   apiALHC,
   apiKdHelp,

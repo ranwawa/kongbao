@@ -1,6 +1,13 @@
- {
-    "action": "supplier-info/getSupplierInfoById",
+{
+    "action": "supplier-goods/removeAll",
     "data": {
-      "supplierId": "5f4b16741179ce00015923a3"
+      "storeId": "eaddcd32aa666e95da3b2b5378def9bc",
+      "goodsId": 1600936155087,
+      "expressList": [
+        {
+          "expressId": "",
+          "expressCostPrice": 330
+        }
+      ]
     }
   }
