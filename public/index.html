@@ -7,8 +7,19 @@
         <title>
             <%= htmlWebpackPlugin.options.title %>
         </title>
+        <style>
+            iframe {
+                display: block;
+                border: 8px solid #000;
+                border-radius: 5px;
+                margin: auto;
+            }
+            ::-webkit-scrollbar{
+                display: none;
+            }
+        </style>
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
                 document.documentElement.style.fontSize = document.documentElement.clientWidth / 20 + 'px'
             })
             var coverSupport = 'CSS' in window && typeof CSS.supports === 'function' && (CSS.supports('top: env(a)') || CSS.supports('top: constant(a)'))
@@ -21,7 +32,18 @@
         <noscript>
             <strong>Please enable JavaScript to continue.</strong>
         </noscript>
+
         <div id="app"></div>
+        <script>
+           if (window.innerWidth > 768) {
+             document.querySelector('#app').remove();
+             const iframe = document.createElement('iframe');
+             iframe.src= location.href;
+             iframe.width = '415px';
+             iframe.height = '736px';
+             document.body.appendChild(iframe);
+           }
+        </script>
         <!-- built files will be auto injected -->
     </body>
 

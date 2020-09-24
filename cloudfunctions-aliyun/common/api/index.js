@@ -1,5 +1,6 @@
 const db = require("./db");
 const utils = require("./utils");
+const config = require("./config");
 const { request } = require("./request");
 const config = require("./config");
 const mainFunc = require("./main-func");
@@ -20,12 +21,24 @@ class ControllerBase {
   constructor(appId = "", userInfo = {}) {
     this.appId = appId;
     this.userInfo = userInfo;
+    this.userId = userInfo._id;
     this.token = userInfo.token ? userInfo.token[0] : "木有token";
     this.isVip = userInfo.vipExpireTime
       ? userInfo.vipExpireTime > Date.now()
       : false;
-    console.log("是否为vip会员", this.isVip);
     this.ResponseModal = ResponseModal;
+  }
+  /**
+   * 检查是否为md5Id
+   */
+  checkIsId(id) {
+    return typeof id === "string" && id.length === 32;
+  }
+  /**
+   * 获取400响应参数
+   */
+  get400Error(str) {
+    return new this.ResponseModal(400, {}, str);
   }
   /**
    * 加工查询数据

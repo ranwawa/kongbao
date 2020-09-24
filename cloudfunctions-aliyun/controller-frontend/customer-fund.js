@@ -40,7 +40,9 @@ module.exports = class CustomerFund extends ControllerAuth {
       .sort({ createTime: 1 })
       .end();
     res.data = res.data.map((ele) => {
-      ele.createTimeStr = moment(ele.createTime).format("YYYY-MM-DD HH:mm:ss");
+      ele.createTimeStr = moment(ele.createTime)
+        .utcOffset(8)
+        .format("YYYY-MM-DD HH:mm:ss");
       return ele;
     });
     return this.processResponseData(res, "(customer-fund)根据类型获取列表");

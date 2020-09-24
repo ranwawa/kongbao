@@ -5,7 +5,11 @@
  * @since 2020/9/14 11:55
  */
 const { mainFunc } = require("api");
+const PlLog = require("./platform-log");
 const SpInfo = require("./supplier-info");
+const SpGoods = require("./supplier-goods");
+const SpStore = require("./supplier-store");
+const SpStoreGoods = require("./supplier-store-goods");
 const AgentInfo = require("./agent-info");
 const AgentFund = require("./agent-fund");
 const CustomerOrder = require("./customer-order");
@@ -13,7 +17,11 @@ const CustomerFund = require("./customer-fund");
 const CustomerFundOrder = require("./customer-fund-order");
 const UserAnonymous = require("./user-anonymous");
 const fileMap = {
+  "platform-log": PlLog,
   "supplier-info": SpInfo,
+  "supplier-goods": SpGoods,
+  "supplier-store": SpStore,
+  "supplier-store-goods": SpStoreGoods,
   "agent-info": AgentInfo,
   "agent-fund": AgentFund,
   "customer-order": CustomerOrder,

@@ -22,7 +22,9 @@ module.exports = class UserAuth extends ControllerAuth {
       balanceStr: (userInfo.balance / 100).toFixed(2),
       nickname: userInfo.nickname,
       isVip: this.checkVip(),
-      vipExpireTimeStr: moment(userInfo.vipExpireTime).format("YYYY年MM月DD日"),
+      vipExpireTimeStr: moment(userInfo.vipExpireTime)
+        .utcOffset(8)
+        .format("YYYY年MM月DD日"),
     };
     uniCloud.logger.info("获取用户信息-出参", res);
     return new this.ResponseModal(0, res);

@@ -146,7 +146,7 @@ module.exports = class OrderOperate extends ControllerAuth {
     if (!postData) {
       return new this.ResponseModal(500, {}, "获取第快递公司信息,数据异常");
     }
-    const [, res4] = await apiALHC.merchantCreateOrderList(postData);
+    const [, res4] = await apiALHC.merchantCreateOrderList({ datas: postData });
     if (!res4 || res4.length < 1) {
       return new this.ResponseModal(500, {}, "快递公司下单失败");
     }
@@ -276,41 +276,29 @@ module.exports = class OrderOperate extends ControllerAuth {
    */
   async getPostData(options) {
     const { csGoodsInfo, serviceInfo, addressInfo } = options.orderInfo;
-    const SUPPLIER_ID = "5f4b16741179ce00015923a3"; // 阿里货仓ID
-    const [err, data] = await callFunc({
-      name: BACK_END,
-      action: "supplier-info/getSupplierInfoById",
-      data: { supplierId: SUPPLIER_ID },
-    });
-    if (err || !data._id) {
-      return;
-    }
-    const res = {
-      accessToken: data.accessToken,
-      datas: JSON.stringify(
-        addressInfo.map((addressInfoItem) => ({
-          storehouseCode: csGoodsInfo.storeCode,
-          goodsCode: csGoodsInfo.goodsCode,
-          minSingleGoodsWeight: csGoodsInfo.min || 0.6,
-          maxSingleGoodsWeight: csGoodsInfo.max || 0.8,
-          receiver: addressInfoItem.name,
-          receiverPhone: addressInfoItem.mobile,
-          receiverProvinceName: addressInfoItem.provinceName,
-          receiverCityName: addressInfoItem.cityName,
-          receiverAreaName: addressInfoItem.areaName,
-          receiverAddress: addressInfoItem.address,
-          thirdOrderNo: addressInfoItem.addressId,
-          goodsNum: 1,
-          shipperName: serviceInfo.name,
-          shipperPhone: serviceInfo.mobile,
-        }))
-      ),
-    };
+    const data = JSON.stringify(
+      addressInfo.map((addressInfoItem) => ({
+        storehouseCode: csGoodsInfo.storeCode,
+        goodsCode: csGoodsInfo.goodsCode,
+        minSingleGoodsWeight: csGoodsInfo.min || 0.6,
+        maxSingleGoodsWeight: csGoodsInfo.max || 0.8,
+        receiver: addressInfoItem.name,
+        receiverPhone: addressInfoItem.mobile,
+        receiverProvinceName: addressInfoItem.provinceName,
+        receiverCityName: addressInfoItem.cityName,
+        receiverAreaName: addressInfoItem.areaName,
+        receiverAddress: addressInfoItem.address,
+        thirdOrderNo: addressInfoItem.addressId,
+        goodsNum: 1,
+        shipperName: serviceInfo.name,
+        shipperPhone: serviceInfo.mobile,
+      }))
+    );
     uniCloud.logger.info(
       "(order-operate)获取传递给阿里货仓的订单数据-出参",
-      res
+      data
     );
-    return res;
+    return data;
   }
   /***
    * 更新订单状态
