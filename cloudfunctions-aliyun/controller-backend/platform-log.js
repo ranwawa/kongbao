@@ -12,9 +12,8 @@ module.exports = class PlatformLog extends ControllerBase {
    * 添加一条日志
    */
   async add(options) {
-    uniCloud.logger.info("(platform-log)添加一条日志-入参", options);
+    this.logger.info("(platform-log)添加一条日志-入参", options);
     const res = await colPlLog.add(options);
-    uniCloud.logger.info("(platform-log)添加一条日志-出参", res);
-    return res;
+    return this.processResponseData(res, "(platform-log)添加一条日志");
   }
 };

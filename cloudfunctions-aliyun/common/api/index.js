@@ -2,7 +2,6 @@ const db = require("./db");
 const utils = require("./utils");
 const config = require("./config");
 const { request } = require("./request");
-const config = require("./config");
 const mainFunc = require("./main-func");
 const callFunc = require("./call-func");
 const apiALHC = require("./api-alhc");
@@ -28,6 +27,9 @@ class ControllerBase {
       : false;
     this.ResponseModal = ResponseModal;
   }
+  info(title, ...data) {
+    uniCloud.logger.log(`\n\n${title}\n`, ...data);
+  }
   /**
    * 检查是否为md5Id
    */
@@ -48,7 +50,7 @@ class ControllerBase {
    * @param isPickFirst 是否转将数据转换成对象
    */
   async processResponseData(res, title = "--", isPickFirst = false) {
-    uniCloud.logger.log(title + "-出参", res);
+    this.info(title + "-出参", res);
     // 新增成功的返回结构 {id: xxx}
     let code = 0;
     let data = {};

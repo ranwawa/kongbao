@@ -39,44 +39,41 @@ module.exports = {
           expressCostPrice: "3.9",
           notSendAddress: "新疆,西藏,宁夏,甘肃,内蒙古,香港,澳门,台湾",
         },
-        {
-          name: "邮政泉州仓",
-          code: "00004",
-          expressName: "邮政EMS",
-          provinceName: "福建省",
-          cityName: "泉州市",
-          areaName: "惠安县",
-          shipAddress: "福建省泉州市惠安县张青公路中熙产业园",
-          expressCostPrice: "3",
-          notSendAddress: "新疆,西藏,宁夏,甘肃,内蒙古,香港,澳门,台湾,河北",
-        },
-        {
-          name: "圆通杭州仓",
-          code: "00005",
-          expressName: "圆通快递",
-          provinceName: "浙江省",
-          cityName: "绍兴市",
-          areaName: "上虞市",
-          shipAddress: "浙江省绍兴市上虞市张青公路中熙产业园",
-          expressCostPrice: "3.1",
-          notSendAddress: "新疆,西藏,宁夏,甘肃,内蒙古,香港,澳门,台湾",
-        },
       ],
     ];
     // return res;
   },
   // 按仓库获取库存数据
   findStorehouseGoodsStockList: async (data) => {
-    // uniCloud.logger.info("(api-alhc)仓库获取库存数据-入参", data);
-    const res = await request({
-      data: {
-        ...data,
-        accessToken: alhc.accessToken,
-      },
-      url: `${alhc.baseUrl}api/goods/findStorehouseGoodsStockList`,
-    });
+    uniCloud.logger.info("(api-alhc)仓库获取库存数据-入参", data);
+    // const res = await request({
+    //   data: {
+    //     ...data,
+    //     accessToken: alhc.accessToken,
+    //   },
+    //   url: `${alhc.baseUrl}api/goods/findStorehouseGoodsStockList`,
+    // });
     // uniCloud.logger.info("(api-alhc)按仓库获取库存数据-出参", res);
-    return res;
+    // return res;
+    return [
+      null,
+      [
+        {
+          code: "00003",
+          name: "小老鼠剥橙器橙子剥皮器剥橙器",
+          price: "3.35",
+          weight: 0.01,
+          totalStockNumber: 42191,
+          specification: "",
+          image:
+            "http://www.alihuocang.com/alixiaocangvf/20181220/4d666ec9277c4e2ba4d8210eb13de892.png",
+          intro: "",
+          sales: 302956,
+          brand: "",
+          unit: "",
+        },
+      ],
+    ];
   },
   // 批量下单
   merchantCreateOrderList: async (data) => {

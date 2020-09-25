@@ -4,8 +4,9 @@
  * @author 冉娃娃 <274544338@qq.com>
  * @since 2020/9/24 16:58
  */
-const { ControllerBase, db } = require("api");
+const { ControllerBase, db, utils } = require("api");
 const { _, colSpGoods } = db;
+const { lodash } = utils;
 module.exports = class SupplierGoods extends ControllerBase {
   constructor(appId, userInfo) {
     super(appId, userInfo);
@@ -24,8 +25,17 @@ module.exports = class SupplierGoods extends ControllerBase {
    */
   async removeAll() {
     const res = await colSpGoods.where({ _id: _.exists(true) }).remove();
-    uniCloud.logger.info("删除全部商品-出参", res);
-    return res;
+    return this.processResponseData(res, "删除全部商品");
+  }
+  /**
+   * 修改商品
+   */
+  async update(options) {
+    uniCloud.logger.info("修改商品-入参", options);
+    const res = await colSpGoods
+      .doc(options.goodsId)
+      .update(lodash.omit(options, ["goodsId"]));
+    return this.processResponseData(res, "修改商品");
   }
   /**
    * 根据ID查询单个商品

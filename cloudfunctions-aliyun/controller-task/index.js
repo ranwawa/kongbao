@@ -4,5 +4,6 @@ exports.main = async (event, context) => {
   // 定时任务名称
   const timingName = timingTriggerConfig.replace(/[: *]/g, "");
   const alhc = new AliHuoCangAsync();
-  alhc.syncStore();
+  await alhc.syncStore();
+  return {};
 };
