@@ -13,13 +13,13 @@
     <!-- 导航条 -->
     <view class="uv-tabs">
       <view
-        v-for="item in storeList"
-        :key="item.code"
-        :class="{ 'uv-tab-active': item.storeCode === currentStore.storeCode }"
+        v-for="item in cityList"
+        :key="item.cityId"
+        :class="{ 'uv-tab-active': item.cityId === currentCity.cityId }"
         class="uv-tab"
         @click="switchStoreTab(item)"
       >
-        {{ item.storeName }}
+        {{ item.name }}
       </view>
     </view>
     <!-- 商品列表 -->
@@ -47,7 +47,7 @@ import { ROUTE } from "@/assets/constant/common";
     GoodsCard,
   },
   watch: {
-    currentStore(newValue, oldValue) {
+    currentCity(newValue, oldValue) {
       if (oldValue.goodsList) {
         return;
       }
@@ -57,19 +57,19 @@ import { ROUTE } from "@/assets/constant/common";
   },
 })
 export default class LoginHome extends Vue {
-  storeList: Array<store.IStoreItem> = Array();
-  currentStore: store.IStoreItem = Object();
+  cityList: Array<city.IItem> = Array();
+  currentCity: city.IItem = Object();
   goodsList: Array<goods.IGoodsItem> = Array();
   pageInfo: BasePage = new BasePage();
 
   onLoad() {
-    this.getStoreList();
+    this.getCityList();
   }
 
   onReachBottom() {
     if (this.pageInfo.haveMore) {
       this.pageInfo.currentPage += 1;
-      this.getGoodsList(this.currentStore);
+      this.getGoodsList(this.currentCity);
     } else {
       uniWrapper.showToastText("已经到底啦");
     }
@@ -78,39 +78,42 @@ export default class LoginHome extends Vue {
   onPullDownRefresh() {
     this.goodsList = [];
     this.pageInfo = new BasePage();
-    this.getGoodsList(this.currentStore);
+    this.getGoodsList(this.currentCity);
     setTimeout(uni.stopPullDownRefresh, 1000);
   }
 
   /**
    * 获取仓库列表
    */
-  async getStoreList() {
-    const [err, data] = await goods.getStoreList();
+  async getCityList() {
+    const [err, data] = await goods.getCityList();
     if (err || !data?.length) {
       return;
     }
-    this.storeList = data;
-    this.currentStore = data[0];
+    this.cityList = data;
+    this.currentCity = data[0];
   }
 
   /**
    * 切换仓库选项卡
    */
-  switchStoreTab(storeItem: store.IStoreItem) {
+  switchStoreTab(item: city.IItem) {
+    if (this.currentCity.cityId === item.cityId) {
+      return;
+    }
     this.pageInfo = new BasePage();
-    this.goodsList = Array();
-    this.currentStore = storeItem;
+    this.cityList = Array();
+    this.currentCity = item;
   }
 
   /**
    * 根据仓库编号查询商品列表
    */
-  async getGoodsList(storeItem: store.IStoreItem) {
+  async getGoodsList(item: city.IItem) {
     const [err, data] = await goods.getGoodsList({
       pageSize: this.pageInfo.pageSize,
       currentPage: this.pageInfo.currentPage,
-      storeCode: storeItem.storeCode,
+      cityId: item.cityId,
     });
     if (err || !data?.length) {
       this.pageInfo.haveMore = false;
@@ -137,49 +140,46 @@ export default class LoginHome extends Vue {
 }
 </script>
 
-<style
-  lang="scss"
-  scoped
->
-  /* 滚动图 */
-  .swiper {
-    height: px2rpx(168);
+<style lang="scss" scoped>
+/* 滚动图 */
+.swiper {
+  height: px2rpx(168);
+  width: 100%;
+
+  &__img {
     width: 100%;
+    height: 100%;
+  }
+}
 
-    &__img {
-      width: 100%;
-      height: 100%;
+/* 导航条 */
+.uv-tabs {
+  @include flex-row;
+  justify-content: space-between;
+  margin-bottom: $s-sm;
+  background-color: #fff;
+  text-align: center;
+}
+
+.uv-tab {
+  position: relative;
+  flex-grow: 1;
+  padding: $s-sm $s-md;
+  line-height: $s-xl;
+
+  &-active {
+    color: $c-theme;
+    font-weight: bold;
+
+    &::after {
+      content: " ";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: px2rpx(3);
+      background-color: $c-theme;
     }
   }
-
-  /* 导航条 */
-  .uv-tabs {
-    @include flex-row;
-    justify-content: space-between;
-    margin-bottom: $s-sm;
-    background-color: #fff;
-    text-align: center;
-  }
-
-  .uv-tab {
-    position: relative;
-    flex-grow: 1;
-    padding: $s-sm $s-md;
-    line-height: $s-xl;
-
-    &-active {
-      color: $c-theme;
-      font-weight: bold;
-      &::after {
-        content: " ";
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: px2rpx(3);
-        background-color: $c-theme;
-      }
-    }
-  }
-
+}
 </style>

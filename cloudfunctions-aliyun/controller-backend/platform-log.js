@@ -5,7 +5,7 @@
  * @since 2020/9/24 14:42
  */
 const { db, ControllerBase } = require("api");
-const { colPlLog } = db;
+const { colPlLog, _ } = db;
 
 module.exports = class PlatformLog extends ControllerBase {
   /**
@@ -15,5 +15,9 @@ module.exports = class PlatformLog extends ControllerBase {
     this.logger.info("(platform-log)添加一条日志-入参", options);
     const res = await colPlLog.add(options);
     return this.processResponseData(res, "(platform-log)添加一条日志");
+  }
+  async removeAll() {
+    const res = await colPlLog.where({ _id: _.exists(true) }).remove();
+    return this.processResponseData(res, "删除全部日志");
   }
 };

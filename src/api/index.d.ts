@@ -81,10 +81,16 @@ namespace store {
     goodsList?: any[];
   }
 }
+namespace city {
+  interface IItem {
+    name: string;
+    cityId: string;
+  }
+}
 
 namespace goods {
   interface IGoodsListReq {
-    storeCode: string;
+    cityId: string;
     pageSize: number;
     currentPage: number;
   }

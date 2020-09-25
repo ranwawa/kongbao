@@ -5,7 +5,7 @@
  * @since 2020/9/24 11:43
  */
 const { ControllerBase, db, utils } = require("api");
-const { colSpStore } = db;
+const { colSpStore, _ } = db;
 const { lodash } = utils;
 module.exports = class SupplierStore extends ControllerBase {
   /**
@@ -15,6 +15,10 @@ module.exports = class SupplierStore extends ControllerBase {
     uniCloud.logger.info("(supplier-store)新增一条仓库-入参", options);
     const res = await colSpStore.add(options);
     return this.processResponseData(res, "(supplier-store)新增一条仓库");
+  }
+  async removeAll() {
+    const res = await colSpStore.where({ _id: _.exists(true) }).remove();
+    return this.processResponseData(res, "(supplier-store)删除全部");
   }
   /**
    * 修改仓库信息

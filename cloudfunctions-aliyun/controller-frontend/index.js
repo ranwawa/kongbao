@@ -5,6 +5,7 @@
  * @since 2020/9/14 11:55
  */
 const { mainFunc } = require("api");
+const PlatformCities = require("./platform-cities");
 const SupplierStore = require("./supplier-store");
 const AgentInfo = require("./agent-info");
 const AgentGoods = require("./agent-goods");
@@ -18,6 +19,7 @@ const UserAnonymous = require("./user-anonymous");
 const OrderOperate = require("./order-operate");
 
 const fileMap = {
+  "platform-cities": PlatformCities,
   "supplier-store": SupplierStore,
   "agent-info": AgentInfo,
   "agent-goods": AgentGoods,

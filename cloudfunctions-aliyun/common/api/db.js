@@ -3,6 +3,7 @@ const dbCmd = db.command;
 const $ = db.command.aggregate;
 // 平台相关集合
 const colPlLog = db.collection("kb-pl-log");
+const colPlCities = db.collection("kb-pl-cities");
 // 供应商相关集合
 const colSpInfos = db.collection("kb-sp-infos");
 const colSpStore = db.collection("kb-sp-stores");
@@ -26,6 +27,7 @@ module.exports = {
   dbCmd,
   /* 平台相关 */
   colPlLog,
+  colPlCities,
   /* 供应商相关 */
   colSpInfos,
   colSpGoods,

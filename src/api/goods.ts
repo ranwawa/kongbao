@@ -3,24 +3,21 @@ import { Request } from "./request";
 const request = new Request("controller-frontend");
 class Goods {
   /**
-   * 查询仓库列表
-   * @param data
+   * 查询支持的城市列表
    */
-  getStoreList(data = {}) {
-    return request.start<Array<store.IStoreItem>>({
+  getCityList(data = {}) {
+    return request.start<Array<city.IItem>>({
       data,
-      action: "supplier-store/getList",
+      action: "platform-cities/getList",
     });
   }
-
   /**
-   * 根据仓库ID查询商品列表
-   * @param data
+   * 根据城市ID查询商品列表
    */
   getGoodsList(data: goods.IGoodsListReq) {
     return request.start<Array<goods.IGoodsItem>>({
       data,
-      action: "agent-goods/getListByStoreCode",
+      action: "supplier-store/getGoodsListByCityId",
     });
   }
 
@@ -36,7 +33,6 @@ class Goods {
   }
   /**
    * 查询推荐商品
-   * @param data
    */
   getGoodsRecommend() {
     return request.start<Array<goods.IGoodsItem>>({

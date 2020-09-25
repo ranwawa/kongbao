@@ -344,6 +344,10 @@ declare namespace ucCollection {
      * @param value
      */
     limit: (value: number) => ICollection;
+    /**
+     * 统计匹配查询条件的记录的条数
+     */
+    count: () => Promise<{ affectedDocs: number; total: number }>;
   }
 
   /**

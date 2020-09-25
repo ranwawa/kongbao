@@ -15,7 +15,7 @@ module.exports = class SupplierStore extends ControllerBase {
    * 根据仓库编号获取商品列表
    */
   async getListByStoreCode(options = {}) {
-    uniCloud.logger.log("根据仓库编号获取商品列表-入参", options);
+    this.info("根据仓库编号获取商品列表-入参", options);
     const { pageSize = 10, currentPage = 1, storeCode } = options;
     if (
       typeof pageSize !== "number" ||
@@ -75,6 +75,7 @@ module.exports = class SupplierStore extends ControllerBase {
     });
     return this.processResponseData(res, "查询推荐商品", false);
   }
+
   /**
    * 查询推荐商品
    * @returns {Promise<void>}
@@ -122,12 +123,11 @@ module.exports = class SupplierStore extends ControllerBase {
     });
     return this.processResponseData(res, "查询推荐商品", false);
   }
-
   /**
    * 根据商品ID查询商品信息
    */
   async getSingleByGoodsId(options = {}) {
-    uniCloud.logger.log("根据商品ID查询商品信息-入参", options);
+    this.info("根据商品ID查询商品信息-入参", options);
     const { goodsId = "" } = options;
     if (typeof goodsId !== "string" || goodsId.length !== 32) {
       return new this.ResponseModal(400, {}, "参数异常");
@@ -183,7 +183,7 @@ module.exports = class SupplierStore extends ControllerBase {
    * 根据商品ID查询完整的商品信息
    */
   async getSingleCompleteByGoodsId(goodsId) {
-    uniCloud.logger.log("根据商品ID查询完整的商品信息-入参", goodsId);
+    this.info("根据商品ID查询完整的商品信息-入参", goodsId);
     const res = await colAgGoods
       .aggregate()
       .match({

@@ -62,9 +62,10 @@ module.exports = class AliHuoCang extends ControllerBase {
       data: {
         spId,
         _id: storeId,
+        cityId: "",
         updateTime: Date.now(),
         createTime: Date.now(),
-        isDeleted: false,
+        isDelete: false,
         isEnable: true,
         sort: 0,
         storeName: newStoreItem.name,

@@ -28,7 +28,7 @@ class ControllerBase {
     this.ResponseModal = ResponseModal;
   }
   info(title, ...data) {
-    uniCloud.logger.log(`\n\n${title}\n`, ...data);
+    uniCloud.logger.log(`\n\n${title}\n\n`, ...data);
   }
   /**
    * 检查是否为md5Id
@@ -67,6 +67,13 @@ class ControllerBase {
       if (res.affectedDocs < 1) {
         code = 500;
         msg = "更新失败";
+      }
+      data = res;
+    } else if (res.affectedDocs !== undefined && res.deleted !== undefined) {
+      // 删除成功的返回结构 {affectedDocs: 1, deleted: 1}
+      if (res.affectedDocs < 1) {
+        code = 500;
+        msg = "删除失败";
       }
       data = res;
     } else {

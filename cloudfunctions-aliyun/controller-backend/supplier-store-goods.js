@@ -29,4 +29,8 @@ module.exports = class SupplierStoreGoods extends ControllerBase {
       true
     );
   }
+  async removeAll() {
+    const res = await colSpStoreGoods.where({ _id: _.exists(true) }).remove();
+    return this.processResponseData(res, "删除全部关联");
+  }
 };

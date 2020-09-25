@@ -12,22 +12,26 @@ const SpStore = require("./supplier-store");
 const SpStoreGoods = require("./supplier-store-goods");
 const AgentInfo = require("./agent-info");
 const AgentFund = require("./agent-fund");
+const AgentGoods = require("./agent-goods");
 const CustomerOrder = require("./customer-order");
 const CustomerFund = require("./customer-fund");
 const CustomerFundOrder = require("./customer-fund-order");
 const UserAnonymous = require("./user-anonymous");
+const GoodsOperate = require("./goods-operate");
 const fileMap = {
   "platform-log": PlLog,
   "supplier-info": SpInfo,
   "supplier-goods": SpGoods,
   "supplier-store": SpStore,
   "supplier-store-goods": SpStoreGoods,
+  "agent-goods": AgentGoods,
   "agent-info": AgentInfo,
   "agent-fund": AgentFund,
   "customer-order": CustomerOrder,
   "customer-fund": CustomerFund,
   "customer-fund-order": CustomerFundOrder,
   "user-anonymous": UserAnonymous,
+  "goods-operate": GoodsOperate,
 };
 exports.main = async (event, context) => {
   // todo 上线时删掉这个
