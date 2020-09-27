@@ -8,10 +8,10 @@
         @click="copy(agentInfo.serviceInfo.wechat)"
       />
       <uv-cell
-        :value="agentInfo.serviceInfo.wechat"
+        :value="agentInfo.serviceInfo.qq"
         title="客服QQ"
         size="large"
-        @click="copy(agentInfo.serviceInfo.wechat)"
+        @click="copy(agentInfo.serviceInfo.qq)"
       />
       <uv-cell
         :border="false"
