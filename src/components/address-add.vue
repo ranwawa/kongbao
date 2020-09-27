@@ -1,5 +1,5 @@
 <template>
-  <view class="address-add" @touchstart.stop @touchmove.stop>
+  <view class="address-add" @touchmove.stop>
     <!-- 遮罩 -->
     <view class="address-add__mask" @click="$emit('close')"></view>
     <view class="address-add__wrapper">

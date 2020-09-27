@@ -1,6 +1,10 @@
 {
-    "action": "goods-operate/initAgentGoods",
+    "action": "customer-order/getRecordIdByOrderId",
     "data": {
-      "appId": "__UNI__0CA1D11"
+      "orderId": "12a48dd517140538e2ffa0da5be8d1bb",
+      "userId": "5f65ce26d79b0f0001cba57a",
+      "appId": "__UNI__0CA1D11",
+      "isDelete": false,
+      "isEnable": true
     }
   }
