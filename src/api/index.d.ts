@@ -115,7 +115,7 @@ namespace goods {
     inventory: number;
     content: string;
     storeName: string;
-    expressPrice: string;
+    expressPrice: number;
     expressPriceStr: string;
     expressName: string;
     formattedAddress: string;

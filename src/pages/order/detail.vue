@@ -85,7 +85,7 @@ export default class LoginHome extends Vue {
     if (!index) {
       return;
     }
-    const data: string = this.orderInfo.addressInfo[index].formattedAddress;
+    const data: string = this.orderInfo.addressList[index].formattedAddress;
     this.copyInMp(data);
     this.copyInH5(data);
     uniWrapper.showToastText("复制成功");
@@ -95,7 +95,7 @@ export default class LoginHome extends Vue {
    * 复制所有地址
    */
   copyAll() {
-    const data: string = this.orderInfo.addressInfo
+    const data: string = this.orderInfo.addressList
       .map((ele) => `${ele.formattedAddress}`)
       .join("\r\n");
     this.copyInMp(data);

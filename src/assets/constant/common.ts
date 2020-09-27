@@ -28,3 +28,15 @@ export enum PAY_TYPE {
   "ALIPAY" = 1,
   "WECHAT",
 }
+
+// 代码运行环境
+export enum EEnvironment {
+  DEV = "dev", // 开发环境
+  BUILD = "build", // 生产环境
+}
+
+// 代码运行平台
+export enum EPlatform {
+  H5 = "h5",
+  MP_WEIXIN = "mp-weixin",
+}
