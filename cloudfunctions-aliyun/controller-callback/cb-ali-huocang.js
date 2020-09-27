@@ -23,23 +23,23 @@ module.exports = class AliHuoCang extends ControllerBase {
 
     if (!res) {
       uniCloud.logger.error("下单成功的数量和更新成功的数量有误， 请检查");
-      return;
+      return Error;
     }
     // 更新主订单
     const [err2, data2] = await callFunc({
       name: "controller-backend",
       action: "customer-order/updateStatusByBatchNo",
-      data: {
-        preStatus: 3,
-        nextStatus: 5,
-      },
+      data: { batchNo: data[0].batchNo },
     });
-    if (!data2 || !data2.affectedDocs < 1) {
+    if (!data2 || data2.affectedDocs < 1) {
       uniCloud.logger.log("(cb-ali-huocang)批量下单接口回调-出参", err2, data2);
       return Error;
     }
     return { success: true };
   }
+  /**
+   * 更新子订单
+   */
   async updateOrderSub(options) {
     const promiseAll = options.map((ele) =>
       callFunc({
@@ -49,10 +49,10 @@ module.exports = class AliHuoCang extends ControllerBase {
       })
     );
     const res = await Promise.all(promiseAll);
-    console.log(11111111, res);
     const affectedDocs = res.filter(
       ([err, data]) => data && data.affectedDocs === 1
     );
+    this.info("更新子订单-出参", affectedDocs.length, options.length);
     return affectedDocs.length === options.length;
   }
   /**
