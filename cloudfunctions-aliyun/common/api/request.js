@@ -22,16 +22,20 @@ module.exports.request = async function (options) {
     data = {},
     contentType = "application/x-www-form-urlencoded",
   } = options;
-  const res = await requestBind(url, {
-    method,
-    data,
-    contentType,
-    dataType: "json",
-  });
-  switch (res.status) {
-    case 200:
-      return handleResponseOK(res.data);
-    default:
-      return [res, null];
+  try {
+    const res = await requestBind(url, {
+      method,
+      data,
+      contentType,
+      dataType: "json",
+    });
+    switch (res.status) {
+      case 200:
+        return handleResponseOK(res.data);
+      default:
+        return [res, null];
+    }
+  } catch (e) {
+    return [e, null];
   }
 };
