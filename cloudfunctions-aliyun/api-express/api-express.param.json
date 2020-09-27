@@ -1,6 +1,0 @@
-{
-	"path": "/cb/alihuocang",
-"body":"data=%5B%7B%22recordId%22%3A%22774878%22%2C%22batchNo%22%3A%222020091321303277240674%22%2C%22amount%22%3A3.70%2C%22thirdOrderNo%22%3A%22781db96c58c847c19675940402fd3773%22%2C%22success%22%3A%22true%22%7D%2C%7B%22recordId%22%3A%22774879%22%2C%22batchNo%22%3A%222020091321303277240674%22%2C%22amount%22%3A3.70%2C%22thirdOrderNo%22%3A%224a200b86f37d39db137b214194cb0946%22%2C%22success%22%3A%22true%22%7D%5D",	
-	"action": "store/getList",
-	"data": {}
-}
