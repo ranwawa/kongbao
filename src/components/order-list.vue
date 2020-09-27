@@ -118,8 +118,9 @@ export default class OrderList extends Vue {
    */
   async alertSend(item: order.IDetailRes) {
     this.isDisableBtn = true;
-    await order.alertSend({ orderId: item.orderId });
+    const [err] = await order.alertSend({ orderId: item.orderId });
     this.isDisableBtn = false;
+    if (err) return;
     this.$emit("refresh-order", item);
   }
   /**
@@ -127,8 +128,9 @@ export default class OrderList extends Vue {
    */
   async alertPrint(item: order.IDetailRes) {
     this.isDisableBtn = true;
-    await order.alertPrint({ orderId: item.orderId });
+    const [err] = await order.alertPrint({ orderId: item.orderId });
     this.isDisableBtn = false;
+    if (err) return;
     this.$emit("refresh-order", item);
   }
 }

@@ -1,7 +1,10 @@
 <template>
   <view class="rww-container">
     <!-- 订单信息 -->
-    <order-list :order-list="[orderInfo]" />
+    <order-list
+      :order-list="[orderInfo]"
+      @refresh-order="getOrderDetail(orderInfo.orderId)"
+    />
     <!-- 服务信息 -->
     <view class="o-detail">
       <uv-cell :value="orderInfo.serviceInfo" title="售后信息" />

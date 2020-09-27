@@ -18,6 +18,7 @@
         :order-list="orderList"
         is-show-detail-btn
         @click-order="goOrderDetail"
+        @refresh-order="switchTab"
       />
     </view>
   </view>
@@ -81,11 +82,11 @@ export default class LoginHome extends Vue {
   /**
    * 切换订单类型
    */
-  switchTab(item: order.ITabItem) {
-    this.currentTab = item;
+  switchTab(item?: order.ITabItem) {
+    item && (this.currentTab = item);
     this.orderList = [];
     this.pageInfo = new BasePage();
-    this.getOrderList(item);
+    this.getOrderList(this.currentTab);
   }
   /**
    * 查询订单
