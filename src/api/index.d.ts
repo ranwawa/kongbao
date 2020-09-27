@@ -187,7 +187,7 @@ namespace order {
     /**
      * 收货地址
      */
-    addressList: Array<{ formattedAddress: string }>;
+    addressList: Array<{ formattedAddress: string; expressNo: string }>;
     /**
      * 商品信息
      */
@@ -205,7 +205,6 @@ namespace order {
     payTimeStr: string;
     storeTimeStr: string;
     status: number;
-    expressNo: string;
   }
 
   /**
