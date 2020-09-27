@@ -94,7 +94,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import { uniWrapper } from "@/assets/js/uni-wrapper";
 import { cellPhoneReg, userNameReg } from "@/assets/js/regular";
-import { address } from "@/api/address";
+import { service } from "@/api/service";
 
 @Component({
   props: {
@@ -134,14 +134,14 @@ export default class LoginHome extends Vue {
   [x: string]: any;
   isAuto: boolean = false; // 是否为智能识别模式
   isDisableSubmit: boolean = false; // 是否禁用保存按钮
-  formData: address.IAddressItem = Object(); // 手动添加的表单数据
+  formData: service.IAddressItem = Object(); // 手动添加的表单数据
   addressStr: string = ""; // 智能识别的地址信息
 
   /**
    * 手动添加
    */
   submitLabour() {
-    const { addressId, name, mobile, address } = this.formData;
+    const { serviceId, name, mobile, address } = this.formData;
     if (!name || !userNameReg.test(name)) {
       uniWrapper.showToastText("请填写正确的姓名");
       return;
@@ -161,7 +161,7 @@ export default class LoginHome extends Vue {
       return;
     }
     this.$emit("submit", {
-      addressId,
+      serviceId,
       name,
       mobile,
       address,
@@ -188,7 +188,7 @@ export default class LoginHome extends Vue {
       return;
     }
     this.isDisableSubmit = true;
-    const [err, data] = await address.resolveAddress({
+    const [err, data] = await service.resolveAddress({
       addressStr: this.addressStr,
     });
     this.isDisableSubmit = false;

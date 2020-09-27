@@ -12,12 +12,13 @@ module.exports = class PlatformLog extends ControllerBase {
    * 添加一条日志
    */
   async add(options) {
-    this.logger.info("(platform-log)添加一条日志-入参", options);
+    this.info("(platform-log)添加一条日志-入参", options);
+    options.createTime = Date.now();
     const res = await colPlLog.add(options);
     return this.processResponseData(res, "(platform-log)添加一条日志");
   }
   async removeAll() {
     const res = await colPlLog.where({ _id: _.exists(true) }).remove();
-    return this.processResponseData(res, "删除全部日志");
+    return this.processResponseData(res, "(platform-log)删除全部日志");
   }
 };

@@ -159,7 +159,7 @@ declare namespace ucCommand {
   /**
    * 数据库操作符，通过 db.command 获取
    */
-  interface ICommand extends ICommandUpdate {
+  interface ICommand extends ICommandUpdate, ICommandExpression {
     /**
      * 判断字段是否存在
      * @param value
@@ -181,18 +181,29 @@ declare namespace ucCommand {
      * 多个用户同时写，对数据库来说都是将字段自增，不会有后来者覆写前者的情况
      */
     inc(value: number): ICommand;
+
     /**
      * 更新操作符，用于表示删除某个字段。
      */
     remove: () => void;
   }
+
+  interface ICommandExpression {
+    expr: (options: any) => ICommand;
+  }
+
   interface IAggregateCommand
     extends IAggregateCommandObject,
       IAggregateCommandCondition,
       IAggregateCommandCompare,
       IAggregateCommandString,
       IAggregateCommandArray,
-      IAggregateCommandMath {}
+      IAggregateCommandMath {
+    /**
+     * 在lookup中使用
+     */
+    pipeline: () => ucAggregate.IAggregate;
+  }
 
   /**
    * 聚合操作符-算术操作符
@@ -344,6 +355,7 @@ declare namespace ucCollection {
      * @param value
      */
     limit: (value: number) => ICollection;
+    skip: (value: number) => ICollection;
     /**
      * 统计匹配查询条件的记录的条数
      */
@@ -477,6 +489,11 @@ declare namespace ucAggregate {
      * @param object
      */
     addFields: (object) => IAggregate;
+
+    /**
+     * 在Lookup中使用
+     */
+    done: () => void;
   }
 
   interface IAggregateLookUpBase {
@@ -598,6 +615,7 @@ declare namespace ucUploadFile {
      */
     onUploadProgress?: (options: any) => any;
   }
+
   /**
    * 直接上传文件到云存储。
    * 响应参数

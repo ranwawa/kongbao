@@ -26,6 +26,13 @@ class ControllerBase {
       ? userInfo.vipExpireTime > Date.now()
       : false;
     this.ResponseModal = ResponseModal;
+    this.baseFields = [
+      "updateTime",
+      "createTime",
+      "isDelete",
+      "isEnable",
+      "sort",
+    ];
   }
   info(title, ...data) {
     uniCloud.logger.log(`\n\n${title}\n\n`, ...data);
@@ -51,11 +58,15 @@ class ControllerBase {
    */
   async processResponseData(res, title = "--", isPickFirst = false) {
     this.info(title + "-出参", res);
-    // 新增成功的返回结构 {id: xxx}
     let code = 0;
     let data = {};
     let msg = "ok";
     if (res.id !== undefined) {
+      // 新增成功的返回结构 {id: xxx}
+      code = 0;
+      data = res;
+    } else if (res.inserted !== undefined) {
+      // 批量插入成功返回 {inserted: 1, result: {0: id}, ids: [id]}
       code = 0;
       data = res;
     } else if (res.affectedDocs !== undefined && res.data !== undefined) {
@@ -82,6 +93,31 @@ class ControllerBase {
       msg = "未知异常";
     }
     return new ResponseModal(code, data, msg);
+  }
+  getTrue(properties = []) {
+    const obj = {};
+    properties.forEach((ele) => (obj[ele] = true));
+    return obj;
+  }
+  getFalse(properties = []) {
+    const obj = {};
+    properties.forEach((ele) => (obj[ele] = false));
+    return obj;
+  }
+  getBaseFields(isAuth = false) {
+    const now = Date.now();
+    const param = {
+      updateTime: now,
+      createTime: now,
+      isDelete: false,
+      isEnable: true,
+      sort: 0,
+    };
+    if (isAuth) {
+      param.appId = this.appId;
+      param.userId = this.userInfo._id;
+    }
+    return param;
   }
 }
 

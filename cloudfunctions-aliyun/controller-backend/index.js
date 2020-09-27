@@ -6,6 +6,7 @@
  */
 const { mainFunc } = require("api");
 const PlLog = require("./platform-log");
+const PlExpress = require("./platform-express");
 const SpInfo = require("./supplier-info");
 const SpGoods = require("./supplier-goods");
 const SpStore = require("./supplier-store");
@@ -20,6 +21,7 @@ const UserAnonymous = require("./user-anonymous");
 const GoodsOperate = require("./goods-operate");
 const fileMap = {
   "platform-log": PlLog,
+  "platform-express": PlExpress,
   "supplier-info": SpInfo,
   "supplier-goods": SpGoods,
   "supplier-store": SpStore,
@@ -37,5 +39,16 @@ exports.main = async (event, context) => {
   // todo 上线时删掉这个
   context.CLIENTUA =
     "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1";
+  if (event.action === "removeAll") {
+    await new PlLog().removeAll();
+    await new SpGoods().removeAll();
+    await new SpStore().removeAll();
+    await new SpStoreGoods().removeAll();
+    await new AgentGoods().removeAll();
+    await new AgentFund().removeAll();
+    await new CustomerOrder().removeAll();
+    await new CustomerFund().removeAll();
+    await new CustomerFundOrder().removeAll();
+  }
   return await mainFunc(event, context, fileMap);
 };

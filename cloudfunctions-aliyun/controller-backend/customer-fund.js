@@ -5,7 +5,7 @@
  * @since 2020/9/18 17:09
  */
 const { db, ControllerBase } = require("api");
-const { colCsFund } = db;
+const { colCsFund, _ } = db;
 module.exports = class CustomerFund extends ControllerBase {
   constructor(appId, userInfo) {
     super(appId, userInfo);
@@ -28,5 +28,9 @@ module.exports = class CustomerFund extends ControllerBase {
       createTime: Date.now(),
     });
     return this.processResponseData(res, "添加一条用户资金明细");
+  }
+  async removeAll() {
+    const res = await colCsFund.where({ _id: _.exists(true) }).remove();
+    return this.processResponseData(res, "(customer-fund)删除全部资金明细");
   }
 };

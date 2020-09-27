@@ -13,11 +13,11 @@
           custom-style="margin-right: 8rpx; font-size: 20rpx;"
           round
         >
-          {{ item.expressName }}
+          {{ item.storeName }}
         </uv-tag>
         {{ item.goodsName }}
       </view>
-      <view class="goods-card__desc" @click.stop="$emit('click-btn', item)">
+      <view class="goods-card__desc">
         <uv-price :amount="item.salePriceNormalStr" size="10" />
         <view class="goods-card__record">
           vip仅需 {{ item.salePriceVipStr }}元
@@ -25,7 +25,11 @@
       </view>
       <view class="goods-card__desc goods-card__desc-center">
         <view class="goods-card__record">已售{{ item.sales }}件</view>
-        <uv-button size="mini" custom-class="theme-style__button">
+        <uv-button
+          size="mini"
+          custom-class="theme-style__button"
+          @click.stop="$emit('click-btn', item)"
+        >
           购买
         </uv-button>
       </view>

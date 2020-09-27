@@ -12,19 +12,19 @@ module.exports = class SupplierStore extends ControllerBase {
    * 新增一条仓库
    */
   async add(options) {
-    uniCloud.logger.info("(supplier-store)新增一条仓库-入参", options);
+    this.info("(supplier-store)新增一条仓库-入参", options);
     const res = await colSpStore.add(options);
     return this.processResponseData(res, "(supplier-store)新增一条仓库");
   }
   async removeAll() {
     const res = await colSpStore.where({ _id: _.exists(true) }).remove();
-    return this.processResponseData(res, "(supplier-store)删除全部");
+    return this.processResponseData(res, "(supplier-store)删除全部仓库");
   }
   /**
    * 修改仓库信息
    */
   async update(options) {
-    uniCloud.logger.info("(supplier-store)修改仓库信息-入参", options);
+    this.info("(supplier-store)修改仓库信息-入参", options);
     const res = await colSpStore
       .doc(options.storeId)
       .update(lodash.omit(options, ["storeId"]));
@@ -34,10 +34,7 @@ module.exports = class SupplierStore extends ControllerBase {
    * 根据ID查询单个仓库信息
    */
   async getSingleById(options) {
-    uniCloud.logger.info(
-      "(supplier-store)根据ID查询单个仓库信息-入参",
-      options
-    );
+    this.info("(supplier-store)根据ID查询单个仓库信息-入参", options);
     const { storeId } = options;
     if (!this.checkIsId(storeId)) {
       return this.get400Error("供应商id有误");

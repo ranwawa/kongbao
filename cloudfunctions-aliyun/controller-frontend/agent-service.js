@@ -1,31 +1,8 @@
-const uniID = require("uni-id");
-const { ResponseModal, request } = require("api");
-const { colCsAddress } = require("./db");
-module.exports = class AgentAddress {
-  constructor(appId = "", uniIdToken = "") {
-    this.appId = appId;
-    this.uniIdToken = uniIdToken;
-  }
-  /**
-   * 验证token
-   * @returns {Promise<ResponseModal|{msg: string, code: number}|{msg: string,
-   *   code: number}|{msg: string, code: number}|*|{msg: string, code: number,
-   *   err: *}|{msg: string, code: number, err: *}>}
-   */
-  async checkToken() {
-    if (!this.uniIdToken) {
-      return new ResponseModal(401, "请登录后访问");
-    }
-    const res = await uniID.checkToken(this.uniIdToken);
-    uniCloud.logger.log("验证token-出参", res);
-    if (res.code !== 0) {
-      return res;
-    }
-    if (res.appId === this.appId) {
-      uniCloud.logger.warn("验证token", "注册时appId与登录时appId有差异");
-    }
-    this.userId = res.uid;
-    return res;
+const { db, ControllerAuth, apiKdHelp } = require("api");
+const { colAgService } = db;
+module.exports = class AgentService extends ControllerAuth {
+  constructor(appId, userInfo) {
+    super(appId, userInfo);
   }
   /**
    * 添加地址
@@ -46,7 +23,7 @@ module.exports = class AgentAddress {
     } = param;
     const paramData = {
       appId: this.appId,
-      userId: this.userInfo.userId,
+      userId: this.userInfo._id,
       name,
       mobile,
       provinceCode,
@@ -63,7 +40,7 @@ module.exports = class AgentAddress {
       isDelete: false,
     };
     uniCloud.logger.log("添加地址-入参", paramData);
-    const res = await colCsAddress.add(paramData);
+    const res = await colAgService.add(paramData);
     return this.processResponseData(res, "添加地址");
   }
   /**
@@ -74,12 +51,12 @@ module.exports = class AgentAddress {
   async del(option = {}) {
     const param = {
       appId: this.appId,
-      userId: this.userInfo.userId,
-      _id: option.addressId,
+      userId: this.userInfo._id,
+      _id: option.serviceId,
       isDelete: false,
     };
     uniCloud.logger.log("删除一条地址-入参", param);
-    const res = await colCsAddress.where(param).update({
+    const res = await colAgService.where(param).update({
       isDelete: true,
       updateTime: Date.now(),
     });
@@ -89,21 +66,21 @@ module.exports = class AgentAddress {
    * 设置为默认地址
    * @returns {Promise<void>}
    */
-  async setDefault(option = { addressId: "" }) {
+  async setDefault(option = { serviceId: "" }) {
     const pubParam = {
       appId: this.appId,
-      userId: this.userId,
+      userId: this.userInfo._id,
       isDelete: false,
     };
     const param = {
-      _id: option.addressId,
+      _id: option.serviceId,
     };
     uniCloud.logger.log("设置为默认地址-入参", pubParam, param);
-    await colCsAddress.where(pubParam).update({
+    await colAgService.where(pubParam).update({
       default: false,
       updateTime: Date.now(),
     });
-    const res = await colCsAddress
+    const res = await colAgService
       .where({
         ...pubParam,
         ...param,
@@ -145,11 +122,12 @@ module.exports = class AgentAddress {
       updateTime: Date.now(),
     };
     uniCloud.logger.log("修改一条地址-入参", param);
-    const res = await colCsAddress
+    const res = await colAgService
       .where({
         appId: this.appId,
-        userId: this.userId,
-        _id: option.addressId,
+        userId: this.userInfo._id,
+        _id: option.serviceId,
+        isDelete: false,
       })
       .update(param);
     return this.processResponseData(res, "修改一条地址", false);
@@ -160,90 +138,106 @@ module.exports = class AgentAddress {
   async getList() {
     const param = {
       appId: this.appId,
-      userId: this.userId,
+      userId: this.userInfo._id,
       isDelete: false,
     };
     uniCloud.logger.log("查询当前用户所有地址-入参", param);
-    const res = await colCsAddress
-      .where(param)
-      .field({
-        _id: true,
-        name: true,
-        mobile: true,
-        provinceName: true,
-        cityName: true,
-        areaName: true,
-        address: true,
-        default: true,
+    const res = await colAgService
+      .aggregate()
+      .match(param)
+      .addFields({ serviceId: "$_id" })
+      .project({
+        _id: false,
+        ...this.getTrue([
+          "serviceId",
+          "name",
+          "mobile",
+          "provinceName",
+          "cityName",
+          "areaName",
+          "address",
+          "default",
+          "formattedAddress",
+        ]),
       })
-      .get();
+      .end();
     return this.processResponseData(res, "查询当前用户所有地址", false);
   }
   /**
    * 查询一条地址
    */
-  async getSingle(option = {}) {
+  async getSingle(options = {}) {
+    this.info("查询一条地址-入参", options);
     const param = {
       appId: this.appId,
-      userId: this.userId,
+      userId: this.userInfo._id,
       isDelete: false,
-      _id: option.addressId,
+      _id: options.serviceId,
     };
-    uniCloud.logger.log("查询一条地址-入参", param);
-    const res = await colCsAddress.where(param).get();
+    const res = await colAgService
+      .aggregate()
+      .match(param)
+      .limit(1)
+      .addFields({ serviceId: "$_id" })
+      .project({
+        _id: false,
+        ...this.getTrue([
+          "serviceId",
+          "name",
+          "mobile",
+          "provinceName",
+          "cityName",
+          "areaName",
+          "address",
+          "default",
+          "formattedAddress",
+        ]),
+      })
+      .end();
     return this.processResponseData(res, "查询一条地址", true);
   }
   /**
    * 查询默认地址
-   * @param option
-   * @returns {Promise<ResponseModal>}
    */
-  async getDefault(option = {}) {
+  async getDefault() {
     const param = {
       appId: this.appId,
-      userId: this.userId,
+      userId: this.userInfo._id,
       isDelete: false,
       default: true,
     };
     uniCloud.logger.log("查询默认地址-入参", param);
-    const res = await colCsAddress.where(param).limit(1).get();
+    const res = await colAgService
+      .aggregate()
+      .match(param)
+      .limit(1)
+      .addFields({ serviceId: "$_id" })
+      .project({
+        _id: false,
+        ...this.getTrue([
+          "serviceId",
+          "name",
+          "mobile",
+          "provinceName",
+          "cityName",
+          "areaName",
+          "address",
+          "default",
+          "formattedAddress",
+        ]),
+      })
+      .end();
     return this.processResponseData(res, "查询默认地址", true);
   }
   /**
    * 智能解析收货地址
    */
-  async resolveAddress(option) {
-    uniCloud.logger.log("智能解析收货地址-入参", option);
-    const appId = "100687";
-    const method = "cloud.address.resolve";
-    const ts = Date.now();
-    const appKey = "ed51dbd0ffb2a5bbbb8aede0c3bdc1ec40b41de1";
-    // 计算签名
-    const signStr = appId + method + ts + appKey;
-    const crypto = require("crypto");
-    const h = crypto.createHash("md5");
-    h.update(signStr);
-    const sign = h.digest("hex");
-    const param = JSON.stringify({
-      text: option.addressStr,
-      multimode: true,
-    });
-    let [err, data] = await request({
-      url: "https://kop.kuaidihelp.com/api",
-      method: "POST",
-      contentType: "application/x-www-form-urlencoded",
-      dataType: "json",
-      data: {
-        app_id: appId,
-        method: method,
-        ts: ts,
-        sign: sign,
-        data: param,
-      },
-    });
+  async resolveAddress(options) {
+    uniCloud.logger.log("智能解析收货地址-入参", options);
+    let [err, data] = await apiKdHelp.resolveAddress(options.addressStr);
     if (err) {
       uniCloud.logger.log("智能解析收货地址异常-报错", err);
-      return new ResponseModal(500, err, "服务器异常");
+      return new this.ResponseModal(500, err, "服务器异常");
     } else {
       data = data.map((ele) => ({
         name: ele.name,
@@ -255,20 +249,7 @@ module.exports = class AgentAddress {
         formattedAddress: ele.original,
         isDefault: false,
       }));
-      return new ResponseModal(0, data, "解析成功");
+      return new this.ResponseModal(0, data, "解析成功");
     }
-  }
-  /**
-   * 加工查询数据
-   * 用于按固定格式返回前端
-   * @param res
-   * @param title
-   * @param isPickFirst
-   */
-  async processResponseData(res, title = "--", isPickFirst = false) {
-    uniCloud.logger.log(title + "-出参", res);
-    let data = res.affectedDocs ? res.data || [] : [];
-    isPickFirst && (data = data[0] || {});
-    return new ResponseModal(0, data);
   }
 };

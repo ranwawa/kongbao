@@ -31,14 +31,14 @@
         icon="hotel-o"
         title="发货仓库"
         :label="goodsInfo.storeName"
-        :value="goodsInfo.shipAddress"
+        :value="goodsInfo.formattedAddress"
       />
       <uv-cell
         :border="false"
         icon="logistics"
         title="承运快递"
         :label="goodsInfo.expressName"
-        :value="goodsInfo.notSendAddress || '无'"
+        :value="goodsInfo.remark || ''"
       ></uv-cell>
     </uv-cell-group>
     <!-- 商品详情 -->
@@ -106,7 +106,6 @@ export default class LoginHome extends Vue {
     if (err || !data?.goodsId) {
       return;
     }
-    data.notSendAddress = `暂不发货区域: ${data.notSendAddress}`;
     this.goodsInfo = data;
   }
 

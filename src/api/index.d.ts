@@ -83,7 +83,7 @@ namespace store {
 }
 namespace city {
   interface IItem {
-    name: string;
+    cityName: string;
     cityId: string;
   }
 }
@@ -100,6 +100,7 @@ namespace goods {
    */
   interface IGoodsItem {
     goodsId: string;
+    storeId: string;
     showPrice: number;
     showPriceStr: number;
     salePriceVip: number;
@@ -114,9 +115,20 @@ namespace goods {
     inventory: number;
     content: string;
     storeName: string;
+    expressPrice: string;
+    expressPriceStr: string;
     expressName: string;
-    shipAddress: string;
-    notSendAddress: string;
+    formattedAddress: string;
+    remark: string;
+  }
+  interface IDetailReq {
+    goodsId: string;
+    storeId: string;
+  }
+  interface IExpressItem {
+    expressName: string;
+    expressCostPrice: number;
+    expressCostPriceStr: string;
   }
 }
 
@@ -127,12 +139,12 @@ namespace service {
   }
 }
 
-namespace address {
+namespace service {
   /**
    * 单条地址
    */
   interface IAddressItem {
-    addressId: string;
+    serviceId: string;
     name: string;
     mobile: string;
     provinceName: string;
@@ -152,15 +164,16 @@ namespace order {
     /**
      * 商品信息
      */
-    goodsInfo: goods.IGoodsItem;
+    goodsId: string;
     /**
      * 售后信息
      */
-    serviceInfo: address.IAddressItem;
+    serviceId: string;
+    storeId: string;
     /**
      * 收货地址
      */
-    addressInfo: Array<address.IAddressItem>;
+    addressList: Array<service.IAddressItem>;
   }
 
   /**
@@ -174,7 +187,7 @@ namespace order {
     /**
      * 收货地址
      */
-    addressInfo: Array<{ formattedAddress: string }>;
+    addressList: Array<{ formattedAddress: string }>;
     /**
      * 商品信息
      */

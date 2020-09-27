@@ -16,10 +16,7 @@ module.exports = class SupplierStoreGoods extends ControllerBase {
    * 添加仓库商品关联
    */
   async add(options) {
-    uniCloud.logger.info(
-      "(supplier-store-goods)添加仓库商品关联-入参",
-      options
-    );
+    this.info("(supplier-store-goods)添加仓库商品关联-入参", options);
     const res = await colSpStoreGoods.add(
       lodash.pick(options, ["storeId", "goodsId"])
     );
@@ -31,6 +28,6 @@ module.exports = class SupplierStoreGoods extends ControllerBase {
   }
   async removeAll() {
     const res = await colSpStoreGoods.where({ _id: _.exists(true) }).remove();
-    return this.processResponseData(res, "删除全部关联");
+    return this.processResponseData(res, "(supplier-store-goods)删除全部关联");
   }
 };

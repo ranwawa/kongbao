@@ -9,7 +9,7 @@ const PlatformCities = require("./platform-cities");
 const SupplierStore = require("./supplier-store");
 const AgentInfo = require("./agent-info");
 const AgentGoods = require("./agent-goods");
-const CustomerAddress = require("./customer-address");
+const AgentService = require("./agent-service");
 const CustomerOrder = require("./customer-order");
 const CustomerFund = require("./customer-fund");
 const CustomerFundOrder = require("./customer-fund-order");
@@ -24,7 +24,7 @@ const fileMap = {
   "agent-info": AgentInfo,
   "agent-goods": AgentGoods,
   "customer-fund": CustomerFund,
-  "customer-address": CustomerAddress,
+  "agent-service": AgentService,
   "customer-order": CustomerOrder,
   "user-auth": UserAuth,
   "user-anonymous": UserAnonymous,
@@ -35,7 +35,7 @@ const fileMap = {
 exports.main = async (event, context) => {
   // todo 上线时删掉这个
   context.CLIENTUA =
-    "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1";
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1";
 
   return await mainFunc(event, context, fileMap);
 };

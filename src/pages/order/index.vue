@@ -37,7 +37,7 @@
     <!-- 商品信息 -->
     <view class="order-goods section">
       <view class="section__header">
-        <view class="section__title">{{ goodsInfo.storeName }}</view>
+        <view class="section__title">{{ goodsInfo.expressName }}</view>
       </view>
       <view class="order-goods__content section__body">
         <goods-cell :goods-info="goodsInfo" :goods-num="addressList.length" />
@@ -48,18 +48,22 @@
       <view class="section__header">
         <view class="section__title">小计</view>
         <view class="section__desc">
-          <uv-price :amount="computedGoodsAmount" size="8"></uv-price>
+          <uv-price :amount="computedAmount.orderPrice" size="8"></uv-price>
         </view>
       </view>
       <view class="order-amount__content">
-        <uv-cell title="商品" :value="computedGoodsAmount" />
-        <uv-cell :border="false" title="运费" value="包邮" />
+        <uv-cell title="商品" :value="computedAmount.goodsPrice" />
+        <uv-cell
+          :border="false"
+          title="运费"
+          :value="computedAmount.expressPrice"
+        />
       </view>
     </view>
     <!-- 底部按钮 -->
     <view class="order-footer">
       <view class="order-footer__amount">
-        实付款: <uv-price :amount="computedGoodsAmount" size="8" />
+        实付款: <uv-price :amount="computedAmount.orderPrice" size="8" />
       </view>
       <uv-button
         :disabled="isDisablePayBtn"
@@ -104,7 +108,7 @@ import { ROUTE, STORAGE_KEY } from "@/assets/constant/common";
 import { vm } from "@/assets/js/event-bus";
 import SimpleAddress from "simple-address";
 import AddressAdd from "@/components/address-add.vue";
-import { address } from "@/api/address";
+import { service } from "@/api/service";
 import { order } from "@/api/order";
 import { user } from "@/api/user";
 
@@ -118,7 +122,7 @@ import { user } from "@/api/user";
 })
 export default class LoginHome extends Vue {
   goodsInfo: goods.IGoodsItem = Object();
-  serviceInfo: address.IAddressItem = Object();
+  serviceInfo: service.IAddressItem = Object();
   addressList: Array<any> = Array();
   isShowAddressAdd: boolean = false; // 是否显示添加地址弹框
   cityInfo = ""; // 选中的省市区信息
@@ -126,37 +130,46 @@ export default class LoginHome extends Vue {
   userInfo: user.IUserInfoRes = Object(); // 用户信息
 
   /**
-   * 订单总金额
+   * 金额小计
    */
-  get computedGoodsAmount() {
-    const price = this.goodsInfo.dealPrice || 0;
-    return +((price * this.addressList.length) / 100).toFixed(2);
+  get computedAmount() {
+    const { length } = this.addressList;
+    const goodsPrice = this.goodsInfo.dealPrice || 0;
+    const expressPrice = this.goodsInfo.expressPrice || 0;
+    return {
+      goodsPrice: this.fen2yuan(goodsPrice, length),
+      expressPrice: this.fen2yuan(expressPrice, length),
+      orderPrice: this.fen2yuan(goodsPrice + expressPrice, length),
+    };
   }
 
   onLoad(e: { goodsId: string }) {
-    if (!e.goodsId) {
+    const { goodsId } = e;
+    if (!goodsId) {
       uniWrapper.showToastText("该商品已被抢光");
       setTimeout(() => {
-        uniWrapper.redirectToPage(ROUTE.TAB_CATEGORY);
+        uniWrapper.switchTabPage(ROUTE.TAB_CATEGORY);
       }, 1688);
+      return;
     }
     this.userInfo = uni.getStorageSync(STORAGE_KEY.USER_INFO);
-    this.getGoodsDetail(e.goodsId);
+    this.getGoodsDetail(goodsId);
     this.getDefaultAddress();
-    vm.$on("update-service", (item: address.IAddressItem) => {
+    vm.$on("update-service", (item: service.IAddressItem) => {
       this.serviceInfo = item;
     });
   }
+  fen2yuan(price: number, length: number) {
+    return +((price * length) / 100).toFixed(2);
+  }
   /**
    * 查询商品详情
-   * @param goodsId
    */
   async getGoodsDetail(goodsId: string) {
     const [err, data] = await goods.getGoodsDetail({ goodsId });
     if (err || !data?.goodsId) {
       return;
     }
-    data.notSendAddress = `暂不发货区域: ${data.notSendAddress}`;
     if (this.userInfo.isVip) {
       data.dealPrice = data.salePriceVip;
       data.dealPriceStr = data.salePriceVipStr;
@@ -170,8 +183,8 @@ export default class LoginHome extends Vue {
    * 查询默认地址
    */
   async getDefaultAddress() {
-    const [err, data] = await address.getAddressDefault();
-    if (err || !data?.addressId) return;
+    const [err, data] = await service.getAddressDefault();
+    if (err || !data?.serviceId) return;
     this.serviceInfo = data;
   }
   /**
@@ -183,14 +196,14 @@ export default class LoginHome extends Vue {
   /**
    * 单条添加收货地址
    */
-  handleSubmit(item: address.IAddressItem) {
+  handleSubmit(item: service.IAddressItem) {
     this.addressList.push(item);
     this.isShowAddressAdd = false;
   }
   /**
    * 智能解析金条地址
    */
-  handleSubmitAuto(addressList: Array<address.IAddressItem>) {
+  handleSubmitAuto(addressList: Array<service.IAddressItem>) {
     this.addressList = this.addressList.concat(addressList);
     this.isShowAddressAdd = false;
   }
@@ -222,19 +235,22 @@ export default class LoginHome extends Vue {
    * 立即支付
    */
   async submit() {
-    if (!this.serviceInfo.name) {
+    const { serviceInfo, addressList, goodsInfo } = this;
+    console.log(serviceInfo);
+    if (!serviceInfo.serviceId) {
       uniWrapper.showToastText("请选择售后信息");
       return;
     }
-    if (!this.addressList.length) {
+    if (!addressList.length) {
       uniWrapper.showToastText("请添加收货地址");
       return;
     }
     this.isDisablePayBtn = true;
     const [err, data] = await order.add({
-      goodsInfo: this.goodsInfo,
-      serviceInfo: this.serviceInfo,
-      addressInfo: this.addressList,
+      goodsId: goodsInfo.goodsId,
+      serviceId: serviceInfo.serviceId,
+      storeId: goodsInfo.storeId,
+      addressList: this.addressList,
     });
     this.isDisablePayBtn = false;
     if (err || !data?.id) {

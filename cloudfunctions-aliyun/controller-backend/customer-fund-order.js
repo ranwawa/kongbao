@@ -5,18 +5,17 @@
  * @since 2020/9/15 15:20
  */
 const { db, ControllerBase } = require("api");
-const { colCsFundOrder, $ } = db;
+const { colCsFundOrder, $, _ } = db;
 module.exports = class CustomerFund extends ControllerBase {
   constructor(appId, userInfo) {
     super(appId, userInfo);
   }
-
   /**
    * 更新实际支付金额
    */
   async update(options) {
     const { fundOrderId, realPrice, userId, appId } = options;
-    uniCloud.logger.info("更新实际支付金额-入参", options);
+    this.info("更新实际支付金额-入参", options);
     const res = await colCsFundOrder
       .where({
         userId,
@@ -30,5 +29,12 @@ module.exports = class CustomerFund extends ControllerBase {
         status: options.nextStatus,
       });
     return this.processResponseData(res, "更新实际支付金额");
+  }
+  async removeAll() {
+    const res = await colCsFundOrder.where({ _id: _.exists(true) }).remove();
+    return this.processResponseData(
+      res,
+      "(customer-fund-order)删除全部充值订单"
+    );
   }
 };

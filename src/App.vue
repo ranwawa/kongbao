@@ -62,4 +62,19 @@ page {
 .simple-address-mask {
   z-index: $z-popover !important;
 }
+
+/* 布局 */
+.layout-section {
+  padding: 0 $s-sm;
+  margin: $s-sm 0;
+  background-color: #fff;
+  &__head {
+    @include bd-hairline-bottom;
+    padding: $s-sm 0;
+    font-size: $fz-lg;
+  }
+  &__body {
+    padding: $s-sm 0;
+  }
+}
 </style>

@@ -28,7 +28,7 @@
         </uv-button>
       </view>
       <view
-        v-for="(item, index) in orderInfo.addressInfo"
+        v-for="(item, index) in orderInfo.addressList"
         :key="index"
         class="od-address__item"
       >

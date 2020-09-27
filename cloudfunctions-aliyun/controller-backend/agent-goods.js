@@ -11,9 +11,16 @@ module.exports = class SupplierStoreGoods extends ControllerBase {
   constructor(appId, userInfo) {
     super(appId, userInfo);
   }
-
+  /**
+   * 添加金条商品
+   */
+  async addMore(options) {
+    this.info("(agent-goods)添加多条商品-入参", options);
+    const res = await colAgGoods.add(options);
+    return this.processResponseData(res, "(agent-goods)添加多条商品");
+  }
   async removeAll() {
     const res = await colAgGoods.where({ _id: _.exists(true) }).remove();
-    return this.processResponseData(res, "删除全部商品");
+    return this.processResponseData(res, "(agent-goods)删除全部商品");
   }
 };

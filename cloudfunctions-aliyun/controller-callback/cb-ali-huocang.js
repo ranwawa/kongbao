@@ -6,28 +6,30 @@
  */
 const { callFunc, ControllerBase } = require("api");
 const Error = { success: false };
+const BACK_END = "controller-backend";
 module.exports = class AliHuoCang extends ControllerBase {
   /**
    * 批量下单接口回调
    */
   async confirm(options) {
-    uniCloud.logger.log("(cb-ali-huocang)批量下单接口回调-入参", options);
+    this.info("(cb-ali-huocang)批量下单接口回调-入参", options);
     // 清洗响应参数
     const data = this.processOptions(options);
     if (data.length < 1) {
       return Error;
     }
-    // 更新响应参数
-    const param = await this.mergeAddressInfo(data);
-    if (!param.orderId || param.addressInfo.length < 1) {
-      return Error;
+    // 更新子订单
+    const res = await this.updateOrderSub(data);
+
+    if (!res) {
+      uniCloud.logger.error("下单成功的数量和更新成功的数量有误， 请检查");
+      return;
     }
-    // 将更新后的参数同步到数据库
+    // 更新主订单
     const [err2, data2] = await callFunc({
       name: "controller-backend",
-      action: "customer-order/updateOrderInfo",
+      action: "customer-order/updateStatusByBatchNo",
       data: {
-        ...param,
         preStatus: 3,
         nextStatus: 5,
       },
@@ -37,6 +39,21 @@ module.exports = class AliHuoCang extends ControllerBase {
       return Error;
     }
     return { success: true };
+  }
+  async updateOrderSub(options) {
+    const promiseAll = options.map((ele) =>
+      callFunc({
+        name: BACK_END,
+        action: "customer-order/updateSub",
+        data: ele,
+      })
+    );
+    const res = await Promise.all(promiseAll);
+    console.log(11111111, res);
+    const affectedDocs = res.filter(
+      ([err, data]) => data && data.affectedDocs === 1
+    );
+    return affectedDocs.length === options.length;
   }
   /**
    * 加工传进来的参数

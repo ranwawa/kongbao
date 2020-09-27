@@ -18,12 +18,7 @@ module.exports = class PlatformCities extends ControllerBase {
     const res = await colPlCities
       .aggregate()
       .match({ _id: _.exists(true) })
-      .addFields({
-        cityId: "$_id",
-      })
-      .project({
-        _id: false,
-      })
+      .project({ _id: false })
       .end();
     return this.processResponseData(res, "(platform-cities)查询所有城市");
   }

@@ -67,7 +67,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import AddressAdd from "@/components/address-add.vue";
 import SimpleAddress from "simple-address";
-import { address } from "@/api/address";
+import { service } from "@/api/service";
 import { uniWrapper } from "@/assets/js/uni-wrapper";
 import { vm } from "@/assets/js/event-bus";
 
@@ -83,8 +83,8 @@ enum TYPE {
 })
 export default class Address extends Vue {
   [x: string]: any;
-  addressList: Array<address.IAddressItem> = Array(); // 地址列表
-  currentAddress: address.IAddressItem = Object(); // 当前编辑的地址
+  addressList: Array<service.IAddressItem> = Array(); // 地址列表
+  currentAddress: service.IAddressItem = Object(); // 当前编辑的地址
   isShowAddressAdd: boolean = false; // 是否显示添加地址弹框
   addressModalType: string = "add"; // 新增 修改
   cityInfo = ""; // 选中的省市区信息
@@ -99,7 +99,7 @@ export default class Address extends Vue {
    * 获取地址列表
    */
   async getList() {
-    const [err, data] = await address.getAddressList();
+    const [err, data] = await service.getAddressList();
     if (err || !data?.length) {
       return;
     }
@@ -108,14 +108,14 @@ export default class Address extends Vue {
   /**
    * 触发相关事件
    */
-  handleSubmit(item: address.IAddressItem) {
+  handleSubmit(item: service.IAddressItem) {
     this[this.addressModalType](item);
   }
   /**
    * 添加地址
    */
-  async add(item: address.IAddressItem) {
-    const [err, data] = await address.add(item);
+  async add(item: service.IAddressItem) {
+    const [err, data] = await service.add(item);
     if (err || data?._id) {
       return;
     }
@@ -127,7 +127,7 @@ export default class Address extends Vue {
   /**
    * 删除一条地址
    */
-  async del(addressId: string, index: number) {
+  async del(serviceId: string, index: number) {
     const [er, data]: any = await uniWrapper.showModalText(
       "确定要删除吗?",
       true
@@ -135,7 +135,7 @@ export default class Address extends Vue {
     if (er || data.cancel) {
       return;
     }
-    const [err] = await address.del({ addressId });
+    const [err] = await service.del({ serviceId });
     if (err) return;
     this.addressList.splice(index, 1);
   }
@@ -144,7 +144,7 @@ export default class Address extends Vue {
    * 编辑一条地址
    * @param item
    */
-  async edit(item: address.IAddressItem) {
+  async edit(item: service.IAddressItem) {
     this.addressModalType = "update";
     this.currentAddress = JSON.parse(JSON.stringify(item));
     this.isShowAddressAdd = true;
@@ -153,22 +153,22 @@ export default class Address extends Vue {
   /**
    * 设置为默认地址
    */
-  async setDefault(item: address.IAddressItem, index: number) {
+  async setDefault(item: service.IAddressItem, index: number) {
     if (item.default) return;
-    const addressId = item.addressId;
-    const [err] = await address.setDefault({ addressId });
+    const serviceId = item.serviceId;
+    const [err] = await service.setDefault({ serviceId });
     if (err) return;
     const { addressList } = this;
     for (let key in addressList) {
-      addressList[key].default = addressList[key].addressId === addressId;
+      addressList[key].default = addressList[key].serviceId === serviceId;
     }
   }
 
   /**
    * 修改一条地址
    */
-  async update(item: address.IAddressItem) {
-    const [err, data] = await address.update(item);
+  async update(item: service.IAddressItem) {
+    const [err, data] = await service.update(item);
     if (err || data?._id) {
       return;
     }
@@ -192,7 +192,7 @@ export default class Address extends Vue {
   /**
    * 选择地址
    */
-  chooseAddress(item: address.IAddressItem) {
+  chooseAddress(item: service.IAddressItem) {
     if (this.openType === TYPE.CHOOSE) {
       vm.$emit("update-service", item);
       uni.navigateBack({ delta: 1 });

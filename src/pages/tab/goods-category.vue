@@ -19,7 +19,7 @@
         class="uv-tab"
         @click="switchStoreTab(item)"
       >
-        {{ item.name }}
+        {{ item.cityName }}
       </view>
     </view>
     <!-- 商品列表 -->
@@ -102,7 +102,7 @@ export default class LoginHome extends Vue {
       return;
     }
     this.pageInfo = new BasePage();
-    this.cityList = Array();
+    this.goodsList = Array();
     this.currentCity = item;
   }
 
@@ -126,7 +126,6 @@ export default class LoginHome extends Vue {
    * 前往商品详情
    */
   goDetail(item: goods.IGoodsItem) {
-    console.log(123123123, item);
     uniWrapper.navigateToPage(`${ROUTE.GOODS_DETAIL}?goodsId=${item.goodsId}`);
   }
 

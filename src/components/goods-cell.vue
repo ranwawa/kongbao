@@ -8,7 +8,7 @@
     <view class="goods-cell__content">
       <view class="goods-cell__name">
         <uv-tag type="danger" round>
-          {{ goodsInfo.expressName }}
+          {{ goodsInfo.storeName }}
         </uv-tag>
         {{ goodsInfo.goodsName }}
       </view>

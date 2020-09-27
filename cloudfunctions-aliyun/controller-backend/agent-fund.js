@@ -5,7 +5,7 @@
  * @since 2020/9/18 17:12
  */
 const { db, ControllerBase } = require("api");
-const { colAgFund } = db;
+const { colAgFund, _ } = db;
 module.exports = class AgentFund extends ControllerBase {
   constructor(appId, userInfo) {
     super(appId, userInfo);
@@ -14,9 +14,10 @@ module.exports = class AgentFund extends ControllerBase {
    * 添加一条分站资金明细
    */
   async add(options) {
-    uniCloud.logger.info("(agent-fund)添加一条分站资金明细-入参", options);
+    this.info("(agent-fund)添加一条分站资金明细-入参", options);
     const { remarkId, type, userId, appId, price } = options;
-    const isIncome = type > 10 && type < 20; // 11自己充值 12管理员充值 21购物 22管理员扣减 23开通vip
+    const isIncome = type > 10 && type < 20; // 11自己充值 12管理员充值 21购物 22管理员扣减
+    // 23开通vip
     const res = await colAgFund.add({
       price,
       appId,
@@ -28,5 +29,9 @@ module.exports = class AgentFund extends ControllerBase {
       remark: `订单id-${remarkId}`,
     });
     return this.processResponseData(res, "(agent-fund)添加一条分站资金明细");
+  }
+  async removeAll() {
+    const res = await colAgFund.where({ _id: _.exists(true) }).remove();
+    return this.processResponseData(res, "(agent-fund)删除全部资金明细");
   }
 };

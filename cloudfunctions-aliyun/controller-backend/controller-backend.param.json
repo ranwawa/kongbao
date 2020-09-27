@@ -1,13 +1,6 @@
 {
-    "action": "supplier-goods/removeAll",
+    "action": "goods-operate/initAgentGoods",
     "data": {
-      "storeId": "eaddcd32aa666e95da3b2b5378def9bc",
-      "goodsId": 1600936155087,
-      "expressList": [
-        {
-          "expressId": "",
-          "expressCostPrice": 330
-        }
-      ]
+      "appId": "__UNI__0CA1D11"
     }
   }

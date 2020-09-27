@@ -5,8 +5,8 @@
  * @since 2020/9/14 11:08
  */
 const { ControllerAuth, db, utils } = require("api");
-const { colCsOrder, $ } = db;
-const { moment, md5 } = utils;
+const { colCsOrder, colCsOrderSub, $, _ } = db;
+const { moment, md5, lodash } = utils;
 function isId(id) {
   return typeof id === "string" && id.length === 32;
 }
@@ -16,78 +16,62 @@ module.exports = class CustomerOrder extends ControllerAuth {
     super(appId, userInfo);
   }
   /**
-   * 添加订单
-   */
-  async add(csAmount, agAmount, dealPrice, orderInfo) {
-    const now = Date.now();
-    const orderId = md5(`${this.appId}${this.userInfo._id}${csAmount}${now}`);
-    orderInfo.addressInfo = orderInfo.addressInfo.map((ele, index) => ({
-      ...ele,
-      addressId: md5(`${orderId}${index}`),
-    }));
-    const param = {
-      csAmount,
-      agAmount,
-      dealPrice,
-      ...orderInfo,
-      _id: orderId,
-      appId: this.appId,
-      userId: this.userInfo._id,
-      isDelete: false,
-      createTime: now,
-      status: 1, // 1已创建,待支付 2,已支付,待提交到供应商 3,已提交到供应,待供应商响应(待收货) 5,
-      // 已收货,待发货(出物流纪录)
-    };
-    const res = await colCsOrder.add(param);
-    uniCloud.logger.log("添加订单-入参", param);
-    return new this.ResponseModal(0, res);
-  }
-  /**
    * 查询单条订单
    */
   async getSingle(options) {
+    this.info("(customer-order)查询单条订单-入参", options);
+    const { orderId } = options;
+    if (!isId(orderId)) {
+      return new this.ResponseModal(400, {}, "订单信息有误");
+    }
     const param = {
       appId: this.appId,
       userId: this.userInfo._id,
-      _id: options.orderId,
+      _id: orderId,
       isDelete: false,
     };
-    uniCloud.logger.log("查询单条订单-入参", param);
-    if (!isId(options.orderId)) {
-      return new this.ResponseModal(400, {}, "订单信息有误");
-    }
     const res = await colCsOrder
       .aggregate()
       .match(param)
-      .limit(1)
-      .project({
-        orderId: "$_id",
-        _id: false,
-        status: true,
-        createTime: true,
-        payTime: true,
-        storeTime: "$spBuyTime",
-        amount: "$csAmount",
-        amountStr: $.divide(["$csAmount", 100]),
-        num: $.size("$addressInfo"),
+      .lookup({
+        from: "kb-cs-order-sub",
+        pipeline: $.pipeline()
+          .match(_.expr($.eq([orderId, "$orderId"])))
+          .project({ _id: false, formattedAddress: true })
+          .done(),
+        as: "addressList",
+      })
+      .addFields({
+        orderId,
+        amountStr: $.divide(["$amountCustomer", 100]),
+        amount: "$amountCustomer",
         serviceInfo: "$serviceInfo.formattedAddress",
-        addressInfo: $.map({
-          input: "$addressInfo",
-          as: "this",
-          in: { formattedAddress: "$$this.formattedAddress" },
-        }),
+        storeTime: "$spBuyTime",
+        num: $.size("$addressList"),
         goodsInfo: {
-          goodsId: "$csGoodsInfo.goodsId",
-          expressName: "$spGoodsInfo.expressName",
-          dealPriceStr: $.divide(["$dealPrice", 100]),
-          goodsName: "$spGoodsInfo.goodsName",
-          salePriceNormal: $.divide(["$csAmount", $.size("$addressInfo")]),
-          salePriceNormalStr: $.divide([
-            $.divide(["$csAmount", $.size("$addressInfo")]),
-            100,
-          ]),
-          imgList: $.split(["$spGoodsInfo.imgList", "---"]),
+          goodsId: "$agGoodsInfo._id",
+          expressName: "$spStoreInfo.expressInfo.expressName",
+          storeName: "$spStoreInfo.storeName",
+          dealPriceStr: $.divide(["$dealPriceCustomer", 100]),
+          goodsName: "$agGoodsInfo.goodsName",
+          imgList: "$agGoodsInfo.imgList",
         },
+      })
+      .project({
+        _id: false,
+        ...this.getTrue([
+          "orderId",
+          "amountStr",
+          "amount",
+          "serviceInfo",
+          "storeTime",
+          "status",
+          "createTime",
+          "payTime",
+          "num",
+          "addressList",
+          "goodsInfo",
+        ]),
       })
       .end();
     res.data = res.data.map((ele) => {
@@ -100,37 +84,7 @@ module.exports = class CustomerOrder extends ControllerAuth {
         (ele.payTimeStr = moment(ele.payTime).utcOffset(8).format(FORMATTER));
       return ele;
     });
-    return this.processResponseData(res, "查询单条订单", true);
-  }
-  /**
-   * 查询完整的订单信息
-   */
-  async getSingleComplete(orderId) {
-    uniCloud.logger.log("(customer-order)查询完整的订单信息-入参", orderId);
-    const res = await colCsOrder
-      .where({
-        appId: this.appId,
-        userId: this.userInfo._id,
-        _id: orderId,
-        status: 1,
-        isDelete: false,
-      })
-      .field({
-        _id: true,
-        csAmount: true,
-        agAmount: true,
-        dealPrice: true,
-        csGoodsInfo: true,
-        serviceInfo: true,
-        addressInfo: true,
-      })
-      .limit(1)
-      .get();
-    return this.processResponseData(
-      res,
-      "(customer-order)支付订单,查询订单信息",
-      true
-    );
+    return this.processResponseData(res, "(customer-order)查询单条订单", true);
   }
   /**
    * 根据分类查询订单
@@ -140,10 +94,10 @@ module.exports = class CustomerOrder extends ControllerAuth {
     const param = {
       appId: this.appId,
       userId: this.userInfo._id,
-      status: status === -1 ? undefined : status,
       isDelete: false,
     };
-    uniCloud.logger.log("根据分类查询订单-入参", param);
+    status !== -1 && (param.status = status);
+    this.info("(customer-order)根据分类查询订单-入参", param);
     const res = await colCsOrder
       .aggregate()
       .match(param)
@@ -156,21 +110,18 @@ module.exports = class CustomerOrder extends ControllerAuth {
         _id: false,
         status: true,
         createTime: true,
+        num: true,
         orderId: "$_id",
-        num: $.size("$addressInfo"),
-        amount: "$csAmount",
-        amountStr: $.divide(["$csAmount", 100]),
+        amount: "$amountCustomer",
+        amountStr: $.divide(["$amountCustomer", 100]),
         goodsInfo: {
-          goodsId: "$csGoodsInfo.goodsId",
-          expressName: "$spGoodsInfo.expressName",
-          goodsName: "$spGoodsInfo.goodsName",
-          dealPriceStr: $.divide(["$dealPrice", 100]),
-          salePriceNormal: $.divide(["$csAmount", $.size("$addressInfo")]),
-          salePriceNormalStr: $.divide([
-            $.divide(["$csAmount", $.size("$addressInfo")]),
-            100,
-          ]),
-          imgList: $.split(["$spGoodsInfo.imgList", "---"]),
+          goodsId: "$agGoodsInfo._id",
+          expressName: "$spStoreInfo.expressInfo.expressName",
+          goodsName: "$agGoodsInfo.goodsName",
+          num: "$num",
+          storeName: "$spStoreInfo.storeName",
+          dealPriceStr: $.divide(["$dealPriceCustomer", 100]),
+          imgList: "$agGoodsInfo.imgList",
         },
       })
       .end();
@@ -178,6 +129,6 @@ module.exports = class CustomerOrder extends ControllerAuth {
       ele.createTimeStr = moment(ele.createTime).utcOffset(8).format(FORMATTER);
       return ele;
     });
-    return this.processResponseData(res, "根据分类查询订单");
+    return this.processResponseData(res, "(customer-order)根据分类查询订单");
   }
 };

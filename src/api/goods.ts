@@ -20,15 +20,14 @@ class Goods {
       action: "supplier-store/getGoodsListByCityId",
     });
   }
-
   /**
-   * 根据商品ID查询商品信息
+   * 根据商品ID和仓库ID查询商品信息
    * @param data
    */
   getGoodsDetail(data: { goodsId: string }) {
     return request.start<goods.IGoodsItem>({
       data,
-      action: "agent-goods/getSingleByGoodsId",
+      action: "agent-goods/getSingleByGoodsIdAndStoreId",
     });
   }
   /**

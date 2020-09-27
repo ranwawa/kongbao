@@ -54,38 +54,37 @@ module.exports = class AliHuoCang extends ControllerBase {
   /**
    * 添加一条仓库信息
    */
-  async addStore(newStoreItem, storeId) {
-    this.info("(alihuocang-async)添加一条仓库信息-入参", newStoreItem);
+  async addStore(storeInfoNew, storeId) {
+    this.info("(alihuocang-async)添加一条仓库信息-入参", storeInfoNew);
+    const param = {
+      spId,
+      _id: storeId,
+      storeName: storeInfoNew.name,
+      formattedAddress: storeInfoNew.shipAddress,
+      remark: "暂不发货区域：" + storeInfoNew.notSendAddress,
+      cityInfo: {
+        cityId: "",
+        cityName: "",
+      },
+      expressInfo: {
+        expressCostPrice: yuan2fen(storeInfoNew.expressCostPrice),
+        expressName: "",
+        expressLogo: "",
+        expressId: "",
+      },
+      originInfo: storeInfoNew,
+      ...this.getBaseFields(),
+    };
     const [err, data] = await callFunc({
       name: BACK_END,
       action: "supplier-store/add",
-      data: {
-        spId,
-        _id: storeId,
-        cityId: "",
-        updateTime: Date.now(),
-        createTime: Date.now(),
-        isDelete: false,
-        isEnable: true,
-        sort: 0,
-        storeName: newStoreItem.name,
-        formattedAddress: newStoreItem.shipAddress,
-        remark: newStoreItem.notSendAddress,
-        originInfo: newStoreItem,
-        expressList: [
-          {
-            expressId: "",
-            expressCostPrice: yuan2fen(newStoreItem.expressCostPrice),
-          },
-        ],
-      },
+      data: param,
     });
     if (err) {
       uniCloud.logger.error("(alihuocang-async)添加一条仓库信息", err);
       return;
     }
     this.info("(alihuocang-async)添加一条仓库信息-出参", data);
-    await this.addLog("新增一条仓库", `仓库id是${storeId}`);
     return data;
   }
   /**
@@ -94,44 +93,38 @@ module.exports = class AliHuoCang extends ControllerBase {
   async updateStore(storeInfoNew, storeInfoOld) {
     // 只有价格发生变化后才会更新
     // 更新也只更新时间,价格
-    if (
-      storeInfoNew.expressCostPrice === storeInfoOld.originInfo.expressCostPrice
-    ) {
+    const newPrice = storeInfoNew.expressCostPrice;
+    const oldPrice = storeInfoOld.originInfo.expressCostPrice;
+    if (newPrice === oldPrice) {
       return;
     }
-    this.info("(alihuocang-async)更新仓库-入参", storeInfoNew, storeInfoOld);
+    this.info("(alihuocang-async)更新仓库-入参", newPrice, oldPrice);
+    const param = {
+      storeId: storeInfoOld._id,
+      updateTime: Date.now(),
+      expressInfo: {
+        expressCostPrice: yuan2fen(storeInfoNew.expressCostPrice),
+      },
+      originInfo: storeInfoNew,
+    };
     const [err, data] = await callFunc({
       name: BACK_END,
       action: "supplier-store/update",
-      data: {
-        storeId: storeInfoOld._id,
-        updateTime: Date.now(),
-        expressList: [
-          {
-            expressId: "",
-            expressCostPrice: yuan2fen(storeInfoNew.expressCostPrice),
-          },
-        ],
-        originInfo: storeInfoNew,
-      },
+      data: param,
     });
     if (err) {
       uniCloud.logger.error("(alihuocang-async)更新仓库出错", err);
       return;
     }
     this.info("(alihuocang-async)更新仓库-出参", data);
-    this.addLog(
-      "更新仓库",
-      `仓库id是${storeInfoOld._id},老的价格是${storeInfoOld.originInfo.expressCostPrice}
-    ,新的价格是${storeInfoNew.expressCostPrice}`
-    );
+    this.addLog("更新仓库", { storeInfoNew, storeInfoOld });
     return data;
   }
   /**
    * 添加一条日志
    */
   async addLog(title, content) {
-    this.info("(alihuocang-async)添加日志-入参", title, content);
+    this.info("(alihuocang-async)添加日志-入参", title);
     const res = await callFunc({
       name: BACK_END,
       action: "platform-log/add",
@@ -173,27 +166,24 @@ module.exports = class AliHuoCang extends ControllerBase {
    * 添加商品
    */
   async addGoods(goodsItemNew, goodsId, storeId) {
-    const now = Date.now();
+    const param = {
+      _id: goodsId,
+      spId,
+      storeId,
+      goodsName: goodsItemNew.name,
+      goodsCode: goodsItemNew.code,
+      ...this.getGoodsPrice(goodsItemNew.price),
+      sales: goodsItemNew.sales,
+      inventory: goodsItemNew.totalStockNumber,
+      content: goodsItemNew.intro,
+      imgList: [goodsItemNew.image],
+      originInfo: goodsItemNew,
+      ...this.getBaseFields(),
+    };
     const res = await callFunc({
       name: BACK_END,
       action: "supplier-goods/add",
-      data: {
-        _id: goodsId,
-        spId,
-        goodsName: goodsItemNew.name,
-        goodsCode: goodsItemNew.code,
-        goodsCostPrice: yuan2fen(goodsItemNew.price),
-        sales: goodsItemNew.sales,
-        inventory: goodsItemNew.totalStockNumber,
-        content: goodsItemNew.intro,
-        imgList: [goodsItemNew.image],
-        originInfo: goodsItemNew,
-        sort: 0,
-        updateTime: now,
-        createTime: now,
-        isDelete: false,
-        isEnable: true,
-      },
+      data: param,
     });
     this.info("(alihuocang-async)添加商品-出参", res);
     const [err, data] = res;
@@ -201,9 +191,15 @@ module.exports = class AliHuoCang extends ControllerBase {
       uniCloud.logger.error("(alihuocang-async)添加商品失败", err);
       return;
     }
-    this.addStoreGoodsRelation(storeId, goodsId);
-    await this.addLog("添加商品", `商品id是${goodsId}`);
     return data;
+  }
+  getGoodsPrice(priceStr) {
+    const price = yuan2fen(priceStr);
+    return {
+      goodsCostPrice: price,
+      agentPriceNormal: price + 10, // 普通代理赚一毛
+      agentPriceVip: price + 5, // 高级代理赚5分
+    };
   }
   /**
    * 更新商品
@@ -213,16 +209,17 @@ module.exports = class AliHuoCang extends ControllerBase {
     const { totalStockNumber, price } = goodsItemNew;
     const oldTotalStockNumber = goodsItemOld.totalStockNumber;
     const oldPrice = goodsItemOld.price;
+    this.info("(alihuocang-async)修改商品-入参", price, oldPrice);
     if (totalStockNumber === oldTotalStockNumber && price === oldPrice) {
       return;
     }
+    let priceParam = price !== oldPrice ? this.getGoodsPrice(price) : {};
     const param = {
-      inventory: totalStockNumber,
       goodsId,
-      goodsCostPrice: yuan2fen(price),
+      inventory: totalStockNumber,
       originInfo: goodsItemNew,
+      ...priceParam,
     };
-    this.info("(alihuocang-async)修改商品-入参", goodsId);
     const [err, data] = await callFunc({
       name: BACK_END,
       action: "supplier-goods/update",
@@ -233,10 +230,7 @@ module.exports = class AliHuoCang extends ControllerBase {
       return;
     }
     this.info("(alihuocang-async)修改商品-出参", data);
-    this.addLog(
-      "更新商品",
-      `商品id是${goodsId},老价格${oldPrice},新价格${price}老库存${oldTotalStockNumber}新库存${totalStockNumber}`
-    );
+    this.addLog("更新商品", { goodsItemNew, goodsItemOld });
     return data;
   }
   /**
