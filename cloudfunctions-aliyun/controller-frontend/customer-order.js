@@ -110,7 +110,7 @@ module.exports = class CustomerOrder extends ControllerAuth {
         _id: false,
         status: true,
         createTime: true,
-        num: true,
+        num: $.divide(["$amountCustomer", "$$dealPriceCustomer"]),
         orderId: "$_id",
         amount: "$amountCustomer",
         amountStr: $.divide(["$amountCustomer", 100]),
