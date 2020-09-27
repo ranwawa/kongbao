@@ -390,7 +390,95 @@ class OrderPay extends OrderConfirm {
   }
 }
 
-module.exports = class OrderOperate extends OrderPay {
+/**
+ * 查询快递单号相关操作
+ */
+class OrderSend extends OrderPay {
+  constructor(appId, userInfo) {
+    super(appId, userInfo);
+    this.customerFundOrder = new CustomerFundOrder(appId, userInfo);
+    this.customerVip = new CustomerVip(appId, userInfo);
+  }
+  /**
+   * 提醒发货
+   */
+  async alertSend(options) {
+    this.info("(order-operate)提醒发货-入参", options);
+    const { orderId } = options;
+    if (!this.checkIsId(orderId)) {
+      return new this.ResponseModal(400, {}, "参数有误");
+    }
+    // 查询当前订单所有地址
+    const res = await this.getRecordIdList(orderId);
+    if (!res) {
+      return new this.ResponseModal(400, {}, "数据异常");
+    }
+    // 根据地址查询第3方快递单号
+    // 每次最多查100个
+    const [err, data] = await apiALHC.findExpressNoList({
+      recordIds: res.join(","),
+    });
+    if (err) {
+      return new this.ResponseModal(500, {}, "服务异常,请稍后再试");
+    }
+    // 更新子订单和主订单
+    const res2 = await this.updateSub(data);
+    if (!res2) {
+      return new this.ResponseModal(500, {}, "更新快递单号出错");
+    }
+    // 更新主订单
+    const [err2, data2] = await callFunc({
+      name: "controller-backend",
+      action: "customer-order/updateOrderInfo",
+      data: {
+        orderId,
+        appId: this.appId,
+        userId: this.userInfo._id,
+        preStatus: 5,
+        nextStatus: 6,
+      },
+    });
+    if (!data2 || data2.affectedDocs < 1) {
+      uniCloud.logger.log("(cb-ali-huocang)批量下单接口回调-出参", err2, data2);
+      return Error;
+    }
+    return new this.ResponseModal(0, data2);
+  }
+  async getRecordIdList(orderId) {
+    const [err, data] = await callFunc({
+      name: BACK_END,
+      action: "customer-order/getRecordIdByOrderId",
+      data: {
+        orderId,
+        userId: this.userInfo._id,
+        appId: this.appId,
+        isDelete: false,
+        isEnable: true,
+      },
+    });
+    if (err || data.length < 1) {
+      return;
+    }
+    return data.map((ele) => ele.recordId);
+  }
+  async updateSub(options) {
+    const promiseAll = options.map((ele) =>
+      callFunc({
+        name: BACK_END,
+        action: "customer-order/updateSub",
+        data: ele,
+      })
+    );
+    const res = await Promise.all(promiseAll);
+    const affectedDocs = res.filter(
+      ([err, data]) => data && data.affectedDocs === 1
+    );
+    this.info("更新子订单-出参", affectedDocs.length, options.length);
+    return affectedDocs.length === options.length;
+  }
+}
+
+module.exports = class OrderOperate extends OrderSend {
   constructor(appId, userInfo) {
     super(appId, userInfo);
     this.customerFundOrder = new CustomerFundOrder(appId, userInfo);

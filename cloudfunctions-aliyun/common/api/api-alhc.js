@@ -88,4 +88,17 @@ module.exports = {
     uniCloud.logger.info("(api-alhc)批量下单-出参", res);
     return res;
   },
+  // 快递运单号批量查询接口
+  findExpressNoList: async (data) => {
+    uniCloud.logger.info("(api-alhc)快递运单号批量查询接口-入参", data);
+    const res = await request({
+      data: {
+        ...data,
+        accessToken: alhc.accessToken,
+      },
+      url: `${alhc.baseUrl}OpenPlatform/findExpressNoList`,
+    });
+    uniCloud.logger.info("(api-alhc)快递运单号批量查询接口-出参", res);
+    return res;
+  },
 };

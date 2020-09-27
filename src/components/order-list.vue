@@ -3,8 +3,8 @@
     <view v-for="item in orderList" :key="item.orderId" class="order-item">
       <!-- 订单信息 -->
       <view class="order-item__head">
-        <view> 创建时间: {{ item.createTimeStr }} </view>
-        <view> 实付: {{ item.amountStr }} </view>
+        <view> 创建时间: {{ item.createTimeStr }}</view>
+        <view> 实付: {{ item.amountStr }}</view>
       </view>
       <!-- 商品信息 -->
       <view class="order-item__body">
@@ -33,7 +33,16 @@
         >
           立即支付
         </uv-button>
-        <uv-button v-if="item.status === 3" size="mini" type="primary" round>
+        <uv-button
+          v-if="item.status === 5"
+          type="info"
+          size="mini"
+          round
+          @click="alertSend(item)"
+        >
+          提醒发货
+        </uv-button>
+        <uv-button v-if="item.status === 6" size="mini" type="primary" round>
           下载订单
         </uv-button>
       </view>
@@ -78,14 +87,23 @@ export default class OrderList extends Vue {
   handleClickGoods(item: order.IDetailRes) {
     this.$emit("click-order", item);
   }
+
   /**
    * 前往订单详情
    */
   goOrderDetail(item: order.IDetailRes) {
     uniWrapper.navigateToPage(`${ROUTE.ORDER_DETAIL}?orderId=${item.orderId}`);
   }
+
   goContact() {
     uniWrapper.navigateToPage(ROUTE.SERVICE_CONTACT);
+  }
+
+  /**
+   * 提醒发货
+   */
+  async alertSend(item: order.IDetailRes) {
+    await order.alertSend({ orderId: item.orderId });
   }
 }
 </script>

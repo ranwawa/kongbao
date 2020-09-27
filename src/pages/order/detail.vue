@@ -21,10 +21,15 @@
     </view>
     <!-- 收货地址列表 -->
     <view class="od-address" @click="copyAddressInfo">
-      <view class="od-address__title" @click.stop="copyAll"
-        >收货地址
-        <uv-button size="mini" type="primary" custom-style="margin: 0;"
-          >批量复制
+      <view class="od-address__title" @click.stop="copyAll">
+        收货地址
+        <uv-button
+          v-if="orderInfo.status === 6"
+          size="mini"
+          type="primary"
+          custom-style="margin: 0;"
+        >
+          批量复制
         </uv-button>
       </view>
       <view
@@ -34,6 +39,9 @@
       >
         <view class="od-address__label" :data-index="index">
           {{ item.formattedAddress }}
+          <template v-if="item.expressNo">
+            (快递单号: {{ item.expressNo }})
+          </template>
         </view>
       </view>
     </view>
@@ -82,10 +90,10 @@ export default class LoginHome extends Vue {
    */
   copyAddressInfo(e: any) {
     const index = e?.target?.dataset?.index;
-    if (!index) {
+    if (this.orderInfo.status !== 6 || !index) {
       return;
     }
-    const data: string = this.orderInfo.addressList[index].formattedAddress;
+    const data: string = this.orderInfo.addressList[index].expressNo;
     this.copyInMp(data);
     this.copyInH5(data);
     uniWrapper.showToastText("复制成功");
@@ -96,7 +104,7 @@ export default class LoginHome extends Vue {
    */
   copyAll() {
     const data: string = this.orderInfo.addressList
-      .map((ele) => `${ele.formattedAddress}`)
+      .map((ele) => `${ele.formattedAddress} ${ele.expressNo}`)
       .join("\r\n");
     this.copyInMp(data);
     this.copyInH5(data);

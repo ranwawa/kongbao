@@ -64,6 +64,17 @@ class Order {
       action: "customer-fund-order/getSingleById",
     });
   }
+
+  /**
+   * 提醒发货
+   */
+  alertSend(data: { orderId: string }) {
+    return request.start<order.IFundOrderItem>({
+      data,
+      isHideLoad: true,
+      action: "order-operate/alertSend",
+    });
+  }
 }
 
 export const order = new Order();

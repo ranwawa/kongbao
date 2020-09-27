@@ -204,6 +204,8 @@ namespace order {
     createTimeStr: string;
     payTimeStr: string;
     storeTimeStr: string;
+    status: number;
+    expressNo: string;
   }
 
   /**

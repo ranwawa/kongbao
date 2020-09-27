@@ -31,6 +31,23 @@ class OrderSub extends ControllerBase {
       .update(lodash.omit(options, ["thirdOrderNo"]));
     return this.processResponseData(res, "alhc更新子订单");
   }
+  /**
+   * 根据订单号查询纪录ID
+   */
+  async getRecordIdByOrderId(options) {
+    this.info("(customer-order)根据订单号查询纪录ID-入参", options);
+    const res = await colCsOrderSub
+      .where(options)
+      .field({
+        _id: false,
+        recordId: true,
+      })
+      .get();
+    return this.processResponseData(
+      res,
+      "(customer-order)根据订单号查询纪录ID"
+    );
+  }
 }
 
 module.exports = class CustomerOrder extends OrderSub {
@@ -154,7 +171,6 @@ module.exports = class CustomerOrder extends OrderSub {
         _id: _.exists(true),
       })
       .remove();
-
     const res2 = await colCsOrderSub
       .where({
         _id: _.exists(true),

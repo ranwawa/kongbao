@@ -37,7 +37,7 @@ module.exports = class CustomerOrder extends ControllerAuth {
         from: "kb-cs-order-sub",
         pipeline: $.pipeline()
           .match(_.expr($.eq([orderId, "$orderId"])))
-          .project({ _id: false, formattedAddress: true })
+          .project({ _id: false, formattedAddress: true, expressNo: true })
           .done(),
         as: "addressList",
       })
