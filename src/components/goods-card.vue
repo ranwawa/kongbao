@@ -6,7 +6,7 @@
       class="goods-card"
       @click="$emit('click-item', item)"
     >
-      <image class="goods-card__img" mode="aspectFill" :src="item.imgList" />
+      <image class="goods-card__img" mode="aspectFill" :src="item.imgList[0]" />
       <view class="goods-card__title">
         <uv-tag
           type="primary"
