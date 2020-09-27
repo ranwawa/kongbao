@@ -120,7 +120,14 @@ export default class LoginHome extends Vue {
 .order {
   /* 顶部tab */
   &-tabs {
-    @include fixed-top(px2rpx(44));
+    /* 在h5下,fix是基于整个窗口布局的,而自定义导航会挡住 */
+    /* 在小程序下,fix是基于webview布局的,并不包含导航区域,所以要分开处理 */
+    /* #ifdef H5 */
+    @include fixed-top(44px);
+    /* #endif */
+    /* #ifdef MP */
+    @include fixed-top;
+    /* #endif */
     @include flex-row;
     margin-bottom: $s-sm;
     overflow: auto;
@@ -129,9 +136,9 @@ export default class LoginHome extends Vue {
 
   &-tab {
     position: relative;
-    height: 3em;
+    height: px2rpx(44);
     min-width: 6em;
-    line-height: 3em;
+    line-height: px2rpx(44);
     text-align: center;
 
     &-active::after {
