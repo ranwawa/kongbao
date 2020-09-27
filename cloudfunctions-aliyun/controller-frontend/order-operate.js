@@ -89,6 +89,8 @@ class OrderConfirm extends ControllerAuth {
     const addressListNew = addressList.map((ele, index) => ({
       orderId,
       ...ele,
+      // 阿里货仓只限城市名为2个字以上,而直辖市只有一个字.所以得处理一下
+      cityName: ele.cityName.length < 2 ? ele.areaName : ele.cityName,
       _id: md5(`${orderId}${index}`),
       ...this.getBaseFields(true),
     }));
