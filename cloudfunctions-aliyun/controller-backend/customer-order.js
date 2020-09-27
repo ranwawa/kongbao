@@ -189,7 +189,7 @@ module.exports = class CustomerOrder extends OrderSub {
         appId: options.appId,
         userId: options.userId,
         _id: options.orderId,
-        status: 1,
+        status: options.status,
         isDelete: false,
       })
       .addFields({ spId: "$spStoreInfo.spId" })

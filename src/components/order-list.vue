@@ -34,7 +34,20 @@
           立即支付
         </uv-button>
         <uv-button
+          v-if="item.status === 2"
+          :disabled="isDisableBtn"
+          :loading="isDisableBtn"
+          type="info"
+          size="mini"
+          round
+          @click="alertPrint(item)"
+        >
+          提醒打单
+        </uv-button>
+        <uv-button
           v-if="item.status === 5"
+          :disabled="isDisableBtn"
+          :loading="isDisableBtn"
           type="info"
           size="mini"
           round
@@ -74,6 +87,7 @@ import { order } from "@/api/order";
   },
 })
 export default class OrderList extends Vue {
+  isDisableBtn: boolean = false;
   /**
    * 前往支付页面
    */
@@ -103,7 +117,19 @@ export default class OrderList extends Vue {
    * 提醒发货
    */
   async alertSend(item: order.IDetailRes) {
+    this.isDisableBtn = true;
     await order.alertSend({ orderId: item.orderId });
+    this.isDisableBtn = false;
+    this.$emit("refresh-order", item);
+  }
+  /**
+   * 提醒打单
+   */
+  async alertPrint(item: order.IDetailRes) {
+    this.isDisableBtn = true;
+    await order.alertPrint({ orderId: item.orderId });
+    this.isDisableBtn = false;
+    this.$emit("refresh-order", item);
   }
 }
 </script>

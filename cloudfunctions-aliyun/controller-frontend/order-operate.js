@@ -162,7 +162,7 @@ class OrderPay extends OrderConfirm {
   async pay(options) {
     this.info("(order-operate)支付-入参", options);
     const { orderId } = options;
-    if (typeof orderId !== "string") {
+    if (!this.checkIsId(orderId)) {
       return new this.ResponseModal(400, {}, "参数异常");
     }
     // 查询订单,用户,分站金额信息
@@ -182,13 +182,13 @@ class OrderPay extends OrderConfirm {
       return new this.ResponseModal(500, {}, "更新相关信息,数据异常");
     }
     // 请求第3方接口,更新订单状态
-    return await this[FUNC[res.orderInfo.spId]](res, orderId);
+    return await this[FUNC[res.orderInfo.spId]](res.orderInfo, orderId);
   }
   /**
    * 阿里货仓下单逻辑
    */
-  async alihuocang(res, orderId) {
-    const postData = await this.getPostData(res);
+  async alihuocang(orderInfo, orderId) {
+    const postData = await this.getPostData(orderInfo);
     if (!postData) {
       return new this.ResponseModal(500, {}, "获取下单参数,数据异常");
     }
@@ -218,7 +218,7 @@ class OrderPay extends OrderConfirm {
     const getOrderAmount = callFunc({
       name: BACK_END,
       action: "customer-order/getOrderAmount",
-      data: { appId, userId, orderId },
+      data: { appId, userId, orderId, status: 1 },
     });
     const getAgentSingle = callFunc({
       name: BACK_END,
@@ -338,7 +338,7 @@ class OrderPay extends OrderConfirm {
       spStoreInfo,
       serviceInfo,
       addressList,
-    } = options.orderInfo;
+    } = options;
     const data = JSON.stringify(
       addressList.map((addressInfoItem) => ({
         storehouseCode: spStoreInfo.originInfo.code,
@@ -389,6 +389,25 @@ class OrderPay extends OrderConfirm {
         appId: this.appId,
       },
     });
+  }
+  /**
+   * 提醒打单
+   */
+  async alertPrint(options) {
+    this.info("(order-operate)提醒打单-入参", options);
+    const { orderId } = options;
+    if (!this.checkIsId(orderId)) {
+      return new this.ResponseModal(400, {}, "参数异常");
+    }
+    const [err, orderInfo] = await callFunc({
+      name: BACK_END,
+      action: "customer-order/getOrderAmount",
+      data: { appId: this.appId, uerId: this.userInfo._id, orderId, status: 2 },
+    });
+    if (err || !orderInfo.spId) {
+      return new this.ResponseModal(400, "订单信息有误");
+    }
+    return await this[FUNC[orderInfo.spId]](orderInfo, orderId);
   }
 }
 

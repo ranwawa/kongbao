@@ -71,8 +71,16 @@ class Order {
   alertSend(data: { orderId: string }) {
     return request.start<order.IFundOrderItem>({
       data,
-      isHideLoad: true,
       action: "order-operate/alertSend",
+    });
+  }
+  /**
+   * 提醒发货
+   */
+  alertPrint(data: { orderId: string }) {
+    return request.start<order.IFundOrderItem>({
+      data,
+      action: "order-operate/alertPrint",
     });
   }
 }
