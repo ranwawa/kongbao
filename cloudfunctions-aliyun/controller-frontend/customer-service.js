@@ -1,5 +1,5 @@
 const { db, ControllerAuth, apiKdHelp } = require("api");
-const { colAgService } = db;
+const { colCsService } = db;
 module.exports = class AgentService extends ControllerAuth {
   constructor(appId, userInfo) {
     super(appId, userInfo);
@@ -40,7 +40,7 @@ module.exports = class AgentService extends ControllerAuth {
       isDelete: false,
     };
     uniCloud.logger.log("添加地址-入参", paramData);
-    const res = await colAgService.add(paramData);
+    const res = await colCsService.add(paramData);
     return this.processResponseData(res, "添加地址");
   }
   /**
@@ -56,7 +56,7 @@ module.exports = class AgentService extends ControllerAuth {
       isDelete: false,
     };
     uniCloud.logger.log("删除一条地址-入参", param);
-    const res = await colAgService.where(param).update({
+    const res = await colCsService.where(param).update({
       isDelete: true,
       updateTime: Date.now(),
     });
@@ -76,11 +76,11 @@ module.exports = class AgentService extends ControllerAuth {
       _id: option.serviceId,
     };
     uniCloud.logger.log("设置为默认地址-入参", pubParam, param);
-    await colAgService.where(pubParam).update({
+    await colCsService.where(pubParam).update({
       default: false,
       updateTime: Date.now(),
     });
-    const res = await colAgService
+    const res = await colCsService
       .where({
         ...pubParam,
         ...param,
@@ -122,7 +122,7 @@ module.exports = class AgentService extends ControllerAuth {
       updateTime: Date.now(),
     };
     uniCloud.logger.log("修改一条地址-入参", param);
-    const res = await colAgService
+    const res = await colCsService
       .where({
         appId: this.appId,
         userId: this.userInfo._id,
@@ -142,7 +142,7 @@ module.exports = class AgentService extends ControllerAuth {
       isDelete: false,
     };
     uniCloud.logger.log("查询当前用户所有地址-入参", param);
-    const res = await colAgService
+    const res = await colCsService
       .aggregate()
       .match(param)
       .addFields({ serviceId: "$_id" })
@@ -174,7 +174,7 @@ module.exports = class AgentService extends ControllerAuth {
       isDelete: false,
       _id: options.serviceId,
     };
-    const res = await colAgService
+    const res = await colCsService
       .aggregate()
       .match(param)
       .limit(1)
@@ -207,7 +207,7 @@ module.exports = class AgentService extends ControllerAuth {
       default: true,
     };
     uniCloud.logger.log("查询默认地址-入参", param);
-    const res = await colAgService
+    const res = await colCsService
       .aggregate()
       .match(param)
       .limit(1)

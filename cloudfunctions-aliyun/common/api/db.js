@@ -15,7 +15,6 @@ const colSpStoreExpress = db.collection("kb-sp-store-express");
 const colAgGoods = db.collection("kb-ag-goods");
 const colAgFund = db.collection("kb-ag-fund");
 const colAgInfo = db.collection("kb-ag-infos");
-const colAgService = db.collection("kb-ag-service");
 // 用户相关集合
 const colCsUser = db.collection("uni-id-users");
 const colCsOrder = db.collection("kb-cs-order");
@@ -23,6 +22,7 @@ const colCsOrderSub = db.collection("kb-cs-order-sub");
 const colCsFund = db.collection("kb-cs-fund");
 const colCsFundOrder = db.collection("kb-cs-fund-order");
 const colCsVip = db.collection("kb-cs-vip");
+const colCsService = db.collection("kb-cs-service");
 
 module.exports = {
   $,
@@ -42,12 +42,12 @@ module.exports = {
   colAgGoods,
   colAgInfo,
   colAgFund,
-  colAgService,
   /* 用户相关 */
   colCsUser,
   colCsOrder,
   colCsOrderSub,
   colCsFund,
   colCsFundOrder,
+  colCsService,
   colCsVip,
 };

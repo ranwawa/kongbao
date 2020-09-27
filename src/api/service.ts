@@ -8,7 +8,7 @@ class Service {
   add(data: service.IAddressItem) {
     return request.start<{ _id: string }>({
       data,
-      action: "agent-service/add",
+      action: "customer-service/add",
     });
   }
   /**
@@ -17,7 +17,7 @@ class Service {
   del(data: { serviceId: string }) {
     return request.start<Array<service.IAddressItem>>({
       data,
-      action: "agent-service/del",
+      action: "customer-service/del",
     });
   }
   /**
@@ -26,7 +26,7 @@ class Service {
   setDefault(data: { serviceId: string }) {
     return request.start<Array<service.IAddressItem>>({
       data,
-      action: "agent-service/setDefault",
+      action: "customer-service/setDefault",
     });
   }
   /**
@@ -35,7 +35,7 @@ class Service {
   update(data: service.IAddressItem) {
     return request.start<{ _id: string }>({
       data,
-      action: "agent-service/update",
+      action: "customer-service/update",
     });
   }
   /**
@@ -45,7 +45,7 @@ class Service {
   getAddressList(data = {}) {
     return request.start<Array<service.IAddressItem>>({
       data,
-      action: "agent-service/getList",
+      action: "customer-service/getList",
     });
   }
   /**
@@ -55,7 +55,7 @@ class Service {
   getAddressDefault(data = {}) {
     return request.start<service.IAddressItem>({
       data,
-      action: "agent-service/getDefault",
+      action: "customer-service/getDefault",
     });
   }
   /**
@@ -64,7 +64,7 @@ class Service {
   resolveAddress<T = { addressStr: "" }>(data: T) {
     return request.start<Array<service.IAddressItem>>({
       data,
-      action: "agent-service/resolveAddress",
+      action: "customer-service/resolveAddress",
     });
   }
 }

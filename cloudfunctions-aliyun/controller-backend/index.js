@@ -12,6 +12,7 @@ const SpGoods = require("./supplier-goods");
 const SpStore = require("./supplier-store");
 const SpStoreGoods = require("./supplier-store-goods");
 const AgentInfo = require("./agent-info");
+const AgentService = require("./customer-service");
 const AgentFund = require("./agent-fund");
 const AgentGoods = require("./agent-goods");
 const CustomerOrder = require("./customer-order");
@@ -45,6 +46,7 @@ exports.main = async (event, context) => {
     await new SpStore().removeAll();
     await new SpStoreGoods().removeAll();
     await new AgentGoods().removeAll();
+    await new AgentService().removeAll();
     await new AgentFund().removeAll();
     await new CustomerOrder().removeAll();
     await new CustomerFund().removeAll();
