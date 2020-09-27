@@ -12,7 +12,8 @@ const AgentService = require("./customer-service");
 const CustomerVip = require("./customer-vip");
 const BACK_END = "controller-backend";
 const FUNC = {
-  "5f4b16741179ce00015923a3": "alihuocang", // 阿里货仓
+  "5f4b16741179ce00015923a3": "alihuocang", // 阿里货仓-测试环境
+  "5f705f19fcfc0c000111d3b2": "alihuocang", // 阿里货仓-生产环境
 };
 
 /**

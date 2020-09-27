@@ -9,7 +9,7 @@ const PlatformCities = require("./platform-cities");
 const SupplierStore = require("./supplier-store");
 const AgentInfo = require("./agent-info");
 const AgentGoods = require("./agent-goods");
-const AgentService = require("./customer-service");
+const CustomerService = require("./customer-service");
 const CustomerOrder = require("./customer-order");
 const CustomerFund = require("./customer-fund");
 const CustomerFundOrder = require("./customer-fund-order");
@@ -24,7 +24,7 @@ const fileMap = {
   "agent-info": AgentInfo,
   "agent-goods": AgentGoods,
   "customer-fund": CustomerFund,
-  "customer-service": AgentService,
+  "customer-service": CustomerService,
   "customer-order": CustomerOrder,
   "user-auth": UserAuth,
   "user-anonymous": UserAnonymous,
