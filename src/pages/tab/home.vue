@@ -173,7 +173,6 @@ export default class LoginHome extends Vue {
    */
   async getGoodsRecommend() {
     const [err, data] = await goods.getGoodsRecommend();
-    console.log(123, err, data);
     if (err || !data?.length) {
       return;
     }

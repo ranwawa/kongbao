@@ -119,7 +119,7 @@ import { service } from "@/api/service";
     addressInfo(newValue) {
       const { provinceName, cityName, areaName } = newValue;
       // @ts-ignore
-      this.formData = newValue;
+      this.formData = JSON.parse(JSON.stringify(newValue));
       if (!provinceName) {
         // @ts-ignore
         this.cityInfo = `请点击选择省市区`;
