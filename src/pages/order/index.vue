@@ -37,7 +37,7 @@
     <!-- 商品信息 -->
     <view class="order-goods section">
       <view class="section__header">
-        <view class="section__title">{{ goodsInfo.expressName }}</view>
+        <view class="section__title">{{ goodsInfo.storeName }}</view>
       </view>
       <view class="order-goods__content section__body">
         <goods-cell :goods-info="goodsInfo" :goods-num="addressList.length" />

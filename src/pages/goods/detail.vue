@@ -19,7 +19,7 @@
         <view class="goods-header__record">已售{{ goodsInfo.sales }}件</view>
       </view>
       <view class="goods-header__title">
-        <uv-tag type="danger" custom-style="margin-right: 8rpx;" round>
+        <uv-tag type="primary" custom-style="margin-right: 8rpx;" round>
           {{ goodsInfo.expressName }}
         </uv-tag>
         {{ goodsInfo.goodsName }}

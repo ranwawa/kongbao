@@ -8,13 +8,13 @@
     <view class="goods-cell__content">
       <view class="goods-cell__name">
         <uv-tag type="danger" round>
-          {{ goodsInfo.storeName }}
+          {{ goodsInfo.expressName }}
         </uv-tag>
         {{ goodsInfo.goodsName }}
       </view>
       <view class="goods-cell__bottom">
         <uv-price :amount="goodsInfo.dealPriceStr" size="10" />
-        数量: x{{ goodsNum }}
+        快递费: {{ goodsInfo.expressPriceStr }} 数量: x{{ goodsNum }}
       </view>
     </view>
   </view>

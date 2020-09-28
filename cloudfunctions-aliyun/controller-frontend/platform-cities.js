@@ -14,7 +14,8 @@ module.exports = class PlatformCities extends ControllerBase {
   /**
    * 查询所有城市
    */
-  async getList() {
+  async getList(options) {
+    this.info("(platform-cities)查询所有城市-入参", options);
     const res = await colPlCities
       .aggregate()
       .match({ _id: _.exists(true) })

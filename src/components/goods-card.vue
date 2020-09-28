@@ -13,7 +13,7 @@
           custom-style="margin-right: 8rpx; font-size: 20rpx;"
           round
         >
-          {{ item.storeName }}
+          {{ item.expressName }}
         </uv-tag>
         {{ item.goodsName }}
       </view>

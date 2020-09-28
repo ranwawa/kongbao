@@ -18,37 +18,62 @@ module.exports = class SupplierStore extends ControllerBase {
   async getListRecommend() {
     const res = await colAgGoods
       .aggregate()
-      .match({
-        appId: this.appId,
-        isEnable: true,
-      })
+      .match({ appId: this.appId, isEnable: true })
       .sort({ sort: 1 })
       .lookup({
         from: "kb-sp-goods",
-        localField: "spGoodsId",
-        foreignField: "_id",
-        as: "spGoodsInfoList",
+        let: { spGoodsId: "$spGoodsId" },
+        pipeline: $.pipeline()
+          .match(_.expr($.eq(["$_id", "$$spGoodsId"])))
+          .addFields({ spGoodsId: "$_id" })
+          .project({ _id: false, inventory: true, storeId: true })
+          .done(),
+        as: "spGoodsInfo",
       })
-      .addFields({
-        spGoodsInfo: $.arrayElemAt(["$spGoodsInfoList", 0]),
+      .unwind("$spGoodsInfo")
+      .replaceRoot({
+        newRoot: $.mergeObjects(["$$ROOT", "$spGoodsInfo"]),
       })
+      .project({ spGoodsInfo: false })
+      .lookup({
+        from: "kb-sp-stores",
+        let: { storeId: "$storeId" },
+        pipeline: $.pipeline()
+          .match(_.expr($.eq(["$_id", "$$storeId"])))
+          .addFields({
+            cityName: "$cityInfo.cityName",
+            storeName: "$storeName",
+            expressName: "$expressInfo.expressName",
+          })
+          .project({
+            _id: false,
+            cityName: true,
+            storeName: true,
+            expressName: true,
+          })
+          .done(),
+        as: "spStoreInfo",
+      })
+      .unwind("$spStoreInfo")
+      .replaceRoot({
+        newRoot: $.mergeObjects(["$$ROOT", "$spStoreInfo"]),
+      })
+      .project({ spStoreInfo: false })
       .project({
+        _id: false,
         showPrice: true,
         salePriceVip: true,
         salePriceNormal: true,
-        spGoodsInfo: true,
+        imgList: true,
+        sales: true,
+        goodsName: true,
+        cityName: true,
+        storeName: true,
+        expressName: true,
         showPriceStr: $.divide(["$showPrice", 100]),
         salePriceVipStr: $.divide(["$salePriceVip", 100]),
         salePriceNormalStr: $.divide(["$salePriceNormal", 100]),
         goodsId: "$_id",
-        imgList: "$spGoodsInfo.imgList",
-        expressName: "$spGoodsInfo.expressName",
-        goodsName: "$spGoodsInfo.goodsName",
-        sales: "$spGoodsInfo.sales",
-      })
-      .project({
-        _id: false,
-        spGoodsInfo: false,
       })
       .limit(10)
       .end();

@@ -1,14 +1,12 @@
 {
-	"data": {
-		"orderId": "66026d2e905e4394b978b759d6130a24"
-	},
-	"action": "order-operate/alertPrint",
+	"data": {},
+	"action": "agent-goods/getListRecommend",
 	"clientInfo": {
 		"PLATFORM": "h5",
 		"OS": "ios",
 		"APPID": "__UNI__0CA1D11",
 		"CLIENT_SDK_VERSION": "1.0.0"
 	},
-	"uniCloudClientInfo": "%7B%22ak%22%3A%22__UNI__0CA1D11%22%2C%22p%22%3A%22i%22%2C%22ut%22%3A%22h5%22%2C%22uuid%22%3A%222q3pl89b2f81kv1qfpct2fp0t2hojt6m%22%2C%22fn%22%3A%22controller-frontend%22%2C%22sid%22%3A%2266108fd9-83f0-4fda-9219-f9fe3a6a377e%22%2C%22pvd%22%3A%22a%22%7D",
-	"uniIdToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI1ZjY1Y2UyNmQ3OWIwZjAwMDFjYmE1N2EiLCJjbGllbnRJZCI6IjI1M2RiYWMzYzljNjBiYTJhZDA0OTQ0M2NhZGY4ZjliIiwiaWF0IjoxNjAxMjE1NjMyLCJleHAiOjE2MDg0MTU2MzJ9.oCf63oegHGqH0Cc1aGzDtzzbT-pviBkNaisZUmlbbcs"
+	"uniCloudClientInfo": "%7B%22ak%22%3A%22__UNI__0CA1D11%22%2C%22p%22%3A%22i%22%2C%22ut%22%3A%22h5%22%2C%22uuid%22%3A%22vvjc8gnv7ggktk5ie3jc28tq2p2r0m83%22%2C%22fn%22%3A%22controller-frontend%22%2C%22sid%22%3A%22e2e873a7-3cfe-4a2d-8c8c-a985b2e5c69c%22%2C%22pvd%22%3A%22a%22%7D",
+	"uniIdToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI1ZjY1Y2UyNmQ3OWIwZjAwMDFjYmE1N2EiLCJjbGllbnRJZCI6IjlmZTNhODY5YjgwZGI2ZGQ0ZDI2OTlhMTZiNDkzZThjIiwiaWF0IjoxNjAxMDI5NDA5LCJleHAiOjE2MDgyMjk0MDl9.69Td1IOILgCgXyB3ZsCDse-_q8P1iEq2RQlqwa026ZM"
 }
